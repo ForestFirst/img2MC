@@ -157,7 +157,7 @@ function CSV2Array(str){
     let csv_array = [];
     let tmp_array = str.split("\n");
 
-    for(var i=0;i<tmp.length;i++){
+    for(var i=0;i<tmp_array.length;i++){
         csv_array[i] = tmp_array[i].split(',').slice(7,10);
     }
     return csv_array;
