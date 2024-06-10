@@ -146,6 +146,7 @@ function loadCSVFile(){
 
     csv.onload = function(){
         array = CSV2Array(csv.responseText);
+        console.log(array);
     }
     return array;
 }
