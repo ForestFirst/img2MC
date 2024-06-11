@@ -141,9 +141,12 @@ excelファイル読み込み
 function loadCSVFile(){
     let csv = new XMLHttpRequest();
     let csv_array = [];
-    let tmp_array = str.split("\n");    
+    let tmp_array;
+    
     csv.open("get", "./BlocksColor.csv",true);
     csv.send(null);
+
+    tmp_array = csv.responseText.split("\n");
 
     csv.onload = function(){
         for(var i=0;i<tmp_array.length;i++){
