@@ -318,7 +318,7 @@ function colorErrorDiffusion(img_data,imagecolors,processed_data,origin_xyz,zip,
 
             //誤差（rgbそれぞれで算出）
             let tmp_rgb = [];
-            for(var i = 0;i < 3;i++){
+            for(i = 0;i < 3;i++){
                 tmp_rgb[i] = Math.abs(hsvS[index / 4][i] - color_csv[index / 4][1][i])
             }
             let error = tmp_rgb;
