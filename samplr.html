@@ -287,6 +287,7 @@ function colorErrorDiffusion(img_data,imagecolors,processed_data,origin_xyz,zip,
             let min_angle;
             let max_angle;
 
+            hsvS[index / 4] = rgb2hsv(imagecolors[index],imagecolors[index + 1],imagecolors[index + 2]);
             //比較範囲計算
             min_angle = hsvS[index / 4][0] - (scope / 2);
             if(min_angle < 0) min_angle + angle;
@@ -294,7 +295,6 @@ function colorErrorDiffusion(img_data,imagecolors,processed_data,origin_xyz,zip,
             if(min_angle >= angle) max_angle - angle;
 
             //比較
-            hsvS[index / 4] = rgb2hsv(imagecolors[index],imagecolors[index + 1],imagecolors[index + 2]);
             
             let i = min_angle;
             while(i <= max_angle){
