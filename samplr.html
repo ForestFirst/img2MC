@@ -322,7 +322,7 @@ function colorErrorDiffusion(img_data,imagecolors,processed_data,origin_xyz,zip,
             //誤差（rgbそれぞれで算出）
             let error = [];
             for(i = 0;i < 3;i++){
-                error[i] = Math.abs(hsvS[index / 4][i] - color_csv[index / 4][1][i])
+                error[i] = Math.abs(hsvS[index / 4][i] - color_csv[1][index / 4][i])
             }
 
             //誤差拡散
@@ -347,7 +347,7 @@ function colorErrorDiffusion(img_data,imagecolors,processed_data,origin_xyz,zip,
 
             //rgb代入
             for(i = 0;i < 3;i++){
-                imagecolors[index + i] = color_csv[comp_num][1][i];
+                imagecolors[index + i] = color_csv[1][comp_num][i];
             }
             imagecolors[index + 3] = 255;
         }
