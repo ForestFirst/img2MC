@@ -142,7 +142,9 @@ csv_array[i][1] = {r,g,b}
 */
 function loadCSVFile(){
     let csv = new XMLHttpRequest();
-    var csv_array = new Array(360);
+    var csv_array = new Array(2);
+    csv_array[1] = new Array(360);//hsv
+    csv_array[2] = new Array(360);//rgb
     let rgb_array = new Array(3);
     let hsv_array = new Array(3);
     let tmp_array = [];
@@ -153,12 +155,10 @@ function loadCSVFile(){
     csv.onload = function(){
         tmp_array = (csv.responseText).split("\n");
         for(var i = 1;i < tmp_array.length - 1;i++){
-            csv_array[tmp_array[i][0] - 1] = new Array(2);
-            console.log(csv_array);
             hsv_array = tmp_array[i].split(',').slice(7,10);
             rgb_array = tmp_array[i].split(',').slice(1,4);
-            csv_array[tmp_array[i][0] - 1][0] = hsv_array;
-            csv_array[tmp_array[i][0] - 1][1] = rgb_array;
+            csv_array[0][tmp_array[i][0] - 1] = hsv_array;
+            csv_array[1][tmp_array[i][0] - 1] = rgb_array;
         }
     }
     return csv_array;
