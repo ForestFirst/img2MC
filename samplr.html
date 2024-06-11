@@ -145,11 +145,10 @@ function loadCSVFile(){
     
     csv.open("get", "./BlocksColor.csv",true);
     csv.send(null);
-
-    tmp_array = csv.responseText.split("\n");
-    console.log(tmp_array);
-
+    
     csv.onload = function(){
+        tmp_array = (csv.responseText).split("\n");
+        console.log(tmp_array);
         for(var i=0;i<tmp_array.length;i++){
             csv_array[i] = tmp_array[i].split(',').slice(7,10);
         }
