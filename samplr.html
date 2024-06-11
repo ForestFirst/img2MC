@@ -305,25 +305,25 @@ function colorErrorDiffusion(img_data,imagecolors,processed_data,origin_xyz,zip,
                 i++;
                 comp_value[i] = 0;
                 comp_value[i] = Math.abs(hsvS[index / 4][0] - i) * h_mag;
-                comp_value[i] = Math.abs(hsvS[index / 4][1] - color_csv[1][i][0]);
-                comp_value[i] = Math.abs(hsvS[index / 4][2] - color_csv[2][i][0]);
+                comp_value[i] = Math.abs(hsvS[index / 4][1] - color_csv[0][i][0]);
+                comp_value[i] = Math.abs(hsvS[index / 4][2] - color_csv[1][i][0]);
                 
                 if(i == scope - 1) i = 0;
             }
 
             let tmp_comp_num = comp_value[0];
-            let comp_num;
+            var comp_num;
             for(i = 1;i < scope;i++){
                 if(tmp_comp_num > comp_value[i]){
                     tmp_comp_num = comp_value[i];
-                    tmp_num = i + min_angle;
+                    comp_num = i + min_angle;
                 }
             }
 
             //誤差（rgbそれぞれで算出）
             let error = [];
             for(i = 0;i < 3;i++){
-                error[i] = Math.abs(hsvS[index / 4][i] - color_csv[1][index / 4][i])
+                error[i] = Math.abs(imagecolors[comp_num][i] - color_csv[1][comp_num][i])
             }
 
             //誤差拡散
