@@ -142,7 +142,6 @@ function loadCSVFile(){
     let csv = new XMLHttpRequest();
     let array;
     csv.open("get", "./BlocksColor.csv",true);
-    csv.responseType = "blob";
     csv.send(null);
 
     csv.onload = function(){
