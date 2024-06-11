@@ -152,7 +152,7 @@ function loadCSVFile(){
     
     csv.onload = function(){
         tmp_array = (csv.responseText).split("\n");
-        for(var i=0;i<tmp_array.length;i++){
+        for(var i = 0;i < tmp_array.length;i++){
             hsv_array = tmp_array[i].split(',').slice(7,10);
             rgb_array = tmp_array[i].split(',').slice(1,4);
             csv_array[tmp_array[i][0]][0] = hsv_array;
@@ -332,15 +332,15 @@ function colorErrorDiffusion(img_data,imagecolors,processed_data,origin_xyz,zip,
                 }
                 //左下
                 if(x > 0){
-                    imagecolors[((x - 1) + (y + 1) * width)*4 + i] += (error * 2.8) / 16 | 0;
+                    imagecolors[((x - 1) + (y + 1) * width)*4 + i] += (error[i] * 2.8) / 16 | 0;
                 }
                 //下
                 if(i < height -1){
-                    imagecolors[(x + (y + 1) * width)*4 + i] += (error * 5) / 16 | 0;
+                    imagecolors[(x + (y + 1) * width)*4 + i] += (error[i] * 5) / 16 | 0;
                 }
                 //右下
                 if(x < width - 1 && y > height - 1){
-                    imagecolors[((x + 1) + (y + 1) * width)*4 + i] += (error * 3.2) / 16 | 0;
+                    imagecolors[((x + 1) + (y + 1) * width)*4 + i] += (error[i] * 3.2) / 16 | 0;
                 }
             }
 
