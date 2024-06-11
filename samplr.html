@@ -153,14 +153,14 @@ function loadCSVFile(){
     csv.onload = function(){
         tmp_array = (csv.responseText).split("\n");
         for(var i=0;i<tmp_array.length;i++){
-            hsv_array[i] = tmp_array[i].split(',').slice(7,10);
-            rgb_array[i] = tmp_array[i].split(',').slice(1,4);
-            csv_array[tmp_array[i][0]][0] = hsv_array[i];
-            csv_array[tmp_array[i][0]][1] = rgb_array[i];
+            hsv_array = tmp_array[i].split(',').slice(7,10);
+            rgb_array = tmp_array[i].split(',').slice(1,4);
+            csv_array[tmp_array[i][0]][0] = hsv_array;
+            csv_array[tmp_array[i][0]][1] = rgb_array;
         }
         csv_array = csv_array.slice(1,csv_array.length);
     }
-    return scv_array;
+    return csv_array;
 }
 
 /*
