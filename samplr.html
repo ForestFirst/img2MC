@@ -143,8 +143,8 @@ csv_array[i][1] = {r,g,b}
 function loadCSVFile(){
     let csv = new XMLHttpRequest();
     let csv_array = new Array(360);
-    let rgb_array = [];
-    let hsv_array = [];
+    let rgb_array = new Array(3);
+    let hsv_array = new Array(3);
     let tmp_array = [];
     
     csv.open("get", "./BlocksColor.csv",true);
@@ -155,7 +155,9 @@ function loadCSVFile(){
         for(var i = 0;i < tmp_array.length;i++){
             csv_array[tmp_array[i][0]] = new Array(2);
             hsv_array = tmp_array[i].split(',').slice(7,10);
+            console.log(hsv_array);
             rgb_array = tmp_array[i].split(',').slice(1,4);
+            console.log(rgb_array);
             csv_array[tmp_array[i][0]][0] = hsv_array;
             csv_array[tmp_array[i][0]][1] = rgb_array;
         }
