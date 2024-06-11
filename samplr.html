@@ -152,7 +152,7 @@ function loadCSVFile(){
     
     csv.onload = function(){
         tmp_array = (csv.responseText).split("\n");
-        for(var i = 0;i < tmp_array.length;i++){
+        for(var i = 1;i < tmp_array.length - 1;i++){
             csv_array[tmp_array[i][0]] = new Array(2);
             hsv_array = tmp_array[i].split(',').slice(7,10);
             console.log(hsv_array);
