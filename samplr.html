@@ -140,14 +140,17 @@ excelファイル読み込み
 */
 function loadCSVFile(){
     let csv = new XMLHttpRequest();
-    var array;
+    let csv_array = [];
+    let tmp_array = str.split("\n");    
     csv.open("get", "./BlocksColor.csv",true);
     csv.send(null);
 
     csv.onload = function(){
-        array = CSV2Array(csv.responseText);
+        for(var i=0;i<tmp_array.length;i++){
+            csv_array[i] = tmp_array[i].split(',').slice(7,10);
+        }
     }
-    return array;
+    return csv_array;
 }
 
 /*
