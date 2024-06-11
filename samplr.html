@@ -155,14 +155,12 @@ function loadCSVFile(){
         for(var i = 1;i < tmp_array.length - 1;i++){
             csv_array[tmp_array[i][0]] = new Array(2);
             hsv_array = tmp_array[i].split(',').slice(7,10);
-            console.log(hsv_array);
             rgb_array = tmp_array[i].split(',').slice(1,4);
-            console.log(rgb_array);
             csv_array[tmp_array[i][0]][0] = hsv_array;
             csv_array[tmp_array[i][0]][1] = rgb_array;
         }
         csv_array = csv_array.slice(1,csv_array.length);
-        console.log(csv_array);
+        console.log(csv_array[0][1]);
     }
     return csv_array;
 }
