@@ -158,8 +158,9 @@ function loadCSVFile(){
             rgb_array = tmp_array[i].split(',').slice(1,4);
             csv_array[tmp_array[i][0]][0] = hsv_array;
             csv_array[tmp_array[i][0]][1] = rgb_array;
+            console.log(csv_array[0][0]);
+            console.log(csv_array[0][1]);
         }
-        console.log(csv_array[0][1]);
     }
     return csv_array;
 }
