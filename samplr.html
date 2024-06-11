@@ -215,7 +215,7 @@ function greyErrorDiffusion(img_data,imagecolors,processed_data,origin_xyz,zip,f
         }
     }
     //画像化
-    for (var i = 0;i < img_data.data.length;i++) {
+    for (i = 0;i < img_data.data.length;i++) {
         processed_data.data[i] = imagecolors[i];
     }
     
@@ -344,7 +344,7 @@ function colorErrorDiffusion(img_data,imagecolors,processed_data,origin_xyz,zip,
             }
 
             //rgb代入
-            for(var i = 0;i < 3;i++){
+            for(i = 0;i < 3;i++){
                 imagecolors[index + i] = color_csv[comp_num][1][i];
             }
             imagecolors[index + 3] = 255;
@@ -352,7 +352,7 @@ function colorErrorDiffusion(img_data,imagecolors,processed_data,origin_xyz,zip,
     }
 
     //画像化
-    for (var i = 0;i < img_data.data.length;i++) {
+    for (i = 0;i < img_data.data.length;i++) {
         processed_data.data[i] = imagecolors[i];
     }
     return processed_data;
