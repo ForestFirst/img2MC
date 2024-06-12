@@ -81,26 +81,37 @@ function processImageData(num) {
 /*
 rgbからhsv変換
 */
-function rgb2hsv(r,g,b){
-    r /= 255;
-    g /= 255;
-    b /= 255;
-    
-    var Vmax = Math.max(r,g,b);
-    var Vmin = Math.min(r,g,b);
-    var v = Vmax * 100;
-    var s = (Vmax - Vmin) / Vmax * 100;
-    var h;
-    if(r == Vmax) h = (g - b) / (Vmax - Vmin) * (Math.PI/3);
-    else if(g == Vmax) h = (b - r) / (Vmax - Vmin) * (Math.PI/3) + 2 * Math.PI/3;
-    else h = (r - g) / (Vmax - Vmin) * (Math.PI/3) + 4 * Math.PI/3;
-    //Hを0~2πの間に収める
-    if(h < 0) (h + 2 * Math.PI)/(2 * Math.PI)*360;
-    else if(h > 2*Math.PI) (h - 2 * Math.PI)/(2 * Math.PI)*360;
+function rgb2hsv(rgb){
+    let r,g,b;
+    let h,s,v;
+    let hsvS = new Array(rgb.length);
+    for(i = 0;i < rgb.length;i = i + 4){
 
-    console.log(r,g,b);
-    console.log(h,s,v);
-    return [h,s,v]
+        r = rgb[i] / 255;
+        g = rgb[i + 1] / 255;
+        b = rgb[i + 2] / 255;
+
+        let Vmax = Math.max(r,g,b);
+
+        let Vmin = Math.min(r,g,b);
+        v = Vmax * 100;
+        s = (Vmax - Vmin) / Vmax * 100;
+        if(r == Vmax) h = (g - b) / (Vmax - Vmin) * (Math.PI/3);
+        else if(g == Vmax) h = (b - r) / (Vmax - Vmin) * (Math.PI/3) + 2 * Math.PI/3;
+        else h = (r - g) / (Vmax - Vmin) * (Math.PI/3) + 4 * Math.PI/3;
+        //Hを0~2πの間に収める
+        if(h < 0) (h + 2 * Math.PI)/(2 * Math.PI)*360;
+        else if(h > 2*Math.PI) (h - 2 * Math.PI)/(2 * Math.PI)*360;
+
+        console.log(r,g,b);
+        console.log(h,s,v);
+
+        hsvS[i] = r;
+        hsvS[i + 1] = g;
+        hsvS[i + 2] = b;
+
+    }        
+    return hsvS;
 }
 
 /*
@@ -279,13 +290,13 @@ function colorErrorDiffusion(img_data,imagecolors,processed_data,origin_xyz,zip,
 
     //色格納
     imagecolors = rgbInArray(img_data,imagecolors);
-    console.log(imagecolors);
 
     //配列初期化
     var hsvS = new Array(imagecolors.length / 4);
     for(let i = 0;i < hsvS.length;i++){
         hsvS[i] = new Array(3);
     }
+    hsvS = rgb2hsv(imagecolors);
 
     //色比較
     for(var x = 0;x < width;x++){
@@ -294,7 +305,6 @@ function colorErrorDiffusion(img_data,imagecolors,processed_data,origin_xyz,zip,
             let comp_value = new Array(scope);
             let min_angle;
             let max_angle;
-            hsvS[index / 4] = rgb2hsv(imagecolors[index],imagecolors[index + 1],imagecolors[index + 2]);
             console.log(hsvS);
             //比較範囲計算
             min_angle = hsvS[index / 4][0] - (scope / 2);
