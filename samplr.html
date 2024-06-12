@@ -311,7 +311,7 @@ function colorErrorDiffusion(img_data,imagecolors,processed_data,origin_xyz,zip,
             }
 
             let tmp_comp_num = comp_value[0];
-            var comp_num;
+            var comp_num = min_angle;
             for(i = 1;i < scope;i++){
                 if(tmp_comp_num > comp_value[i]){
                     tmp_comp_num = comp_value[i];
