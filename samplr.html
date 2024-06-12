@@ -149,7 +149,6 @@ function rgbInArray(img_data,imagecolors){
             imagecolors[index + 3] = 255;
         }
     }
-    console.log(img_data.data);
     return imagecolors;
 }
 
@@ -297,7 +296,7 @@ function colorErrorDiffusion(img_data,imagecolors,processed_data,origin_xyz,zip,
     imagecolors = rgbInArray(img_data,imagecolors);
 
     //配列初期化
-    var hsvS = new Array(imagecolors.length / 4);
+    var hsvS = new Array(width * height);
     for(let i = 0;i < hsvS.length;i++){
         hsvS[i] = new Array(3);
     }
@@ -321,10 +320,11 @@ function colorErrorDiffusion(img_data,imagecolors,processed_data,origin_xyz,zip,
             while(i <= max_angle){
                 i++;
                 comp_value[i] = 0;
-                comp_value[i] = Math.abs(hsvS[index / 4][0] - i) * h_mag;
-                comp_value[i] = Math.abs(hsvS[index / 4][1] - color_csv[0][i][0]);
-                comp_value[i] = Math.abs(hsvS[index / 4][2] - color_csv[1][i][0]);
-                
+                if(color_csv[0][i][0] != NaN){
+                    comp_value[i] = Math.abs(hsvS[index / 4][0] - i) * h_mag;
+                    comp_value[i] = Math.abs(hsvS[index / 4][1] - color_csv[0][i][1]);
+                    comp_value[i] = Math.abs(hsvS[index / 4][2] - color_csv[0][i][2]);
+                }
                 if(i == scope - 1) i = 0;
             }
 
