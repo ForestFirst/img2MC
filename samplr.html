@@ -279,20 +279,12 @@ function colorErrorDiffusion(img_data,imagecolors,processed_data,origin_xyz,zip,
 
     //色格納
     imagecolors = rgbInArray(img_data,imagecolors);
-    console.log(imagecolors);
 
-    //比較色
-    //var compare_color_rgb = [[255,0,0],[0,255,0],[0,0,255],[255,255,0],[0,255,255],[255,0,255],[255,128,0],[255,0,128],[0,255,128],[128,255,0],[128,0,255],[0,128,255],[255,255,255],[0,0,0]];
-    //var compare_color_hsv = new Array(14);
+    //配列初期化
     var hsvS = new Array(imagecolors.length / 4);
-
-    //rgb2hsv変換
-    /*
-    for(i = 0;i < 14;i++){
-        hsvS[i].push(rgb2hsv(compare_color_rgb[i][0],compare_color_rgb[i][1],compare_color_rgb[i][2]));
-        //比較
+    for(let i = 0;i < hsvS.length;i++){
+        hsvS[i] = new Array(3);
     }
-    */
 
     //色比較
     for(var x = 0;x < width;x++){
@@ -313,7 +305,7 @@ function colorErrorDiffusion(img_data,imagecolors,processed_data,origin_xyz,zip,
 
             //比較
             
-            let i = min_angle;
+            i = min_angle;
             while(i <= max_angle){
                 i++;
                 comp_value[i] = 0;
