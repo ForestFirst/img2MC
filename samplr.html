@@ -118,6 +118,7 @@ function rgb2grey(img_data,imagecolors){
             imagecolors[index + 3] = 255;
         }
     }
+    return imagecolors;
 }
 
 /*
@@ -133,7 +134,7 @@ function rgbInArray(img_data,imagecolors){
             imagecolors[index + 3] = 255;
         }
     }
-    console.log(imagecolors);
+    return imagecolors;
 }
 
 /*
@@ -180,7 +181,7 @@ function loadCSVFile(){
 function greyErrorDiffusion(img_data,imagecolors,processed_data,origin_xyz,zip,folder){
 
     //グレースケール化
-    rgb2grey(img_data,imagecolors);
+    imagecolors = rgb2grey(img_data,imagecolors);
 
     var error;
     for (var y = 0;y < img_data.height - 1;y++) {
@@ -277,7 +278,8 @@ function colorErrorDiffusion(img_data,imagecolors,processed_data,origin_xyz,zip,
     const h_mag = 2;
 
     //色格納
-    rgbInArray(img_data,imagecolors);
+    imagecolors = rgbInArray(img_data,imagecolors);
+    console.log(imagecolors);
 
     //比較色
     //var compare_color_rgb = [[255,0,0],[0,255,0],[0,0,255],[255,255,0],[0,255,255],[255,0,255],[255,128,0],[255,0,128],[0,255,128],[128,255,0],[128,0,255],[0,128,255],[255,255,255],[0,0,0]];
