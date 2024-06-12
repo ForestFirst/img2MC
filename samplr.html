@@ -94,6 +94,7 @@ function rgb2hsv(rgb){
         r = rgb[i] / 255;
         g = rgb[i + 1] / 255;
         b = rgb[i + 2] / 255;
+        console.log(r,g,b);
 
         Vmax = Math.max(r,g,b);
         Vmin = Math.min(r,g,b);
@@ -308,7 +309,6 @@ function colorErrorDiffusion(img_data,imagecolors,processed_data,origin_xyz,zip,
             let comp_value = new Array(scope);
             let min_angle;
             let max_angle;
-            console.log(hsvS);
             //比較範囲計算
             min_angle = hsvS[index / 4][0] - (scope / 2);
             if(min_angle < 0) min_angle + angle;
