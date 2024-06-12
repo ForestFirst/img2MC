@@ -85,7 +85,8 @@ function rgb2hsv(rgb){
     let r,g,b;
     let h,s,v;
     h = s = v = 0;
-    let hsvS = new Array(rgb.length/4);
+    let hsvS = new Array(rgb.length / 4);
+    console.log(rgb.length);
     for(var i = 0;i < rgb.length;i = i + 4){
 
         hsvS[i / 4] = [0,0,0];
@@ -114,6 +115,7 @@ function rgb2hsv(rgb){
         hsvS[i / 4][1] = s;
         hsvS[i / 4][2] = v;
     }        
+    console.log(hsvS.length);
     return hsvS;
 }
 
