@@ -86,7 +86,7 @@ function rgb2hsv(rgb){
     let h,s,v;
     h = s = v = 0;
     let hsvS = new Array(rgb.length);
-    for(let i = 0;i < rgb.length;i = i + 4){
+    for(var i = 0;i < rgb.length;i = i + 4){
 
         r = rgb[i] / 255;
         g = rgb[i + 1] / 255;
@@ -196,11 +196,11 @@ function greyErrorDiffusion(img_data,imagecolors,processed_data,origin_xyz,zip,f
         for (var x = 0;x < img_data.width - 1;x++) {
             var mid_set_color = new Array(256);
             var error_add = new Array(256);
-            for(i = 0;i < 128;i++){
+            for(var i = 0;i < 128;i++){
                 mid_set_color [i] = 0;
                 error_add[i] = 0;
             }
-            for(i = 128;i <= 255;i++){
+            for(var i = 128;i <= 255;i++){
                 mid_set_color [i] = 255;
                 error_add[i] = 255;
             }
@@ -208,12 +208,12 @@ function greyErrorDiffusion(img_data,imagecolors,processed_data,origin_xyz,zip,f
             var index = (x + y * img_data.width)*4;
             //誤差計算
             error = imagecolors[index] - error_add[Math.round(imagecolors[index])];
-            for(i = 0;i < 3; i++){
+            for(var i = 0;i < 3; i++){
                 imagecolors[index + i] = mid_set_color[Math.round(imagecolors[index + i])];             
             }
 
             //拡散(7 5 3 1 を試したがノイズが大きい)
-            for(i = 0;i < 3; i++){
+            for(var i = 0;i < 3; i++){
                 //右
                 if(x < img_data.width - 1){
                     imagecolors[((x + 1) + y * img_data.width)*4 + i] += (error * 5) / 16 | 0;                        
@@ -234,7 +234,7 @@ function greyErrorDiffusion(img_data,imagecolors,processed_data,origin_xyz,zip,f
         }
     }
     //画像化
-    for (i = 0;i < img_data.data.length;i++) {
+    for (var i = 0;i < img_data.data.length;i++) {
         processed_data.data[i] = imagecolors[i];
     }
     
@@ -311,7 +311,7 @@ function colorErrorDiffusion(img_data,imagecolors,processed_data,origin_xyz,zip,
 
             //比較
             
-            i = min_angle;
+            var i = min_angle;
             while(i <= max_angle){
                 i++;
                 comp_value[i] = 0;
@@ -324,7 +324,7 @@ function colorErrorDiffusion(img_data,imagecolors,processed_data,origin_xyz,zip,
 
             let tmp_comp_num = comp_value[0];
             var comp_num = min_angle;
-            for(i = 1;i < scope;i++){
+            for(var i = 1;i < scope;i++){
                 if(tmp_comp_num > comp_value[i]){
                     tmp_comp_num = comp_value[i];
                     comp_num = i + min_angle;
@@ -335,12 +335,12 @@ function colorErrorDiffusion(img_data,imagecolors,processed_data,origin_xyz,zip,
 
             //誤差（rgbそれぞれで算出）
             let error = [];
-            for(i = 0;i < 3;i++){
+            for(var i = 0;i < 3;i++){
                 error[i] = Math.abs(imagecolors[comp_num * 4 + i] - color_csv[1][comp_num][i]);
             }
 
             //誤差拡散
-            for(i = 0;i < 3; i++){
+            for(var i = 0;i < 3; i++){
                 //右
                 if(x < width - 1){
                     imagecolors[((x + 1) + y * width)*4 + i] += (error[i] * 5) / 16 | 0;                        
@@ -360,7 +360,7 @@ function colorErrorDiffusion(img_data,imagecolors,processed_data,origin_xyz,zip,
             }
 
             //rgb代入
-            for(i = 0;i < 3;i++){
+            for(var i = 0;i < 3;i++){
                 imagecolors[index + i] = color_csv[1][comp_num][i];
             }
             imagecolors[index + 3] = 255;
@@ -368,7 +368,7 @@ function colorErrorDiffusion(img_data,imagecolors,processed_data,origin_xyz,zip,
     }
 
     //画像化
-    for (i = 0;i < img_data.data.length;i++) {
+    for(var i = 0;i < img_data.data.length;i++) {
         processed_data.data[i] = imagecolors[i];
     }
     return processed_data;
