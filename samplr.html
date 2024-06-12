@@ -121,6 +121,21 @@ function rgb2grey(img_data,imagecolors){
 }
 
 /*
+色格納
+*/
+function rgbInArray(img_data,imagecolors){
+    for (var y = 1;y < img_data.height;y++) {
+        for (var x = 1;x < img_data.width;x++) {
+            var index = (x + y * img_data.width)*4;
+            for(i = 0;i < 3;i++){
+                imagecolors[index + i] = img_data.data[index + i];
+            }
+            imagecolors[index + 3] = 255;
+        }
+    }
+}
+
+/*
 hsv比較
 */
 function compareHSV(hsv){
@@ -254,12 +269,14 @@ function greyErrorDiffusion(img_data,imagecolors,processed_data,origin_xyz,zip,f
 
 function colorErrorDiffusion(img_data,imagecolors,processed_data,origin_xyz,zip,folder){
     let color_csv = loadCSVFile();
-    console.log(color_csv);
     let width = img_data.width;
     let height = img_data.height;
     const angle = 360;
     const scope = 30;
     const h_mag = 2;
+
+    //色格納
+    rgbInArray(img_data,imagecolors);
 
     //比較色
     //var compare_color_rgb = [[255,0,0],[0,255,0],[0,0,255],[255,255,0],[0,255,255],[255,0,255],[255,128,0],[255,0,128],[0,255,128],[128,255,0],[128,0,255],[0,128,255],[255,255,255],[0,0,0]];
