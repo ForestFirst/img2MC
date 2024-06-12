@@ -279,6 +279,7 @@ function colorErrorDiffusion(img_data,imagecolors,processed_data,origin_xyz,zip,
 
     //色格納
     imagecolors = rgbInArray(img_data,imagecolors);
+    console.log(imagecolors);
 
     //配列初期化
     var hsvS = new Array(imagecolors.length / 4);
@@ -293,7 +294,6 @@ function colorErrorDiffusion(img_data,imagecolors,processed_data,origin_xyz,zip,
             let comp_value = new Array(scope);
             let min_angle;
             let max_angle;
-            console.log(rgb2hsv(imagecolors[index],imagecolors[index + 1],imagecolors[index + 2]));
             hsvS[index / 4] = rgb2hsv(imagecolors[index],imagecolors[index + 1],imagecolors[index + 2]);
             console.log(hsvS);
             //比較範囲計算
