@@ -81,12 +81,11 @@ function processImageData(num) {
 /*
 rgbからhsv変換
 */
-function rgb2hsv(rgb){
+function rgb2hsv(rgb,array_size){
     let r,g,b;
     let h,s,v;
     h = s = v = 0;
-    let hsvS = new Array(rgb.length / 4);
-    console.log(rgb.length);
+    let hsvS = new Array(array_size);
     for(var i = 0;i < rgb.length;i = i + 4){
 
         hsvS[i / 4] = [0,0,0];
@@ -115,7 +114,6 @@ function rgb2hsv(rgb){
         hsvS[i / 4][1] = s;
         hsvS[i / 4][2] = v;
     }        
-    console.log(hsvS.length);
     return hsvS;
 }
 
@@ -297,14 +295,13 @@ function colorErrorDiffusion(img_data,imagecolors,processed_data,origin_xyz,zip,
 
     //色格納
     imagecolors = rgbInArray(img_data,imagecolors);
-    console.log(imagecolors);
 
     //配列初期化
     var hsvS = new Array(imagecolors.length / 4);
     for(let i = 0;i < hsvS.length;i++){
         hsvS[i] = new Array(3);
     }
-    hsvS = rgb2hsv(imagecolors);
+    hsvS = rgb2hsv(imagecolors, width * height);
 
     //色比較
     for(var x = 0;x < width;x++){
