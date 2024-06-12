@@ -177,7 +177,6 @@ function greyErrorDiffusion(img_data,imagecolors,processed_data,origin_xyz,zip,f
     var error;
     for (var y = 0;y < img_data.height - 1;y++) {
         for (var x = 0;x < img_data.width - 1;x++) {
-
             var mid_set_color = new Array(256);
             var error_add = new Array(256);
             for(i = 0;i < 128;i++){
@@ -319,12 +318,12 @@ function colorErrorDiffusion(img_data,imagecolors,processed_data,origin_xyz,zip,
                     comp_num = i + min_angle;
                 }
             }
+            console.log(color_csv[1][comp_num][i]);
 
             //誤差（rgbそれぞれで算出）
             let error = [];
             for(i = 0;i < 3;i++){
                 error[i] = Math.abs(imagecolors[comp_num * 4 + i] - color_csv[1][comp_num][i]);
-                
             }
 
             //誤差拡散
