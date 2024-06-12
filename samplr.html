@@ -82,7 +82,6 @@ function processImageData(num) {
 rgbからhsv変換
 */
 function rgb2hsv(rgb){
-    console.log(rgb);
     let r,g,b;
     let h,s,v;
     h = s = v = 0;
@@ -140,21 +139,18 @@ function rgb2grey(img_data,imagecolors){
 色格納
 */
 function rgbInArray(img_data,imagecolors){
-    //不透明情報を持っていない配列に格納(容量削減)
-    let colors = new Array(imagecolors.length / 4);
-    console.log(imagecolors.length);
-
-    for (var y = 0;y < img_data.height;y++) {
-        for (var x = 0;x < img_data.width;x++) {
+    for (var y = 1;y < img_data.height;y++) {
+        for (var x = 1;x < img_data.width;x++) {
             var index = (x + y * img_data.width)*4;
-            colors[index] = new Array(3);
-
             for(i = 0;i < 3;i++){
-                colors[index][i] = img_data.data[index + i];
+                imagecolors[index + i] = img_data.data[index + i];
+                
             }
+            imagecolors[index + 3] = 255;
         }
     }
-    return colors;
+    console.log(img_data.data);
+    return imagecolors;
 }
 
 /*
@@ -321,7 +317,6 @@ function colorErrorDiffusion(img_data,imagecolors,processed_data,origin_xyz,zip,
             if(min_angle >= angle) max_angle - angle;
 
             //比較
-            
             var i = min_angle;
             while(i <= max_angle){
                 i++;
