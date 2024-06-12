@@ -179,15 +179,15 @@ function loadCSVFile(){
     csv.onload = function(){
         tmp_array = (csv.responseText).split("\n");
         for(var i = 1;i < tmp_array.length - 1;i++){
-            let h_value = tmp_array[i][0];
             hsv_array = tmp_array[i].split(',').slice(7,10);
             rgb_array = tmp_array[i].split(',').slice(1,4);
-            csv_array[0][h_value] = hsv_array;
-            csv_array[1][h_value] = rgb_array;
+            csv_array[0][hsv_array[0]] = hsv_array;
+            csv_array[1][hsv_array[0]] = rgb_array;
         }
         console.log(hsv_array);
         console.log(rgb_array);
     }
+    console.log(csv_array)
     return csv_array;
 }
 
