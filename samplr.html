@@ -82,6 +82,7 @@ function processImageData(num) {
 rgbからhsv変換
 */
 function rgb2hsv(rgb){
+    console.log(rgb);
     let r,g,b;
     let h,s,v;
     h = s = v = 0;
@@ -94,7 +95,6 @@ function rgb2hsv(rgb){
         r = rgb[i] / 255;
         g = rgb[i + 1] / 255;
         b = rgb[i + 2] / 255;
-        console.log(r,g,b);
 
         Vmax = Math.max(r,g,b);
         Vmin = Math.min(r,g,b);
