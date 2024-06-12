@@ -86,15 +86,15 @@ function rgb2hsv(rgb){
     let h,s,v;
     h = s = v = 0;
     let hsvS = new Array(rgb.length);
-    for(i = 0;i < rgb.length;i = i + 4){
+    for(let i = 0;i < rgb.length;i = i + 4){
 
         r = rgb[i] / 255;
         g = rgb[i + 1] / 255;
         b = rgb[i + 2] / 255;
 
         let Vmax = Math.max(r,g,b);
-
         let Vmin = Math.min(r,g,b);
+
         v = Vmax * 100;
         s = (Vmax - Vmin) / Vmax * 100;
         if(r == Vmax) h = (g - b) / (Vmax - Vmin) * (Math.PI/3);
@@ -102,11 +102,10 @@ function rgb2hsv(rgb){
         else h = (r - g) / (Vmax - Vmin) * (Math.PI/3) + 4 * Math.PI/3;
         //Hを0~2πの間に収める
         if(h < 0) (h + 2 * Math.PI)/(2 * Math.PI) * 360;
-        else if(h > 2*Math.PI) (h - 2 * Math.PI)/(2 * Math.PI) * 360;
+        else if(h > 2 * Math.PI) (h - 2 * Math.PI)/(2 * Math.PI) * 360;
         hsvS[i] = r;
         hsvS[i + 1] = g;
         hsvS[i + 2] = b;
-
     }        
     console.log(hsvS);
     return hsvS;
