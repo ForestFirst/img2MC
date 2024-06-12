@@ -85,29 +85,20 @@ function rgb2hsv(r,g,b){
     r /= 255;
     g /= 255;
     b /= 255;
-    let comp = [r,g,b];
-    let tmp_max = r;
-    let tmp_num = 0;
-
-    for(i = 1;i < 3;i++){
-        if(tmp_max < comp[i]){
-            tmp_max = comp[i];
-            tmp_num = i;
-        }
-    }
     
-    var Vmax = tmp_max;
+    var Vmax = Math.max(r,g,b);
     var Vmin = Math.min(r,g,b);
     var v = Vmax * 100;
     var s = (Vmax - Vmin) / Vmax * 100;
     var h;
-    if(tmp_num == 0) h = (g - b) / (Vmax - Vmin) * (Math.PI/3);
-    else if(tmp_num == 1) h = (b - r) / (Vmax - Vmin) * (Math.PI/3) + 2*Math.PI/3;
-    else h = (r - g) / (Vmax - Vmin) * (Math.PI/3) + 4*Math.PI/3;
+    if(r == Vmax) h = (g - b) / (Vmax - Vmin) * (Math.PI/3);
+    else if(g == Vmax) h = (b - r) / (Vmax - Vmin) * (Math.PI/3) + 2 * Math.PI/3;
+    else h = (r - g) / (Vmax - Vmin) * (Math.PI/3) + 4 * Math.PI/3;
     //H正規化
     if(h < 0) (h + 2 * Math.PI)/(2 * Math.PI)*360;
     else if(h > 2*Math.PI) (h - 2 * Math.PI)/(2 * Math.PI)*360;
 
+    console.log(r,g,b);
     return [h,s,v]
 }
 
