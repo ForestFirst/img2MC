@@ -77,13 +77,13 @@ function rgb2hsv(rgb,array_size){
     for(var i = 0;i < rgb.length;i = i + 4){
         let Vmax,Vmin;
 
-        console.log(rgb[i],rgb[i + 1],rgb[i + 2]);
-
-        r = rgb[i] / 255;
-        g = rgb[i + 1] / 255;
-        b = rgb[i + 2] / 255;
-
-        console.log(r,g,b);
+        if(rgb[i] == undefined) r = 0;
+        else r = rgb[i] / 255;
+        if(rgb[i + 1] == undefined) g = 0
+        else g = rgb[i + 1] / 255;
+        if(rgb[i + 2] == undefined) b = 0;
+        else b = rgb[i + 2] / 255;
+        
         Vmax = Math.max(r,g,b);
         Vmin = Math.min(r,g,b);
 
