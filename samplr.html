@@ -183,7 +183,10 @@ function loadCSVFile(angle){
             csv_array[1][i] = new Array(3);
             csv_array[0][i] = [-1,-1,-1];
             csv_array[1][i] = [-1,-1,-1];
+            console.log(csv_array[1][i]);
+            console.log(csv_array[0][i][0],csv_array[0][i][1],csv_array[0][i][2]);
         }
+        
 
         tmp_array = (csv.responseText).split("\n");
         for(var i = 1;i < tmp_array.length - 1;i++){
