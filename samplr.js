@@ -290,7 +290,7 @@ function colorErrorDiffusion(img_data,imagecolors,processed_data,origin_xyz,zip,
         hsvS[i] = new Array(3);
     }
     hsvS = rgb2hsv(imagecolors, width * height);
-
+    console.log(hsvS);
     //色比較
     for(var y = 0;y < height;y++){
         for(var x = 0;x < width;x++){
@@ -298,7 +298,7 @@ function colorErrorDiffusion(img_data,imagecolors,processed_data,origin_xyz,zip,
             let comp_value = new Array(scope);
             let min_angle;
             let max_angle;
-            console.log(hsvS);
+            
             //比較範囲計算
             min_angle = hsvS[index / 4][0] - (scope / 2);
             if(min_angle < 0) min_angle += angle;
