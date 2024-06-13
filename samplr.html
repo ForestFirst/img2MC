@@ -177,8 +177,10 @@ function loadCSVFile(angle){
     csv.send(null);
     
     csv.onload = function(){
-        //初期化(NaN)
+        //初期化(-1)
         for(var i = 0;i < angle;i++){
+            csv_array[0][i] = new Array(3);
+            csv_array[1][i] = new Array(3);
             csv_array[0][i] = [-1,-1,-1];
             csv_array[1][i] = [-1,-1,-1];
         }
