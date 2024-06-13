@@ -81,6 +81,7 @@ function rgb2hsv(rgb,array_size){
         g = rgb[i + 1] / 255;
         b = rgb[i + 2] / 255;
 
+        console.log(r,g,b);
         Vmax = Math.max(r,g,b);
         Vmin = Math.min(r,g,b);
 
