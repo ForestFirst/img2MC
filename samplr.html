@@ -179,8 +179,8 @@ function loadCSVFile(angle){
     csv.onload = function(){
         //初期化(NaN)
         for(var i = 0;i < angle;i++){
-            csv_array[0][i] = NaN;
-            csv_array[1][i] = NaN;
+            csv_array[0][i] = [NaN,NaN,NaN];
+            csv_array[1][i] = [NaN,NaN,NaN];
         }
 
         tmp_array = (csv.responseText).split("\n");
