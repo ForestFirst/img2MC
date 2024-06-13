@@ -307,10 +307,12 @@ function colorErrorDiffusion(img_data,imagecolors,processed_data,origin_xyz,zip,
             //比較
             var i = 0;
             let comp_hsvH = min_angle;
+            console.log(comp_hsvH);
+            console.log(color_csv[0][comp_hsvH][0]);
             while(i <= scope){
                 comp_value[i] = 0;
                 if(color_csv[0][comp_hsvH][0] != -1){
-                    comp_value[i] = Math.abs(hsvS[index / 4][0] - color_csv[0][comp_hsvH][1]) * h_mag 
+                    comp_value[i] = Math.abs(hsvS[index / 4][0] - color_csv[0][comp_hsvH][0]) * h_mag 
                     + Math.abs(hsvS[index / 4][1] - color_csv[0][comp_hsvH][1])
                     + Math.abs(hsvS[index / 4][2] - color_csv[0][comp_hsvH][2]);
                 }
