@@ -337,7 +337,7 @@ function colorErrorDiffusion(img_data,imagecolors,processed_data,origin_xyz,zip,
             let error = [];
             for(var i = 0;i < 3;i++){
                 error[i] = Math.abs(imagecolors[comp_num * 4 + i] - color_csv[1][comp_num][i]);
-                imagecolors = color_csv[1][comp_num][i];
+                imagecolors[index + i] = color_csv[1][comp_num][i];
             }
 
             //誤差拡散
