@@ -77,6 +77,8 @@ function rgb2hsv(rgb,array_size){
     for(var i = 0;i < rgb.length;i = i + 4){
         let Vmax,Vmin;
 
+        console.log(rgb[i],rgb[i + 1],rgb[i + 2]);
+
         r = rgb[i] / 255;
         g = rgb[i + 1] / 255;
         b = rgb[i + 2] / 255;
