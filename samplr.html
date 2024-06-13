@@ -319,8 +319,6 @@ function colorErrorDiffusion(img_data,imagecolors,processed_data,origin_xyz,zip,
             var i = 0;
             while(i <= scope){
                 comp_value[i] = 0;
-                console.log(i);
-                console.log(i + min_angle);
                 if(color_csv[0][i + min_angle][0] != -1){
                     comp_value[i] = Math.abs(hsvS[index / 4][0] - color_csv[0][i + min_angle][1]) * h_mag 
                     + Math.abs(hsvS[index / 4][1] - color_csv[0][i + min_angle][1])
