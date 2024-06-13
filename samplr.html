@@ -166,8 +166,7 @@ csv_array[i][1] = {r,g,b}
 */
 function loadCSVFile(angle){
     let csv = new XMLHttpRequest();
-    var csv_array = [...Array(2)].map(k=>[...Array(360)].map(k=>[...Array(3)].map(k=>0)))
-    console.log(csv_array);
+    var csv_array = [...Array(2)].map(k=>[...Array(360)].map(k=>[...Array(3)].map(k=>-1)))
     /*
     var csv_array = new Array(2);
     csv_array[0] = new Array(angle);//hsv
@@ -181,13 +180,6 @@ function loadCSVFile(angle){
     csv.send(null);
     
     csv.onload = function(){
-        //初期化(-1)
-        for(var i = 0;i < angle;i++){
-            csv_array[0][i] = new Array(3);
-            csv_array[1][i] = new Array(3);
-            csv_array[0][i] = [-1,-1,-1];
-            csv_array[1][i] = [-1,-1,-1];
-        }
         //格納
         tmp_array = (csv.responseText).split("\n");
         for(var i = 1;i < tmp_array.length - 1;i++){
@@ -197,7 +189,6 @@ function loadCSVFile(angle){
             csv_array[1][hsv_array[0]] = rgb_array;
         }
     }
-    console.log(csv_array);
     return csv_array;
 }
 
@@ -302,10 +293,6 @@ function colorErrorDiffusion(img_data,imagecolors,processed_data,origin_xyz,zip,
     const h_mag = 2;
 
     let color_csv = loadCSVFile(angle);
-    console.log(color_csv);
-    console.log(color_csv[0]);
-    console.log(color_csv[0][2]);
-    console.log(color_csv[0][2][1]);
     let width = img_data.width;
     let height = img_data.height;
 
@@ -332,6 +319,7 @@ function colorErrorDiffusion(img_data,imagecolors,processed_data,origin_xyz,zip,
             max_angle = hsvS[index / 4][0] + (scope / 2);
             if(min_angle >= angle) max_angle - angle;
 
+            console.log(comp_value);
             //比較
             var i = min_angle;
             while(i <= max_angle){
