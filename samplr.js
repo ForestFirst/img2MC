@@ -73,11 +73,8 @@ rgbからhsv変換
 function rgb2hsv(rgb,array_size){
     let r,g,b;
     let h,s,v;
-    h = s = v = 0;
-    let hsvS = new Array(array_size);
+    let hsvS = [...Array(array_size)].map(k=>[...Array(3)].map(k=>-1));;
     for(var i = 0;i < rgb.length;i = i + 4){
-
-        hsvS[i / 4] = [0,0,0];
         let Vmax,Vmin;
 
         r = rgb[i] / 255;
@@ -87,10 +84,14 @@ function rgb2hsv(rgb,array_size){
         Vmax = Math.max(r,g,b);
         Vmin = Math.min(r,g,b);
 
-        v = Vmax * 100;
-        s = (Vmax - Vmin) / Vmax * 100;
+        if(Vmax == 0) v = 0;
+        else v = Vmax * 100;
+
+        if((Vmax - Vmin) == 0) s = 0;
+        else s = (Vmax - Vmin) / Vmax * 100;
         //sが０ならhも０
-        if(s == 0){
+        if(s == 0) h = 0;
+        else {
             if(r == Vmax) h = (g - b) / (Vmax - Vmin) * (Math.PI/3);
             else if(g == Vmax) h = (b - r) / (Vmax - Vmin) * (Math.PI/3) + 2 * Math.PI / 3;
             else if(b == Vmax) h = (r - g) / (Vmax - Vmin) * (Math.PI/3) + 4 * Math.PI / 3;
@@ -155,7 +156,7 @@ csv_array[i][1] = {r,g,b}
 */
 function loadCSVFile(angle){
     let csv = new XMLHttpRequest();
-    var csv_array = [...Array(2)].map(k=>[...Array(360)].map(k=>[...Array(3)].map(k=>-1)))
+    var csv_array = [...Array(2)].map(k=>[...Array(360)].map(k=>[...Array(3)].map(k=>-1)));
 
     let rgb_array = new Array(3);
     let hsv_array = new Array(3);
