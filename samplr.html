@@ -317,15 +317,17 @@ function colorErrorDiffusion(img_data,imagecolors,processed_data,origin_xyz,zip,
 
             //比較
             var i = 0;
+            let comp_hsvH = min_angle;
             while(i <= scope){
+                comp_hsvH += i;
                 comp_value[i] = 0;
-                if(color_csv[0][i + min_angle][0] != -1){
-                    comp_value[i] = Math.abs(hsvS[index / 4][0] - color_csv[0][i + min_angle][1]) * h_mag 
-                    + Math.abs(hsvS[index / 4][1] - color_csv[0][i + min_angle][1])
-                    + Math.abs(hsvS[index / 4][2] - color_csv[0][i + min_angle][2]);
+                if(color_csv[0][comp_hsvH][0] != -1){
+                    comp_value[i] = Math.abs(hsvS[index / 4][0] - color_csv[0][comp_hsvH][1]) * h_mag 
+                    + Math.abs(hsvS[index / 4][1] - color_csv[0][comp_hsvH][1])
+                    + Math.abs(hsvS[index / 4][2] - color_csv[0][comp_hsvH][2]);
                 }
                 i++;
-                if(i + min_angle == angle) i = 0;
+                if(comp_hsvH == angle) comp_hsvH = 0;
             }
 
             let tmp_comp_num = comp_value[0];
