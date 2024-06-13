@@ -295,6 +295,7 @@ function colorErrorDiffusion(img_data,imagecolors,processed_data,origin_xyz,zip,
         hsvS[i] = new Array(3);
     }
     hsvS = rgb2hsv(imagecolors, width * height);
+    console.log(imagecolors);
     console.log(hsvS);
     //色比較
     for(var y = 0;y < height;y++){
