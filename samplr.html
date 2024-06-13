@@ -291,11 +291,11 @@ function greyErrorDiffusion(img_data,imagecolors,processed_data,origin_xyz,zip,f
 function colorErrorDiffusion(img_data,imagecolors,processed_data,origin_xyz,zip,folder){
 
     const angle = 360;
-    const scope = 30;
+    const scope = 60;
     const h_mag = 2;
 
     let color_csv = loadCSVFile(angle);
-    console.log(color_csv);
+    console.log(color_csv[0][0]);
     let width = img_data.width;
     let height = img_data.height;
 
