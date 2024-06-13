@@ -303,8 +303,8 @@ function colorErrorDiffusion(img_data,imagecolors,processed_data,origin_xyz,zip,
     hsvS = rgb2hsv(imagecolors, width * height);
 
     //色比較
-    for(var x = 0;x < width;x++){
-        for(var y = 0;y < height;y++){
+    for(var y = 0;y < height;y++){
+        for(var x = 0;x < width;x++){
             let index = (x + y * width) * 4;
             let comp_value = new Array(scope);
             let min_angle;
@@ -369,6 +369,7 @@ function colorErrorDiffusion(img_data,imagecolors,processed_data,origin_xyz,zip,
             }
             imagecolors[index + 3] = 255;
         }
+        console.log((y + 1) + "列目終了");
     }
 
     //画像化
