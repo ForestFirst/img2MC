@@ -104,6 +104,7 @@ function rgb2hsv(rgb,array_size){
         hsvS[i / 4][1] = s;
         hsvS[i / 4][2] = v;
     }        
+    console.log(hsvS);
     return hsvS;
 }
 
