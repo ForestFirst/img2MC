@@ -133,6 +133,7 @@ function rgb2grey(img_data,imagecolors){
 色格納
 */
 function rgbInArray(img_data,imagecolors){
+    console.log(img_data.data);
     for (var y = 1;y < img_data.height;y++) {
         for (var x = 1;x < img_data.width;x++) {
             var index = (x + y * img_data.width)*4;
@@ -143,6 +144,7 @@ function rgbInArray(img_data,imagecolors){
             imagecolors[index + 3] = 255;
         }
     }
+    console.log(imagecolors);
     return imagecolors;
 }
 
@@ -295,8 +297,6 @@ function colorErrorDiffusion(img_data,imagecolors,processed_data,origin_xyz,zip,
         hsvS[i] = new Array(3);
     }
     hsvS = rgb2hsv(imagecolors, width * height);
-    console.log(imagecolors);
-    console.log(hsvS);
     //色比較
     for(var y = 0;y < height;y++){
         for(var x = 0;x < width;x++){
