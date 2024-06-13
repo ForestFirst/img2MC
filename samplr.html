@@ -153,10 +153,79 @@ function rgbInArray(img_data,imagecolors){
 }
 
 /*
-hsv比較
+色比較
 */
-function compareHSV(hsv){
-    //hsv[]
+function compareColors(imagecolors,angle,h_mag,width,height){
+    for(var x = 0;x < width;x++){
+        for(var y = 0;y < height;y++){
+            let index = (x + y * width) * 4;
+            let comp_value = new Array(scope);
+            let min_angle;
+            let max_angle;
+            //比較範囲計算
+            min_angle = hsvS[index / 4][0] - (scope / 2);
+            if(min_angle < 0) min_angle += angle;
+            max_angle = hsvS[index / 4][0] + (scope / 2);
+            if(max_angle >= angle) max_angle -= angle;
+
+            //比較
+            var i = min_angle;
+            while(i <= max_angle){
+                comp_value[i - min_angle] = 0;
+                console.log(i);
+                if(color_csv[0][i][0] != -1){
+                    comp_value[i - min_angle] = Math.abs(hsvS[index / 4][0] - i) * h_mag 
+                    + Math.abs(hsvS[index / 4][1] - color_csv[0][i][1])
+                    + Math.abs(hsvS[index / 4][2] - color_csv[0][i][2]);
+                }
+                if(i == angle - 1) i = 0;
+                i++;
+            }
+
+            let tmp_comp_num = comp_value[0];
+            var comp_num = min_angle;
+            for(var i = 1;i < scope;i++){
+                if(tmp_comp_num > comp_value[i]){
+                    tmp_comp_num = comp_value[i];
+                    comp_num = i + min_angle;
+                }
+            }
+            console.log(comp_num);
+            console.log(color_csv[1][comp_num]);
+
+            //誤差（rgbそれぞれで算出）
+            let error = [];
+            for(var i = 0;i < 3;i++){
+                error[i] = Math.abs(imagecolors[comp_num * 4 + i] - color_csv[1][comp_num][i]);
+            }
+
+            //誤差拡散
+            for(var i = 0;i < 3; i++){
+                //右
+                if(x < width - 1){
+                    imagecolors[((x + 1) + y * width)*4 + i] += (error[i] * 5) / 16 | 0;                        
+                }
+                //左下
+                if(x > 0){
+                    imagecolors[((x - 1) + (y + 1) * width)*4 + i] += (error[i] * 2.8) / 16 | 0;
+                }
+                //下
+                if(i < height -1){
+                    imagecolors[(x + (y + 1) * width)*4 + i] += (error[i] * 5) / 16 | 0;
+                }
+                //右下
+                if(x < width - 1 && y > height - 1){
+                    imagecolors[((x + 1) + (y + 1) * width)*4 + i] += (error[i] * 3.2) / 16 | 0;
+                }
+            }
+
+            //rgb代入
+            for(var i = 0;i < 3;i++){
+                imagecolors[index + i] = color_csv[1][comp_num][i];
+            }
+            imagecolors[index + 3] = 255;
+        }
+    }
 }
 
 /*
@@ -303,76 +372,7 @@ function colorErrorDiffusion(img_data,imagecolors,processed_data,origin_xyz,zip,
     hsvS = rgb2hsv(imagecolors, width * height);
 
     //色比較
-    for(var x = 0;x < width;x++){
-        for(var y = 0;y < height;y++){
-            let index = (x + y * width) * 4;
-            let comp_value = new Array(scope);
-            let min_angle;
-            let max_angle;
-            //比較範囲計算
-            min_angle = hsvS[index / 4][0] - (scope / 2);
-            if(min_angle < 0) min_angle += angle;
-            max_angle = hsvS[index / 4][0] + (scope / 2);
-            if(max_angle >= angle) max_angle -= angle;
-
-            //比較
-            var i = min_angle;
-            while(i <= max_angle){
-                comp_value[i - min_angle] = 0;
-                console.log(i);
-                if(color_csv[0][i][0] != -1){
-                    comp_value[i - min_angle] = Math.abs(hsvS[index / 4][0] - i) * h_mag 
-                    + Math.abs(hsvS[index / 4][1] - color_csv[0][i][1])
-                    + Math.abs(hsvS[index / 4][2] - color_csv[0][i][2]);
-                }
-                if(i == angle - 1) i = 0;
-                i++;
-            }
-
-            let tmp_comp_num = comp_value[0];
-            var comp_num = min_angle;
-            for(var i = 1;i < scope;i++){
-                if(tmp_comp_num > comp_value[i]){
-                    tmp_comp_num = comp_value[i];
-                    comp_num = i + min_angle;
-                }
-            }
-            console.log(comp_num);
-            console.log(color_csv[1][comp_num]);
-
-            //誤差（rgbそれぞれで算出）
-            let error = [];
-            for(var i = 0;i < 3;i++){
-                error[i] = Math.abs(imagecolors[comp_num * 4 + i] - color_csv[1][comp_num][i]);
-            }
-
-            //誤差拡散
-            for(var i = 0;i < 3; i++){
-                //右
-                if(x < width - 1){
-                    imagecolors[((x + 1) + y * width)*4 + i] += (error[i] * 5) / 16 | 0;                        
-                }
-                //左下
-                if(x > 0){
-                    imagecolors[((x - 1) + (y + 1) * width)*4 + i] += (error[i] * 2.8) / 16 | 0;
-                }
-                //下
-                if(i < height -1){
-                    imagecolors[(x + (y + 1) * width)*4 + i] += (error[i] * 5) / 16 | 0;
-                }
-                //右下
-                if(x < width - 1 && y > height - 1){
-                    imagecolors[((x + 1) + (y + 1) * width)*4 + i] += (error[i] * 3.2) / 16 | 0;
-                }
-            }
-
-            //rgb代入
-            for(var i = 0;i < 3;i++){
-                imagecolors[index + i] = color_csv[1][comp_num][i];
-            }
-            imagecolors[index + 3] = 255;
-        }
-    }
+    imagecolors = compareColors(imagecolors,angle,h_mag,width,height);
 
     //画像化
     for(var i = 0;i < img_data.data.length;i++) {
