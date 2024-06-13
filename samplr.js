@@ -103,9 +103,9 @@ function rgb2hsv(rgb,array_size){
         if(h < 0) h = (h + 2 * Math.PI)/(2 * Math.PI) * 360;
         else if(h > 2 * Math.PI) h = (h - 2 * Math.PI)/(2 * Math.PI) * 360;
 
-        hsvS[i / 4][0] = h;
-        hsvS[i / 4][1] = s;
-        hsvS[i / 4][2] = v;
+        hsvS[i / 4][0] = Math.round(h);
+        hsvS[i / 4][1] = Math.round(s);
+        hsvS[i / 4][2] = Math.round(v);
     }        
     console.log(hsvS);
     return hsvS;
@@ -315,7 +315,6 @@ function colorErrorDiffusion(img_data,imagecolors,processed_data,origin_xyz,zip,
             let comp_hsvH = min_angle;
 
             while(i <= scope){
-                console.log(comp_hsvH);
                 comp_value[i] = 0;
                 comp_value[i] = Math.abs(hsvS[index / 4][0] - color_csv[0][comp_hsvH][0]) * h_mag 
                 + Math.abs(hsvS[index / 4][1] - color_csv[0][comp_hsvH][1])
