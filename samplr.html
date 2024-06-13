@@ -155,7 +155,7 @@ function rgbInArray(img_data,imagecolors){
 /*
 色比較
 */
-function compareColors(imagecolors,angle,h_mag,scope,width,height){
+function compareColors(imagecolors,hsvS,angle,h_mag,scope,width,height){
     for(var x = 0;x < width;x++){
         for(var y = 0;y < height;y++){
             let index = (x + y * width) * 4;
@@ -372,7 +372,7 @@ function colorErrorDiffusion(img_data,imagecolors,processed_data,origin_xyz,zip,
     hsvS = rgb2hsv(imagecolors, width * height);
 
     //色比較
-    imagecolors = compareColors(imagecolors,angle,h_mag,scope,width,height);
+    imagecolors = compareColors(imagecolors,hsvS,angle,h_mag,scope,width,height);
 
     //画像化
     for(var i = 0;i < img_data.data.length;i++) {
