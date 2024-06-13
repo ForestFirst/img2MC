@@ -166,9 +166,13 @@ csv_array[i][1] = {r,g,b}
 */
 function loadCSVFile(angle){
     let csv = new XMLHttpRequest();
+    var csv_array = [...Array(2)].map(k=>[...Array(360)].map(k=>[...Array(3)].map(k=>0)))
+    console.log(csv_array);
+    /*
     var csv_array = new Array(2);
     csv_array[0] = new Array(angle);//hsv
     csv_array[1] = new Array(angle);//rgb
+    */
     let rgb_array = new Array(3);
     let hsv_array = new Array(3);
     let tmp_array = [];
@@ -183,11 +187,8 @@ function loadCSVFile(angle){
             csv_array[1][i] = new Array(3);
             csv_array[0][i] = [-1,-1,-1];
             csv_array[1][i] = [-1,-1,-1];
-            console.log(csv_array[1][i]);
-            console.log(csv_array[0][i][0],csv_array[0][i][1],csv_array[0][i][2]);
         }
-        
-
+        //格納
         tmp_array = (csv.responseText).split("\n");
         for(var i = 1;i < tmp_array.length - 1;i++){
             hsv_array = tmp_array[i].split(',').slice(7,10);
@@ -196,6 +197,7 @@ function loadCSVFile(angle){
             csv_array[1][hsv_array[0]] = rgb_array;
         }
     }
+    console.log(csv_array);
     return csv_array;
 }
 
