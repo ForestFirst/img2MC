@@ -298,6 +298,7 @@ function colorErrorDiffusion(img_data,imagecolors,processed_data,origin_xyz,zip,
             let comp_value = new Array(scope);
             let min_angle;
             let max_angle;
+            console.log(hsvS);
             //比較範囲計算
             min_angle = hsvS[index / 4][0] - (scope / 2);
             if(min_angle < 0) min_angle += angle;
@@ -307,8 +308,7 @@ function colorErrorDiffusion(img_data,imagecolors,processed_data,origin_xyz,zip,
             //比較
             var i = 0;
             let comp_hsvH = min_angle;
-            console.log(comp_hsvH);
-            console.log(color_csv[0][comp_hsvH][0]);
+
             while(i <= scope){
                 comp_value[i] = 0;
                 if(color_csv[0][comp_hsvH][0] != -1){
