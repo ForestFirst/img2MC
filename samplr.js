@@ -337,6 +337,7 @@ function colorErrorDiffusion(img_data,imagecolors,processed_data,origin_xyz,zip,
             let error = [];
             for(var i = 0;i < 3;i++){
                 error[i] = Math.abs(imagecolors[comp_num * 4 + i] - color_csv[1][comp_num][i]);
+                imagecolors = color_csv[1][comp_num][i];
             }
 
             //誤差拡散
@@ -365,8 +366,8 @@ function colorErrorDiffusion(img_data,imagecolors,processed_data,origin_xyz,zip,
             }
             imagecolors[index + 3] = 255;
         }
-        console.log((y + 1) + "列目終了");
     }
+    console.log(imagecolors);
 
     //画像化
     for(var i = 0;i < img_data.data.length;i++) {
