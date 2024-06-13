@@ -327,7 +327,7 @@ function colorErrorDiffusion(img_data,imagecolors,processed_data,origin_xyz,zip,
                     + Math.abs(hsvS[index / 4][2] - color_csv[0][i + min_angle][2]);
                 }
                 i++;
-                if(i == angle) i = 0;
+                if(i + min_angle == angle) i = 0;
             }
 
             let tmp_comp_num = comp_value[0];
