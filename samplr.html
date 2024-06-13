@@ -295,6 +295,7 @@ function colorErrorDiffusion(img_data,imagecolors,processed_data,origin_xyz,zip,
     const h_mag = 2;
 
     let color_csv = loadCSVFile(angle);
+    console.log(color_csv);
     let width = img_data.width;
     let height = img_data.height;
 
@@ -326,7 +327,7 @@ function colorErrorDiffusion(img_data,imagecolors,processed_data,origin_xyz,zip,
             while(i <= max_angle){
                 i++;
                 comp_value[i] = 0;
-                if(color_csv[0][i] != -1){
+                if(color_csv[0][i][0] != -1){
                     comp_value[i] = Math.abs(hsvS[index / 4][0] - i) * h_mag;
                     comp_value[i] = Math.abs(hsvS[index / 4][1] - color_csv[0][i][1]);
                     comp_value[i] = Math.abs(hsvS[index / 4][2] - color_csv[0][i][2]);
