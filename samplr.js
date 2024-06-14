@@ -288,11 +288,9 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
     console.log(output_data);
 
     //配列初期化
-    var hsvS = new Array(width * height);
-    for(let i = 0;i < hsvS.length;i++){
-        hsvS[i] = new Array(3);
-    }
+    var hsvS = [...Array(width * height)].map(k=>[...Array(3)].map(k=>0));
     hsvS = rgb2hsv(img_data, width * height);
+    hsvS
     //色比較
     for(var y = 0;y < height;y++){
         for(var x = 0;x < width;x++){
