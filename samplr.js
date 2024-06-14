@@ -231,7 +231,6 @@ function greyErrorDiffusion(img_data,imagecolors,processed_data,origin_xyz,zip,f
     }
     //画像化
     for (var i = 0;i < img_data.data.length;i++) {
-        console.log(processed_data);
         processed_data.data[i] = imagecolors[i];
     }
     
@@ -298,7 +297,7 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
     for(var y = 0;y < height;y++){
         for(var x = 0;x < width;x++){
             let index = (x + y * width) * 4;
-            let comp_value = [...Array(scope)].map(k=>0);
+            let comp_value = [...Array(scope)].map(k=>10000);
             let min_angle;
             let max_angle;
             
@@ -366,12 +365,9 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
     }
 
     //画像化
-    for(var i = 0;i < img_data.data.length;i++) {
-        console.log(output_data[i]);
-        console.log(processed_data);
+    for (var i = 0;i < img_data.data.length;i++) {
         processed_data.data[i] = output_data[i];
     }
-    console.log(processed_data.data);    
     return processed_data;
 }
 
