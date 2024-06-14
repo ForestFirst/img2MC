@@ -137,7 +137,6 @@ function rgbInArray(img_data){
     for(var i = 0;i < img_data.width * img_data.height * 4;i += 4){
         for(var j = 0;j < 3;j++){
             color_data[i + j] = img_data.data[i + j];
-            console.log(color_data[i + j],img_data.data[i + j]);
         }
         color_data[i + 3] = 255;
     }
@@ -283,11 +282,10 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
     let color_csv = loadCSVFile(angle);
     let width = img_data.width;
     let height = img_data.height;
-
-    let output_data = rgbInArray(img_data);
-    console.log(output_data);
+    
     //色格納
-    //output_data = rgbInArray(img_data);
+    let output_data = img_data.data;//rgbInArray(img_data);
+    console.log(output_data);
 
     //配列初期化
     var hsvS = new Array(width * height);
