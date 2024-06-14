@@ -139,7 +139,7 @@ function rgbInArray(img_data,imagecolors){
             var index = (x + y * img_data.width)*4;
             for(i = 0;i < 3;i++){
                 imagecolors[index + i] = img_data.data[index + i];
-                
+                console.log( img_data.data[index + i],imagecolors[index + i]);
             }
             imagecolors[index + 3] = 255;
         }
