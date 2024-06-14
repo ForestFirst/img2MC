@@ -375,8 +375,9 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
 
     console.log(output_data);
     //画像化
-    for(var i = 0;i < img_data.data.length;i++) {
+    for(var i = 0;i < width * height * 4;i++) {
         processed_data.data[i] = output_data[i];
+        console.log(output_data[i]);
     }
     console.log(processed_data.data);    
     return processed_data;
