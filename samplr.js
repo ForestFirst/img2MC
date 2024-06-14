@@ -284,6 +284,7 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
     let height = img_data.height;
 
     let output_data = rgbInArray(img_data);
+    console.log(output_data);
     //色格納
     //output_data = rgbInArray(img_data);
 
