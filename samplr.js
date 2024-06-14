@@ -55,7 +55,7 @@ function processImageData(num) {
 
     let processed_data = cv.getContext('2d').createImageData(img_data.width, img_data.height);
     //色格納
-    let imagecolors = new Array(img_data.width * img_data.height * 4);
+    let imagecolors = [...Array(img_data.width * img_data.height * 4)].map(k=>0);
 
     if(num == 0){
         //誤差拡散法
@@ -136,14 +136,14 @@ function rgbInArray(img_data){
     let color_array = [...Array(img_data.width * img_data.height * 4)].map(k=>0);
     for (var y = 1;y < img_data.height;y++) {
         for (var x = 1;x < img_data.width;x++) {
-            var index = (x + y * img_data.width)*4;
+            var index = (x + y * img_data.width) * 4;
             for(i = 0;i < 3;i++){
-                color_arra[index + i] = img_data.data[index + i];
+                color_array[index + i] = img_data.data[index + i];
             }
-            color_arra[index + 3] = 255;
+            color_array[index + 3] = 255;
         }
     }
-    return color_arra;
+    return color_array;
 }
 
 /*
