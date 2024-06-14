@@ -134,6 +134,7 @@ function rgb2grey(img_data,imagecolors){
 */
 function rgbInArray(img_data){
     let color_data = [...Array(img_data.width * img_data.height * 4)].map(k=>0);
+    console.log(color_data);
     for(var i = 0;i < img_data.width * img_data.height * 4;i += 4){
         for(var j = 0;j < 3;j++){
             color_data[i + j] = img_data.data[i + j];
