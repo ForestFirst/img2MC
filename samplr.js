@@ -276,7 +276,7 @@ function greyErrorDiffusion(img_data,imagecolors,processed_data,origin_xyz,zip,f
     return processed_data;
 }
 
-function colorErrorDiffusion(img_data,imagecolors,processed_data,origin_xyz,zip,folder){
+function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
 
     const angle = 360;
     const scope = 60;
@@ -286,9 +286,11 @@ function colorErrorDiffusion(img_data,imagecolors,processed_data,origin_xyz,zip,
     let width = img_data.width;
     let height = img_data.height;
 
+    let output_data = [...Array(width * height * 4)].map(k=>0);
+
     //色格納
-    imagecolors = rgbInArray(img_data);
-    console.log(imagecolors);
+    output_data = rgbInArray(img_data);
+    console.log(output_data);
 
     //配列初期化
     var hsvS = new Array(width * height);
@@ -332,46 +334,47 @@ function colorErrorDiffusion(img_data,imagecolors,processed_data,origin_xyz,zip,
                     comp_num = i + min_angle;
                 }
             }
+            console.log(comp_num);
 
             //誤差（rgbそれぞれで算出）
             let error = [];
             for(var i = 0;i < 3;i++){
-                error[i] = Math.abs(imagecolors[comp_num * 4 + i] - color_csv[1][comp_num][i]);
-                imagecolors[index + i] = color_csv[1][comp_num][i];
+                error[i] = Math.abs(output_data[comp_num * 4 + i] - color_csv[1][comp_num][i]);
+                output_data[index + i] = color_csv[1][comp_num][i];
             }
 
             //誤差拡散
             for(var i = 0;i < 3; i++){
                 //右
                 if(x < width - 1){
-                    imagecolors[((x + 1) + y * width)*4 + i] += (error[i] * 5) / 16 | 0;                        
+                    output_data[((x + 1) + y * width)*4 + i] += (error[i] * 5) / 16 | 0;                        
                 }
                 //左下
                 if(x > 0){
-                    imagecolors[((x - 1) + (y + 1) * width)*4 + i] += (error[i] * 2.8) / 16 | 0;
+                    output_data[((x - 1) + (y + 1) * width)*4 + i] += (error[i] * 2.8) / 16 | 0;
                 }
                 //下
                 if(i < height -1){
-                    imagecolors[(x + (y + 1) * width)*4 + i] += (error[i] * 5) / 16 | 0;
+                    output_data[(x + (y + 1) * width)*4 + i] += (error[i] * 5) / 16 | 0;
                 }
                 //右下
                 if(x < width - 1 && y > height - 1){
-                    imagecolors[((x + 1) + (y + 1) * width)*4 + i] += (error[i] * 3.2) / 16 | 0;
+                    output_data[((x + 1) + (y + 1) * width)*4 + i] += (error[i] * 3.2) / 16 | 0;
                 }
             }
 
             //rgb代入
             for(var i = 0;i < 3;i++){
-                imagecolors[index + i] = color_csv[1][comp_num][i];
+                output_data[index + i] = color_csv[1][comp_num][i];
             }
-            imagecolors[index + 3] = 255;
+            output_data[index + 3] = 255;
         }
     }
 
 
     //画像化
     for(var i = 0;i < img_data.data.length;i++) {
-        processed_data.data[i] = imagecolors[i];
+        processed_data.data[i] = output_data[i];
     }
     console.log(processed_data.data);    
     return processed_data;
