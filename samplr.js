@@ -73,7 +73,7 @@ rgbからhsv変換
 function rgb2hsv(rgb,array_size){
     let r,g,b;
     let h,s,v;
-    let hsvS = [...Array(array_size)].map(k=>[...Array(3)].map(k=>-1));;
+    let hsvS = [...Array(array_size)].map(k=>[...Array(3)].map(k=>-1));
     for(var i = 0;i < rgb.length;i = i + 4){
         let Vmax,Vmin;
 
@@ -132,17 +132,18 @@ function rgb2grey(img_data,imagecolors){
 /*
 色格納
 */
-function rgbInArray(img_data,imagecolors){
+function rgbInArray(img_data){
+    let color_array = [...Array(img_data.width * img_data.height * 4)].map(k=>0);
     for (var y = 1;y < img_data.height;y++) {
         for (var x = 1;x < img_data.width;x++) {
             var index = (x + y * img_data.width)*4;
             for(i = 0;i < 3;i++){
-                imagecolors[index + i] = img_data.data[index + i];
+                color_arra[index + i] = img_data.data[index + i];
             }
-            imagecolors[index + 3] = 255;
+            color_arra[index + 3] = 255;
         }
     }
-    return imagecolors;
+    return color_arra;
 }
 
 /*
@@ -286,7 +287,7 @@ function colorErrorDiffusion(img_data,imagecolors,processed_data,origin_xyz,zip,
     let height = img_data.height;
 
     //色格納
-    imagecolors = rgbInArray(img_data,imagecolors);
+    imagecolors = rgbInArray(img_data);
     console.log(imagecolors);
 
     //配列初期化
