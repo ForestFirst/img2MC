@@ -231,6 +231,7 @@ function greyErrorDiffusion(img_data,imagecolors,processed_data,origin_xyz,zip,f
     }
     //画像化
     for (var i = 0;i < img_data.data.length;i++) {
+        console.log(processed_data);
         processed_data.data[i] = imagecolors[i];
     }
     
@@ -365,7 +366,7 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
     }
 
     //画像化
-    for(var i = 0;i < width * height * 4;i++) {
+    for(var i = 0;i < img_data.data.length;i++) {
         console.log(output_data[i]);
         console.log(processed_data.data[i]);
         processed_data.data[i] = output_data[i];
