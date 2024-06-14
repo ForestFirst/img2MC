@@ -134,19 +134,19 @@ function rgb2grey(img_data,imagecolors){
 */
 function rgbInArray(img_data){
     console.log(img_data.data);
-    var color_array = [...Array(img_data.width * img_data.height * 4)].map(k=>0);
-    console.log(color_array);
+    var color_data = [...Array(img_data.width * img_data.height * 4)].map(k=>0);
+    console.log(color_data);
     for (var y = 1;y < img_data.height;y++) {
         for (var x = 1;x < img_data.width;x++) {
             var index = (x + y * img_data.width) * 4;
             for(i = 0;i < 3;i++){
-                color_array[index + i] = img_data.data[index + i];
+                color_data[index + i] = img_data.data[index + i];
             }
-            color_array[index + 3] = 255;
+            color_data[index + 3] = 255;
         }
     }
-    console.log(color_array);
-    return color_array;
+    console.log(color_data);
+    return color_data;
 }
 
 /*
