@@ -134,17 +134,21 @@ function rgb2grey(img_data,imagecolors){
 */
 function rgbInArray(img_data,imagecolors){
     console.log(img_data.data);
+    for(var i = 0;i < img_data.height * img_data.width*4;i++ ){
+        imagecolors[i] = img_data.data[i];
+    }
+    /*
     for (var y = 1;y < img_data.height;y++) {
         for (var x = 1;x < img_data.width;x++) {
             var index = (x + y * img_data.width)*4;
             for(i = 0;i < 3;i++){
                 imagecolors[index + i] = img_data.data[index + i];
-                console.log( img_data.data[index + i],imagecolors[index + i]);
             }
             imagecolors[index + 3] = 255;
         }
     }
-    console.log(imagecolors);
+    */
+   console.log(imagecolors);
     return imagecolors;
 }
 
