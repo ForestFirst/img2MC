@@ -133,8 +133,7 @@ function rgb2grey(img_data,imagecolors){
 色格納
 */
 function rgbInArray(img_data){
-    let color_data = [...Array(img_data.width * img_data.height * 4)].map(k=>0);
-    console.log(color_data);
+    let color_data = [];//[...Array(img_data.width * img_data.height * 4)].map(k=>0);
     for(var i = 0;i < img_data.width * img_data.height * 4;i += 4){
         for(var j = 0;j < 3;j++){
             color_data[i + j] = img_data.data[i + j];
@@ -298,7 +297,7 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
     for(var y = 0;y < height;y++){
         for(var x = 0;x < width;x++){
             let index = (x + y * width) * 4;
-            let comp_value = new Array(scope);
+            let comp_value = [...Array(scope)].map(k=>0);
             let min_angle;
             let max_angle;
             
@@ -313,7 +312,6 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
             let comp_hsvH = min_angle;
 
             while(i <= scope){
-                comp_value[i] = 0;
                 comp_value[i] = Math.abs(hsvS[index / 4][0] - color_csv[0][comp_hsvH][0]) * h_mag 
                 + Math.abs(hsvS[index / 4][1] - color_csv[0][comp_hsvH][1])
                 + Math.abs(hsvS[index / 4][2] - color_csv[0][comp_hsvH][2]);
@@ -366,7 +364,6 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
         }
     }
 
-    console.log(output_data);
     //画像化
     for(var i = 0;i < width * height * 4;i++) {
         processed_data.data[i] = output_data[i];
