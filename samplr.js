@@ -62,7 +62,7 @@ function processImageData(num) {
         processed_data = greyErrorDiffusion(img_data,imagecolors,processed_data,origin_xyz,zip[0],zip[1]);
     }
     else if(num == 1){
-        processed_data = colorErrorDiffusion(img_data,imagecolors,processed_data,origin_xyz,zip[0],zip[1]);
+        processed_data = colorErrorDiffusion(img_data,processed_data,origin_xyz,zip[0],zip[1]);
     }
     cv.getContext('2d').putImageData(processed_data, 0, 0);
 }
@@ -283,9 +283,9 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
     let width = img_data.width;
     let height = img_data.height;
 
-    let output_data = [...Array(width * height * 4)].map(k=>0);
+    let output_data = rgbInArray(img_data);
     //色格納
-    output_data = rgbInArray(img_data);
+    //output_data = rgbInArray(img_data);
 
     //配列初期化
     var hsvS = new Array(width * height);
