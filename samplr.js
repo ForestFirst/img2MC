@@ -133,12 +133,13 @@ function rgb2grey(img_data,imagecolors){
 色格納
 */
 function rgbInArray(img_data){
-    let color_array = [...Array(img_data.width * img_data.height * 4)].map(k=>0);
+    var color_array = [...Array(img_data.width * img_data.height * 4)].map(k=>0);
     for (var y = 1;y < img_data.height;y++) {
         for (var x = 1;x < img_data.width;x++) {
             var index = (x + y * img_data.width) * 4;
             for(i = 0;i < 3;i++){
                 color_array[index + i] = img_data.data[index + i];
+                console.log(color_array[index + i],img_data.data[index + i]);
             }
             color_array[index + 3] = 255;
         }
@@ -334,7 +335,6 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
                     comp_num = i + min_angle;
                 }
             }
-            console.log(comp_num);
 
             //誤差（rgbそれぞれで算出）
             let error = [];
@@ -371,7 +371,7 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
         }
     }
 
-
+    console.log(output_data);
     //画像化
     for(var i = 0;i < img_data.data.length;i++) {
         processed_data.data[i] = output_data[i];
