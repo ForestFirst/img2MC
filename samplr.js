@@ -367,12 +367,13 @@ function colorErrorDiffusion(img_data,imagecolors,processed_data,origin_xyz,zip,
             imagecolors[index + 3] = 255;
         }
     }
-    console.log(imagecolors);
+
 
     //画像化
     for(var i = 0;i < img_data.data.length;i++) {
         processed_data.data[i] = imagecolors[i];
     }
+    console.log(processed_data.data);    
     return processed_data;
 }
 
