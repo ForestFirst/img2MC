@@ -135,14 +135,11 @@ function rgb2grey(img_data,imagecolors){
 function rgbInArray(img_data){
     let color_data = [...Array(img_data.width * img_data.height * 4)].map(k=>0);
     console.log(color_data);
-    for (var y = 1;y < img_data.height;y++) {
-        for (var x = 1;x < img_data.width;x++) {
-            var index = (x + y * img_data.width) * 4;
-            for(i = 0;i < 3;i++){
-                color_data[index + i] = img_data.data[index + i];
-            }
-            color_data[index + 3] = 255;
+    for(var i = 0;i < img_data.width * img_data.height * 4;i += 4){
+        for(var j = 0;j < 3;j++){
+            color_data[i + j] = img_data.data[i + j];
         }
+        color_data[i + 3] = 255;
     }
     return color_data;
 }
@@ -288,10 +285,8 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
     let height = img_data.height;
 
     let output_data = [...Array(width * height * 4)].map(k=>0);
-    console.log(output_data);
     //色格納
     output_data = rgbInArray(img_data);
-    console.log(output_data);
 
     //配列初期化
     var hsvS = new Array(width * height);
