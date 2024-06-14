@@ -133,7 +133,7 @@ function rgb2grey(img_data,imagecolors){
 色格納
 */
 function rgbInArray(img_data){
-    var color_data = [...Array(img_data.width * img_data.height * 4)].map(k=>0);
+    let color_data = [...Array(img_data.width * img_data.height * 4)].map(k=>0);
     console.log(color_data);
     for (var y = 1;y < img_data.height;y++) {
         for (var x = 1;x < img_data.width;x++) {
