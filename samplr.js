@@ -100,14 +100,14 @@ function rgb2hsv(rgb,array_size){
             else if(b == Vmax) h = (r - g) / (Vmax - Vmin) * (Math.PI/3) + 4 * Math.PI / 3;
         }
         //Hを0~2πの間に収める
-        if(h < 0) h = (h + 2 * Math.PI)/(2 * Math.PI) * 360;
+        if(h < 0) h = (h + 2 * Math.PI);
         else if(h > 2 * Math.PI) h = (h - 2 * Math.PI)/(2 * Math.PI) * 360;
+        h /= (2 * Math.PI) * 360;
 
         hsvS[i / 4][0] = Math.round(h);
         hsvS[i / 4][1] = Math.round(s);
         hsvS[i / 4][2] = Math.round(v);
     }        
-    console.log(hsvS);
     return hsvS;
 }
 
@@ -133,11 +133,6 @@ function rgb2grey(img_data,imagecolors){
 色格納
 */
 function rgbInArray(img_data,imagecolors){
-    console.log(img_data.data);
-    for(var i = 0;i < img_data.height * img_data.width*4;i++ ){
-        imagecolors[i] = img_data.data[i];
-    }
-    /*
     for (var y = 1;y < img_data.height;y++) {
         for (var x = 1;x < img_data.width;x++) {
             var index = (x + y * img_data.width)*4;
@@ -147,8 +142,6 @@ function rgbInArray(img_data,imagecolors){
             imagecolors[index + 3] = 255;
         }
     }
-    */
-   console.log(imagecolors);
     return imagecolors;
 }
 
@@ -294,13 +287,14 @@ function colorErrorDiffusion(img_data,imagecolors,processed_data,origin_xyz,zip,
 
     //色格納
     imagecolors = rgbInArray(img_data,imagecolors);
+    console.log(imagecolors);
 
     //配列初期化
     var hsvS = new Array(width * height);
     for(let i = 0;i < hsvS.length;i++){
         hsvS[i] = new Array(3);
     }
-    hsvS = rgb2hsv(imagecolors, width * height);
+    hsvS = rgb2hsv(img_data, width * height);
     //色比較
     for(var y = 0;y < height;y++){
         for(var x = 0;x < width;x++){
