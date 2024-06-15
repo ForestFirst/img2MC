@@ -166,6 +166,8 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
     const angle = 360;
     const scope = 180;
     const h_mag = 2;
+    const s_mag = 1;
+    const v_mag = 1;
 
     let color_csv = loadCSVFile(angle);
     console.log(color_csv);
@@ -181,7 +183,7 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
     for(var y = 0;y < height;y++){
         for(var x = 0;x < width;x++){
             let index = (x + y * width) * 4;
-            let comp_value = [...Array(scope)].map(k=>10000);
+            let comp_value = [...Array(scope)].map(k=>0);
             let min_angle;
             let max_angle;
             
@@ -194,29 +196,27 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
             //比較
             var i = 0;
             let comp_hsvH = min_angle;
-            let img_index = index / 4;
-            console.log("----------------");
+            let img_index = x + y * width;
             while(i <= scope){
                 //let csv_index = comp_hsvH;
                 //console.log(comp_hsvH);
-                if(color_csv[0][comp_hsvH][0] != -1){
-                    comp_value[i] = Math.abs(hsvS[img_index][0] - color_csv[0][comp_hsvH][0]) * h_mag 
-                    + Math.abs(hsvS[img_index][1] - color_csv[0][comp_hsvH][1])
-                    + Math.abs(hsvS[img_index][2] - color_csv[0][comp_hsvH][2]);
+                if(color_csv[0][comp_hsvH][0] > -1){
+                    let H_diff = Math.abs(hsvS[img_index][0] - color_csv[0][comp_hsvH][0]) * h_mag;
+                    let S_diff = Math.abs(hsvS[img_index][1] - color_csv[0][comp_hsvH][1]) * s_mag;
+                    let V_diff = Math.abs(hsvS[img_index][2] - color_csv[0][comp_hsvH][2]) * v_mag;
+                    comp_value[i] = H_diff + S_diff + V_diff;
                 }
-                else{
-                    comp_value[i] = 10000;
-                }
+                else comp_value[i] = 10000;
                 i++;
                 comp_hsvH++;
-                if(comp_hsvH == angle) comp_hsvH = 0;
-                
+                if(comp_hsvH >= angle) comp_hsvH = 0;
             }
 
             let tmp_comp_num = comp_value[0];
             let comp_num = min_angle;
             for(var i = 1;i < scope;i++){
                 if(tmp_comp_num > comp_value[i]){
+                    console.log("g");
                     tmp_comp_num = comp_value[i];
                     comp_num = i + min_angle;
                 }
