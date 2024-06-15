@@ -195,9 +195,14 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
             let comp_hsvH = min_angle;
 
             while(i <= scope){
-                comp_value[i] = Math.abs(hsvS[index / 4][0] - color_csv[0][comp_hsvH][0]) * h_mag 
-                + Math.abs(hsvS[index / 4][1] - color_csv[0][comp_hsvH][1])
-                + Math.abs(hsvS[index / 4][2] - color_csv[0][comp_hsvH][2]);
+                if(color_csv[0][comp_hsvH][0] == -1){
+                    comp_value[i] = Math.abs(hsvS[index / 4][0] - color_csv[0][comp_hsvH][0]) * h_mag 
+                    + Math.abs(hsvS[index / 4][1] - color_csv[0][comp_hsvH][1])
+                    + Math.abs(hsvS[index / 4][2] - color_csv[0][comp_hsvH][2]);
+                }
+                else{
+                    comp_value[i] = 10000;
+                }
                 i++;
                 comp_hsvH++;
                 if(comp_hsvH == angle) comp_hsvH = 0;
@@ -216,7 +221,6 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
             let error = [];
             for(var i = 0;i < 3;i++){
                 error[i] = Math.abs(output_data[comp_num * 4 + i] - color_csv[1][comp_num][i]);
-                console.dir(color_csv[1][comp_num][i]);
                 output_data[index + i] = color_csv[1][comp_num][i];
             }
 
