@@ -168,17 +168,13 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
     const h_mag = 2;
     const s_mag = 1;
     const v_mag = 1;
-
-    let color_csv = loadCSVFile(angle);
-    console.log(color_csv);
-    let width = img_data.width;
-    let height = img_data.height;
+    const width = img_data.width;
+    const height = img_data.height;
+    const color_csv = loadCSVFile(angle);//csvファイル
+    const hsvS = rgb2hsv(img_data, width * height);//画像のHSV
     
     //色格納
     let output_data = [...img_data.data];//rgbInArray(img_data);
-    //配列初期化
-    let hsvS = [...Array(width * height)].map(k=>[...Array(3)].map(k=>0));
-    hsvS = rgb2hsv(img_data, width * height);
     //色比較
     for(var y = 0;y < height;y++){
         for(var x = 0;x < width;x++){
@@ -206,7 +202,7 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
                     diff_value[i] = H_diff + S_diff + V_diff;
                 }
                 else diff_value[i] = 10000;
-                comp_hsvH++;
+                comp_hsvH = min_angle + i;
                 if(comp_hsvH >= angle) comp_hsvH = 0;
             }
 
