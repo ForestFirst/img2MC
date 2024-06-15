@@ -194,6 +194,8 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
             var i = 0;
             let comp_hsvH = min_angle;
             let img_index = index / 4;
+            console.dir(color_csv[0]);
+            console.log(comp_hsvH);
             while(i <= scope){
                 //let csv_index = comp_hsvH;
                 //console.log(comp_hsvH);
