@@ -68,114 +68,6 @@ function processImageData(num) {
 }
 
 /*
-rgbからhsv変換
-*/
-function rgb2hsv(rgb,array_size){
-    let r,g,b;
-    let h,s,v;
-    let hsvS = [...Array(array_size)].map(k=>[...Array(3)].map(k=>-1));
-    for(var i = 0;i < rgb.length;i = i + 4){
-        let Vmax,Vmin;
-
-        if(rgb[i] == undefined) r = 0;
-        else r = rgb[i] / 255;
-        if(rgb[i + 1] == undefined) g = 0
-        else g = rgb[i + 1] / 255;
-        if(rgb[i + 2] == undefined) b = 0;
-        else b = rgb[i + 2] / 255;
-        
-        Vmax = Math.max(r,g,b);
-        Vmin = Math.min(r,g,b);
-
-        if(Vmax == 0) v = 0;
-        else v = Vmax * 100;
-
-        if((Vmax - Vmin) == 0) s = 0;
-        else s = (Vmax - Vmin) / Vmax * 100;
-        //sが０ならhも０
-        if(s == 0) h = 0;
-        else {
-            if(r == Vmax) h = (g - b) / (Vmax - Vmin) * (Math.PI/3);
-            else if(g == Vmax) h = (b - r) / (Vmax - Vmin) * (Math.PI/3) + 2 * Math.PI / 3;
-            else if(b == Vmax) h = (r - g) / (Vmax - Vmin) * (Math.PI/3) + 4 * Math.PI / 3;
-        }
-        //Hを0~2πの間に収める
-        if(h < 0) h = (h + 2 * Math.PI);
-        else if(h > 2 * Math.PI) h = (h - 2 * Math.PI)/(2 * Math.PI) * 360;
-        h /= (2 * Math.PI) * 360;
-
-        hsvS[i / 4][0] = Math.round(h);
-        hsvS[i / 4][1] = Math.round(s);
-        hsvS[i / 4][2] = Math.round(v);
-    }        
-    return hsvS;
-}
-
-/*
-グレースケール化
-*/
-function rgb2grey(img_data,imagecolors){
-    for (var y = 1;y < img_data.height;y++) {
-        for (var x = 1;x < img_data.width;x++) {
-            var index = (x + y * img_data.width)*4;
-            rgb_grey = 0.2126 * img_data.data[index] + 0.7152 * img_data.data[index + 1] + 0.0722 * img_data.data[index + 2];    
-            //rgb_grey = (img_data.data[index] + img_data.data[index + 1] + img_data.data[index + 2])/3;
-            for(i = 0;i < 3;i++){
-                imagecolors[index + i] = rgb_grey;
-            }
-            imagecolors[index + 3] = 255;
-        }
-    }
-    return imagecolors;
-}
-
-/*
-色格納
-*/
-function rgbInArray(img_data){
-    let color_data = [];//[...Array(img_data.width * img_data.height * 4)].map(k=>0);
-    for(var i = 0;i < img_data.width * img_data.height * 4;i += 4){
-        for(var j = 0;j < 3;j++){
-            color_data[i + j] = img_data.data[i + j];
-        }
-        color_data[i + 3] = 255;
-    }
-    return color_data;
-}
-
-/*
-hsv比較
-*/
-function compareHSV(hsv){
-    //hsv[]
-}
-
-/*
-excelファイル読み込み
-csv_array[i][0] = {h,s,v}
-csv_array[i][1] = {r,g,b}
-*/
-function loadCSVFile(angle){
-    let csv = new XMLHttpRequest();
-    var csv_array = [...Array(2)].map(k=>[...Array(360)].map(k=>[...Array(3)].map(k=>-1)));
-    
-    csv.open("get", "./BlocksColor.csv",true);
-    csv.send(null);
-    
-    csv.onload = function(){
-        //格納
-        let tmp_array = (csv.responseText).split("\n");
-        for(var i = 1;i < tmp_array.length - 1;i++){
-            let hsv_array = tmp_array[i].split(',').slice(7,10);
-            let rgb_array = tmp_array[i].split(',').slice(1,4);
-            csv_array[0][hsv_array[0]] = [parseInt(hsv_array[0]),parseInt(hsv_array[1]),parseInt(hsv_array[2])];
-            csv_array[1][hsv_array[0]] = [parseInt(rgb_array[0]),parseInt(rgb_array[1]),parseInt(rgb_array[2])];
-        }
-    }
-    return csv_array;
-}
-
-/*
 誤差拡散法（グレースケールver完成）
 */
 function greyErrorDiffusion(img_data,imagecolors,processed_data,origin_xyz,zip,folder){
@@ -284,7 +176,7 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
     console.log(output_data);
 
     //配列初期化
-    var hsvS = [...Array(width * height)].map(k=>[...Array(3)].map(k=>0));
+    let hsvS = [...Array(width * height)].map(k=>[...Array(3)].map(k=>0));
     hsvS = rgb2hsv(img_data, width * height);
     console.log(hsvS);
     //色比較
@@ -363,6 +255,115 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
         processed_data.data[i] = output_data[i];
     }
     return processed_data;
+}
+
+/*
+rgbからhsv変換
+*/
+function rgb2hsv(rgb,array_size){
+    let r,g,b;
+    let h,s,v;
+    let hsvS = [...Array(array_size)].map(k=>[...Array(3)].map(k=>-1));
+    for(var i = 0;i < rgb.length;i = i + 4){
+        let Vmax,Vmin;
+
+        if(rgb[i] == undefined) r = 0;
+        else r = rgb[i] / 255;
+        if(rgb[i + 1] == undefined) g = 0
+        else g = rgb[i + 1] / 255;
+        if(rgb[i + 2] == undefined) b = 0;
+        else b = rgb[i + 2] / 255;
+        
+        Vmax = Math.max(r,g,b);
+        Vmin = Math.min(r,g,b);
+
+        if(Vmax == 0) v = 0;
+        else v = Vmax * 100;
+
+        if((Vmax - Vmin) == 0) s = 0;
+        else s = (Vmax - Vmin) / Vmax * 100;
+        //sが０ならhも０
+        if(s == 0) h = 0;
+        else {
+            if(r == Vmax) h = (g - b) / (Vmax - Vmin) * (Math.PI/3);
+            else if(g == Vmax) h = (b - r) / (Vmax - Vmin) * (Math.PI/3) + 2 * Math.PI / 3;
+            else if(b == Vmax) h = (r - g) / (Vmax - Vmin) * (Math.PI/3) + 4 * Math.PI / 3;
+        }
+        //Hを0~2πの間に収める
+        if(h < 0) h = (h + 2 * Math.PI);
+        else if(h > 2 * Math.PI) h = (h - 2 * Math.PI)/(2 * Math.PI) * 360;
+        h /= (2 * Math.PI) * 360;
+
+        hsvS[i / 4][0] = Math.round(h);
+        hsvS[i / 4][1] = Math.round(s);
+        hsvS[i / 4][2] = Math.round(v);
+    }        
+    console.log(hsvS);
+    return hsvS;
+}
+
+/*
+グレースケール化
+*/
+function rgb2grey(img_data,imagecolors){
+    for (var y = 1;y < img_data.height;y++) {
+        for (var x = 1;x < img_data.width;x++) {
+            var index = (x + y * img_data.width)*4;
+            rgb_grey = 0.2126 * img_data.data[index] + 0.7152 * img_data.data[index + 1] + 0.0722 * img_data.data[index + 2];    
+            //rgb_grey = (img_data.data[index] + img_data.data[index + 1] + img_data.data[index + 2])/3;
+            for(i = 0;i < 3;i++){
+                imagecolors[index + i] = rgb_grey;
+            }
+            imagecolors[index + 3] = 255;
+        }
+    }
+    return imagecolors;
+}
+
+/*
+色格納
+*/
+function rgbInArray(img_data){
+    let color_data = [];//[...Array(img_data.width * img_data.height * 4)].map(k=>0);
+    for(var i = 0;i < img_data.width * img_data.height * 4;i += 4){
+        for(var j = 0;j < 3;j++){
+            color_data[i + j] = img_data.data[i + j];
+        }
+        color_data[i + 3] = 255;
+    }
+    return color_data;
+}
+
+/*
+hsv比較
+*/
+function compareHSV(hsv){
+    //hsv[]
+}
+
+/*
+excelファイル読み込み
+csv_array[i][0] = {h,s,v}
+csv_array[i][1] = {r,g,b}
+*/
+function loadCSVFile(angle){
+    let csv = new XMLHttpRequest();
+    var csv_array = [...Array(2)].map(k=>[...Array(360)].map(k=>[...Array(3)].map(k=>-1)));
+    
+    csv.open("get", "./BlocksColor.csv",true);
+    csv.send(null);
+    
+    csv.onload = function(){
+        //格納
+        let tmp_array = (csv.responseText).split("\n");
+        for(var i = 1;i < tmp_array.length - 1;i++){
+            let hsv_array = tmp_array[i].split(',').slice(7,10);
+            let rgb_array = tmp_array[i].split(',').slice(1,4);
+            csv_array[0][hsv_array[0]] = [parseInt(hsv_array[0]),parseInt(hsv_array[1]),parseInt(hsv_array[2])];
+            csv_array[1][hsv_array[0]] = [parseInt(rgb_array[0]),parseInt(rgb_array[1]),parseInt(rgb_array[2])];
+        }
+    }
+    return csv_array;
 }
 
 async function filesave(str,filecount,folder){
