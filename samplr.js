@@ -207,6 +207,7 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
                 comp_hsvH++;
                 if(comp_hsvH == angle) comp_hsvH = 0;
             }
+            consolr.dir({...comp_value});
 
             let tmp_comp_num = comp_value[0];
             let comp_num = min_angle;
