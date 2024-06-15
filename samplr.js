@@ -183,7 +183,6 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
         for(var x = 0;x < width;x++){
             let index = (x + y * width) * 4;
             let comp_value = [...Array(scope)].map(k=>10000);
-            console.log({...comp_value});
             let min_angle;
             let max_angle;
             
@@ -250,6 +249,7 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
         }
     }
 
+    console.log({...output_data});
     //画像化
     for (var i = 0;i < img_data.data.length;i++) {
         processed_data.data[i] = output_data[i];
