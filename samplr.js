@@ -186,6 +186,7 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
             const min_angle = minAngleCalculate(hsvS[index / 4][0],scope,angle);
             const max_angle = maxAngleCalculate(hsvS[index / 4][0],scope,angle);
             //比較
+            console.log(min_angle);
             let comp_hsvH = min_angle;
             const img_index = x + y * width;
             for(var i = 0;i < scope; i++){
