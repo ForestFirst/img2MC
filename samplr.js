@@ -158,20 +158,16 @@ csv_array[i][1] = {r,g,b}
 function loadCSVFile(angle){
     let csv = new XMLHttpRequest();
     var csv_array = [...Array(2)].map(k=>[...Array(360)].map(k=>[...Array(3)].map(k=>-1)));
-
-    let rgb_array = new Array(3);
-    let hsv_array = new Array(3);
-    let tmp_array = [];
     
     csv.open("get", "./BlocksColor.csv",true);
     csv.send(null);
     
     csv.onload = function(){
         //格納
-        tmp_array = (csv.responseText).split("\n");
+        let tmp_array = (csv.responseText).split("\n");
         for(var i = 1;i < tmp_array.length - 1;i++){
-            hsv_array = tmp_array[i].split(',').slice(7,10);
-            rgb_array = tmp_array[i].split(',').slice(1,4);
+            let hsv_array = tmp_array[i].split(',').slice(7,10);
+            let rgb_array = tmp_array[i].split(',').slice(1,4);
             csv_array[0][hsv_array[0]] = [parseInt(hsv_array[0]),parseInt(hsv_array[1]),parseInt(hsv_array[2])];
             csv_array[1][hsv_array[0]] = [parseInt(rgb_array[0]),parseInt(rgb_array[1]),parseInt(rgb_array[2])];
         }
@@ -290,7 +286,7 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
     //配列初期化
     var hsvS = [...Array(width * height)].map(k=>[...Array(3)].map(k=>0));
     hsvS = rgb2hsv(img_data, width * height);
-    hsvS
+    console.log(hsvS);
     //色比較
     for(var y = 0;y < height;y++){
         for(var x = 0;x < width;x++){
