@@ -372,8 +372,14 @@ function loadCSVFile(){
     let csv_array = [...Array(2)].map(k=>[...Array(360)].map(k=>[...Array(3)].map(k=>-1)));
     csv.open("get", "./BlocksColor.csv",true);
     csv.send(null);
-    csv.onload = function(){
-        console.log("ブロック色のファイルは読み込めました。");
+    csv.onload = function(e){
+        if (csv.readyState === 4){
+            if(csv.status === 200){
+                console.log(csv.responseText,"ブロック色のファイルは読み込めました。");
+            }else{
+                console.error(csv.statusText);
+            }
+        }
     }
     
     let str = csv.responseText;
