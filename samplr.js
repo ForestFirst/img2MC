@@ -170,8 +170,9 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
     const v_mag = 1;
     const width = img_data.width;
     const height = img_data.height;
-    const color_csv = loadCSVFile(angle);//csvファイル
+    const color_csv = loadCSVFile();//csvファイル
     const hsvS = rgb2hsv(img_data.data, width * height);//画像のHSV
+    console.log(color_csv);
     console.log(hsvS);
     
     //画像の色コピー
@@ -367,12 +368,11 @@ excelファイル読み込み
 csv_array[i][0] = {h,s,v}
 csv_array[i][1] = {r,g,b}
 */
-function loadCSVFile(angle){
+function loadCSVFile(){
     let csv = new XMLHttpRequest();
     var csv_array = [...Array(2)].map(k=>[...Array(360)].map(k=>[...Array(3)].map(k=>-1)));
     
     csv.open("get", "./BlocksColor.csv",true);
-    csv.send(null);
     
     csv.onload = function(){
         //格納
@@ -380,8 +380,10 @@ function loadCSVFile(angle){
         for(var i = 1;i < tmp_array.length - 1;i++){
             let hsv_array = tmp_array[i].split(',').slice(7,10);
             let rgb_array = tmp_array[i].split(',').slice(1,4);
-            csv_array[0][hsv_array[0]] = [parseInt(hsv_array[0]),parseInt(hsv_array[1]),parseInt(hsv_array[2])];
-            csv_array[1][hsv_array[0]] = [parseInt(rgb_array[0]),parseInt(rgb_array[1]),parseInt(rgb_array[2])];
+            csv_array[0][hsv_array[0]] = hsv_array.map( str => parseInt(str, 10));
+            //csv_array[0][hsv_array[0]] = [parseInt(hsv_array[0]),parseInt(hsv_array[1]),parseInt(hsv_array[2])];
+            csv_array[1][rgb_array[0]] = rgb_array.map( str => parseInt(str, 10));
+            //csv_array[1][hsv_array[0]] = [parseInt(rgb_array[0]),parseInt(rgb_array[1]),parseInt(rgb_array[2])];
         }
     }
     return csv_array;
