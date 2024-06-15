@@ -266,7 +266,7 @@ minAngle計算
 */
 function minAngleCalculate(hsvS,scope,angle){
     let min_angle;
-    hsvS - (scope / 2);
+    min_angle = hsvS - (scope / 2);
     if(min_angle < 0) min_angle += angle;
     return min_angle;
 }
@@ -276,7 +276,7 @@ maxAngle計算
 */
 function maxAngleCalculate(hsvS,scope,angle){
     let max_angle;
-    hsvS - (scope / 2);
+    max_angle = hsvS - (scope / 2);
     if(max_angle < 0) max_angle += angle;
     return max_angle;
 }
