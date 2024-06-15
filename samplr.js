@@ -183,14 +183,12 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
     for(var y = 0;y < height;y++){
         for(var x = 0;x < width;x++){
             let index = (x + y * width) * 4;
-            let comp_value = [...Array(scope)].map(k=>0);
-            let min_angle;
-            let max_angle;
+            let diff_value = [...Array(scope)].map(k=>0);
             
             //比較範囲計算
-            min_angle = hsvS[index / 4][0] - (scope / 2);
+            let min_angle = hsvS[index / 4][0] - (scope / 2);
             if(min_angle < 0) min_angle += angle;
-            max_angle = hsvS[index / 4][0] + (scope / 2);
+            let max_angle = hsvS[index / 4][0] + (scope / 2);
             if(max_angle >= angle) max_angle -= angle;
 
             //比較
@@ -199,24 +197,25 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
             for(var i = 0;i < scope; i++){
                 //let csv_index = comp_hsvH;
                 //console.log(comp_hsvH);
+                console.log(color_csv[0][comp_hsvH][0]);
                 if(color_csv[0][comp_hsvH][0] > -1){
                     console.log("v");
                     let H_diff = Math.abs(hsvS[img_index][0] - color_csv[0][comp_hsvH][0]) * h_mag;
                     let S_diff = Math.abs(hsvS[img_index][1] - color_csv[0][comp_hsvH][1]) * s_mag;
                     let V_diff = Math.abs(hsvS[img_index][2] - color_csv[0][comp_hsvH][2]) * v_mag;
-                    comp_value[i] = H_diff + S_diff + V_diff;
+                    diff_value[i] = H_diff + S_diff + V_diff;
                 }
-                else comp_value[i] = 10000;
+                else diff_value[i] = 10000;
                 comp_hsvH++;
                 if(comp_hsvH >= angle) comp_hsvH = 0;
             }
 
-            let tmp_comp_num = comp_value[0];
+            let tmp_comp_num = diff_value[0];
             let comp_num = min_angle;
             for(var i = 1;i < scope;i++){
-                if(tmp_comp_num > comp_value[i]){
+                if(tmp_comp_num > diff_value[i]){
                     console.log("g");
-                    tmp_comp_num = comp_value[i];
+                    tmp_comp_num = diff_value[i];
                     comp_num = i + min_angle;
                 }
             }
