@@ -182,10 +182,10 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
         for(var x = 0;x < width;x++){
             const index = (x + y * width) * 4;
             let diff_value = [...Array(scope)].map(k=>0);
-            
+            console.dir(hsvS[index / 4][0]);
             //比較範囲計算
             const min_angle = minAngleCalculate(hsvS[index / 4][0],scope,angle);
-            const max_angle = maxAngleCalculate(hsvS[index / 4][0],scope,angle);
+            const max_angle = min_angle + scope;
             //比較
             console.log(min_angle);
             let comp_hsvH = min_angle;
@@ -314,9 +314,9 @@ function rgb2hsv(rgb,array_size){
             else if(b == Vmax) h = (r - g) / (Vmax - Vmin) * (Math.PI/3) + 4 * Math.PI / 3;
         }
         //Hを0~2πの間に収める
-        if(h < 0) h = (h + 2 * Math.PI);
-        else if(h > 2 * Math.PI) h = (h - 2 * Math.PI)/(2 * Math.PI) * 360;
-        h /= (2 * Math.PI) * 360;
+        if(h < 0) h += 2 * Math.PI;
+        else if(h > 2 * Math.PI) h -= 2 * Math.PI;
+        h = h / (2 * Math.PI) * 360;
 
         hsvS[i / 4][0] = Math.round(h);
         hsvS[i / 4][1] = Math.round(s);
