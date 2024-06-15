@@ -267,10 +267,13 @@ function rgb2hsv(rgb,array_size){
     for(var i = 0;i < rgb.length;i = i + 4){
         let Vmax,Vmin;
 
+        console.log(rgb[i]);
         if(rgb[i] == undefined) r = 0;
         else r = rgb[i] / 255;
+        console.log(rgb[i + 1]);
         if(rgb[i + 1] == undefined) g = 0
         else g = rgb[i + 1] / 255;
+        console.log(rgb[i + 2]);
         if(rgb[i + 2] == undefined) b = 0;
         else b = rgb[i + 2] / 255;
         
@@ -297,7 +300,6 @@ function rgb2hsv(rgb,array_size){
         hsvS[i / 4][0] = Math.round(h);
         hsvS[i / 4][1] = Math.round(s);
         hsvS[i / 4][2] = Math.round(v);
-        console.log(h,s,v);
     }        
     return hsvS;
 }
