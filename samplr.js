@@ -173,7 +173,7 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
     
     //色格納
     let output_data = [...img_data.data];//rgbInArray(img_data);
-    console.dir({...output_data});
+    console.dir(output_data);
     //配列初期化
     let hsvS = [...Array(width * height)].map(k=>[...Array(3)].map(k=>0));
     hsvS = rgb2hsv(img_data, width * height);
