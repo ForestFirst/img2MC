@@ -168,7 +168,6 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
     const h_mag = 2;
 
     let color_csv = loadCSVFile(angle);
-    console.log({...color_csv});
     let width = img_data.width;
     let height = img_data.height;
     
