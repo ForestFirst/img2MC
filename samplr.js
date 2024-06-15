@@ -172,8 +172,6 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
     const height = img_data.height;
     const color_csv = loadCSVFile();//csvファイル
     const hsvS = rgb2hsv(img_data.data, width * height);//画像のHSV
-    console.log(color_csv);
-    console.log(hsvS);
     
     //画像の色コピー
     let output_data = [...img_data.data];//rgbInArray(img_data);
@@ -192,9 +190,7 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
             for(var i = 0;i < scope; i++){
                 //let csv_index = comp_hsvH;
                 //console.log(comp_hsvH);
-                // console.log(color_csv[0]);
-                // console.log(comp_hsvH);
-                //console.log(color_csv[0][comp_hsvH]);
+                console.log(color_csv[0],color_csv[0][comp_hsvH],color_csv[0][comp_hsvH][0]);
                 if(color_csv[0][comp_hsvH][0] > -1){
                     console.log("v");
                     let H_diff = Math.abs(hsvS[img_index][0] - color_csv[0][comp_hsvH][0]) * h_mag;
@@ -206,6 +202,7 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
                 comp_hsvH = min_angle + i;
                 if(comp_hsvH >= angle) comp_hsvH = 0;
             }
+            console.log(diff_value);
 
             let tmp_comp_num = diff_value[0];
             let comp_num = min_angle;
@@ -392,7 +389,6 @@ function loadCSVFile(){
             }
         }
     }
-    console.log(csv_array);
     return csv_array;
 }
 
