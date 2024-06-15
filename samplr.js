@@ -173,17 +173,16 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
     
     //色格納
     let output_data = [...img_data.data];//rgbInArray(img_data);
-    console.log(output_data);
 
     //配列初期化
     let hsvS = [...Array(width * height)].map(k=>[...Array(3)].map(k=>0));
     hsvS = rgb2hsv(img_data, width * height);
-    console.log(hsvS);
     //色比較
     for(var y = 0;y < height;y++){
         for(var x = 0;x < width;x++){
             let index = (x + y * width) * 4;
             let comp_value = [...Array(scope)].map(k=>10000);
+            console.log(comp_value);
             let min_angle;
             let max_angle;
             
@@ -201,6 +200,7 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
                 comp_value[i] = Math.abs(hsvS[index / 4][0] - color_csv[0][comp_hsvH][0]) * h_mag 
                 + Math.abs(hsvS[index / 4][1] - color_csv[0][comp_hsvH][1])
                 + Math.abs(hsvS[index / 4][2] - color_csv[0][comp_hsvH][2]);
+                console.log({...comp_value[i]});
                 i++;
                 comp_hsvH++;
                 if(comp_hsvH == angle) comp_hsvH = 0;
@@ -267,13 +267,10 @@ function rgb2hsv(rgb,array_size){
     for(var i = 0;i < rgb.length;i = i + 4){
         let Vmax,Vmin;
 
-        console.log(rgb[i]);
         if(rgb[i] == undefined) r = 0;
         else r = rgb[i] / 255;
-        console.log(rgb[i + 1]);
         if(rgb[i + 1] == undefined) g = 0
         else g = rgb[i + 1] / 255;
-        console.log(rgb[i + 2]);
         if(rgb[i + 2] == undefined) b = 0;
         else b = rgb[i + 2] / 255;
         
