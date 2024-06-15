@@ -369,7 +369,6 @@ csv_array[i][1] = {r,g,b}
 */
 function loadCSVFile(){
     let csv = new XMLHttpRequest();
-    var csv_array = [...Array(2)].map(k=>[...Array(360)].map(k=>[...Array(3)].map(k=>-1)));
     
     csv.open("get", "./BlocksColor.csv",true);
     csv.withCredentials = true;
@@ -377,24 +376,24 @@ function loadCSVFile(){
     
     csv.onload = function(){
         if(csv.status == 200){
-            //格納
+            let csv_array = [...Array(2)].map(k=>[...Array(360)].map(k=>[...Array(3)].map(k=>-1)));
             let tmp_array = (csv.responseText).split("\n");
             for(var i = 1;i < tmp_array.length - 1;i++){
                 let hsv_array = tmp_array[i].split(',').slice(7,10);
                 let rgb_array = tmp_array[i].split(',').slice(1,4);
                 csv_array[0][hsv_array[0]] = hsv_array.map( str => parseInt(str, 10));
-                console.log(csv_array[0][hsv_array[0]]);
                 //csv_array[0][hsv_array[0]] = [parseInt(hsv_array[0]),parseInt(hsv_array[1]),parseInt(hsv_array[2])];
                 csv_array[1][rgb_array[0]] = rgb_array.map( str => parseInt(str, 10));
-                console.log(csv_array[1][rgb_array[0]]);
                 //csv_array[1][hsv_array[0]] = [parseInt(rgb_array[0]),parseInt(rgb_array[1]),parseInt(rgb_array[2])];
             }
+            return csv_array;
         }
         else{
-            console.log("ファイルエラー");
+            //終了
+            throw new Error("ファイルエラー");  
         }
     }
-    return csv_array;
+    
 }
 
 async function filesave(str,filecount,folder){
