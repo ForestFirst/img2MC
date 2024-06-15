@@ -369,22 +369,23 @@ csv_array[i][1] = {r,g,b}
 */
 function loadCSVFile(){
     let csv = new XMLHttpRequest();
-    var csv_array = [...Array(2)].map(k=>[...Array(360)].map(k=>[...Array(3)].map(k=>-1)));
+    let csv_array = [...Array(2)].map(k=>[...Array(360)].map(k=>[...Array(3)].map(k=>-1)));
     csv.open("get", "./BlocksColor.csv",true);
     csv.withCredentials = true;
     csv.send();
     
     let str = csv.responseText;
+    console.dir(str);
     let tmp_array = str.split("\n");
+    console.dir(tmp_array);
     for(var i = 1;i < tmp_array.length - 1;i++){
         let hsv_array = tmp_array[i].split(',').slice(7,10);
         let rgb_array = tmp_array[i].split(',').slice(1,4);
+        console.dir(hsv_array,rgb_array);
         //csv_array[0][hsv_array[0]] = hsv_array.map( str => parseInt(str, 10));
         csv_array[0][hsv_array[0]] = [parseInt(hsv_array[0]),parseInt(hsv_array[1]),parseInt(hsv_array[2])];
-        console.log(csv_array[0][hsv_array[0]]);
         //csv_array[1][rgb_array[0]] = rgb_array.map( str => parseInt(str, 10));
         csv_array[1][rgb_array[0]] = [parseInt(rgb_array[0]),parseInt(rgb_array[1]),parseInt(rgb_array[2])];
-        console.log(csv_array[1][rgb_array[0]]);
     }
     console.log(csv_array);
     return csv_array;
