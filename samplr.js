@@ -192,6 +192,7 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
                 //let csv_index = comp_hsvH;
                 //console.log(comp_hsvH);
                 console.log(color_csv[0]);
+                console.log(comp_hsvH);
                 console.log(color_csv[0][comp_hsvH]);
                 console.log(color_csv[0][comp_hsvH][0]);
                 if(color_csv[0][comp_hsvH][0] > -1){
