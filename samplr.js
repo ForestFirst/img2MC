@@ -380,8 +380,10 @@ function loadCSVFile(){
             let hsv_array = tmp_array[i].split(',').slice(7,10);
             let rgb_array = tmp_array[i].split(',').slice(1,4);
             csv_array[0][hsv_array[0]] = hsv_array.map( str => parseInt(str, 10));
+            console.log(csv_array[0][hsv_array[0]]);
             //csv_array[0][hsv_array[0]] = [parseInt(hsv_array[0]),parseInt(hsv_array[1]),parseInt(hsv_array[2])];
             csv_array[1][rgb_array[0]] = rgb_array.map( str => parseInt(str, 10));
+            console.log(csv_array[1][rgb_array[0]]);
             //csv_array[1][hsv_array[0]] = [parseInt(rgb_array[0]),parseInt(rgb_array[1]),parseInt(rgb_array[2])];
         }
     }
