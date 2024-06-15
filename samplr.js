@@ -174,7 +174,7 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
     
     //色格納
     let output_data = [...img_data.data];//rgbInArray(img_data);
-    console.log({...output_data});
+    console.log(img_data.data);
     //配列初期化
     let hsvS = [...Array(width * height)].map(k=>[...Array(3)].map(k=>0));
     hsvS = rgb2hsv(img_data, width * height);
@@ -249,7 +249,6 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
         }
     }
 
-    console.log({...output_data});
     //画像化
     for (var i = 0;i < img_data.data.length;i++) {
         processed_data.data[i] = output_data[i];
