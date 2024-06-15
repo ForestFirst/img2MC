@@ -297,8 +297,8 @@ function rgb2hsv(rgb,array_size){
         hsvS[i / 4][0] = Math.round(h);
         hsvS[i / 4][1] = Math.round(s);
         hsvS[i / 4][2] = Math.round(v);
+        console.log(h,s,v);
     }        
-    console.log(hsvS);
     return hsvS;
 }
 
