@@ -371,7 +371,7 @@ function loadCSVFile(){
     let csv = new XMLHttpRequest();
     let csv_array = [...Array(2)].map(k=>[...Array(360)].map(k=>[...Array(3)].map(k=>-1)));
     csv.open("get", "./BlocksColor.csv",true);
-    csv.send();
+    csv.send(null);
     
     let str = csv.responseText;
     console.dir(str);
