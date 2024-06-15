@@ -168,12 +168,13 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
     const h_mag = 2;
 
     let color_csv = loadCSVFile(angle);
+    console.log({...color_csv});
     let width = img_data.width;
     let height = img_data.height;
     
     //色格納
     let output_data = [...img_data.data];//rgbInArray(img_data);
-
+    console.log({...output_data});
     //配列初期化
     let hsvS = [...Array(width * height)].map(k=>[...Array(3)].map(k=>0));
     hsvS = rgb2hsv(img_data, width * height);
@@ -182,7 +183,7 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
         for(var x = 0;x < width;x++){
             let index = (x + y * width) * 4;
             let comp_value = [...Array(scope)].map(k=>10000);
-            console.log(comp_value);
+            console.log({...comp_value});
             let min_angle;
             let max_angle;
             
@@ -200,7 +201,6 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
                 comp_value[i] = Math.abs(hsvS[index / 4][0] - color_csv[0][comp_hsvH][0]) * h_mag 
                 + Math.abs(hsvS[index / 4][1] - color_csv[0][comp_hsvH][1])
                 + Math.abs(hsvS[index / 4][2] - color_csv[0][comp_hsvH][2]);
-                console.log({...comp_value[i]});
                 i++;
                 comp_hsvH++;
                 if(comp_hsvH == angle) comp_hsvH = 0;
