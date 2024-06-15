@@ -195,7 +195,6 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
                 // console.log(color_csv[0]);
                 // console.log(comp_hsvH);
                 //console.log(color_csv[0][comp_hsvH]);
-                console.log(comp_hsvH,color_csv[0][comp_hsvH][0]);
                 if(color_csv[0][comp_hsvH][0] > -1){
                     console.log("v");
                     let H_diff = Math.abs(hsvS[img_index][0] - color_csv[0][comp_hsvH][0]) * h_mag;
