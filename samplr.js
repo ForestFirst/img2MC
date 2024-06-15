@@ -374,7 +374,8 @@ function loadCSVFile(){
     csv.withCredentials = true;
     csv.send();
     
-    let tmp_array = (csv.responseText).split("\n");
+    let str = csv.responseText;
+    let tmp_array = str.split("\n");
     for(var i = 1;i < tmp_array.length - 1;i++){
         let hsv_array = tmp_array[i].split(',').slice(7,10);
         let rgb_array = tmp_array[i].split(',').slice(1,4);
@@ -385,6 +386,7 @@ function loadCSVFile(){
         console.log(csv_array[1][rgb_array[0]]);
         //csv_array[1][hsv_array[0]] = [parseInt(rgb_array[0]),parseInt(rgb_array[1]),parseInt(rgb_array[2])];
     }
+    console.log(csv_array);
     return csv_array;
 }
 
