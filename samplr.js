@@ -173,23 +173,21 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
     const color_csv = loadCSVFile(angle);//csvファイル
     const hsvS = rgb2hsv(img_data, width * height);//画像のHSV
     
-    //色格納
+    //画像の色コピー
     let output_data = [...img_data.data];//rgbInArray(img_data);
+    
     //色比較
     for(var y = 0;y < height;y++){
         for(var x = 0;x < width;x++){
-            let index = (x + y * width) * 4;
+            const index = (x + y * width) * 4;
             let diff_value = [...Array(scope)].map(k=>0);
             
             //比較範囲計算
-            let min_angle = hsvS[index / 4][0] - (scope / 2);
-            if(min_angle < 0) min_angle += angle;
-            let max_angle = hsvS[index / 4][0] + (scope / 2);
-            if(max_angle >= angle) max_angle -= angle;
-
+            const min_angle = minAngleCalculate(hsvS[index / 4][0],scope,angle);
+            const max_angle = maxAngleCalculate(hsvS[index / 4][0],scope,angle);
             //比較
             let comp_hsvH = min_angle;
-            let img_index = x + y * width;
+            const img_index = x + y * width;
             for(var i = 0;i < scope; i++){
                 //let csv_index = comp_hsvH;
                 //console.log(comp_hsvH);
@@ -256,6 +254,26 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
         processed_data.data[i] = output_data[i];
     }
     return processed_data;
+}
+
+/*
+minAngle計算
+*/
+function minAngleCalculate(hsvS,scope,angle){
+    let min_angle;
+    hsvS - (scope / 2);
+    if(min_angle < 0) min_angle += angle;
+    return min_angle;
+}
+
+/*
+maxAngle計算
+*/
+function maxAngleCalculate(hsvS,scope,angle){
+    let max_angle;
+    hsvS - (scope / 2);
+    if(max_angle < 0) max_angle += angle;
+    return max_angle;
 }
 
 /*
