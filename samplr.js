@@ -169,9 +169,10 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
     const s_mag = 1;
     const v_mag = 1;
     const width = img_data.width;
-    const height = img_data.height;
-    const color_csv = loadCSVFile();//csvファイル
+    const height = img_data.height;    
     const hsvS = rgb2hsv(img_data.data, width * height);//画像のHSV
+    const color_csv = loadCSVFile();//csvファイル
+
     
     //画像の色コピー
     let output_data = [...img_data.data];//rgbInArray(img_data);
@@ -372,8 +373,7 @@ csv_array[i][1] = {r,g,b}
 function loadCSVFile(){
     let csv = new XMLHttpRequest();
     let array = [...Array(2)].map(k=>[...Array(360)].map(k=>[...Array(3)].map(k=>-100)));
-    csv.open("get", "BlocksColor.csv",false);
-    csv.send(null);
+    csv.open("get", "BlocksColor.csv",true);
     csv.onload = function(e){
         if (csv.readyState === 4){
             if(csv.status === 200){
@@ -391,11 +391,14 @@ function loadCSVFile(){
                     array[1][rgb_array[0]] = rgb_array.map(k => ({...rgb_array}));;
                     //array[1][rgb_array[0]] = [parseInt(rgb_array[0]),parseInt(rgb_array[1]),parseInt(rgb_array[2])];
                 }
+
+
             }else{
                 console.error(csv.statusText);
             }
         }
     }
+    csv.send(null);
     return array;
 }
 
