@@ -216,7 +216,7 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
             let error = [];
             console.dir(comp_num);
             for(var i = 0;i < 3;i++){
-                error[i] = color_csv[1][comp_num][i] - output_data[comp_num * 4 + i];
+                error[i] = color_csv[1][comp_num][i] - output_data[index + i];
                 output_data[index + i] = color_csv[1][comp_num][i];
             }
 
