@@ -177,8 +177,8 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
     let output_data = [...img_data.data];//rgbInArray(img_data);
     console.log(color_csv);
     console.log(color_csv[0]);
-    for(var i = 0;i < color_csv[0];i++){
-        console.log(color_csv[0][i]);        
+    for(var i = 0;i < color_csv[0].length;i++){
+        console.log(color_csv[0][i]);
     }
 
     //色比較
