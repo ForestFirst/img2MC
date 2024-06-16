@@ -172,6 +172,7 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
     const height = img_data.height;    
     const hsvS = rgb2hsv(img_data.data, width * height);//画像のHSV
     const color_csv = loadCSVFile();//csvファイル
+    const labs = init_rgb2lab();
     let output_data = [...img_data.data];//画像の色コピー
 
 
