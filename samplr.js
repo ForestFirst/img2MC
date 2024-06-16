@@ -213,7 +213,7 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
 
             //誤差（rgbそれぞれで算出）
             let error = new Array(3);
-            console.dir(comp_num,color_csv[1][comp_num]);
+            console.log(comp_num,color_csv[1][comp_num]);
             for(var i = 0;i < 3;i++){
                 error[i] =  output_data[index + i] - color_csv[1][comp_num][i];
                 
@@ -406,7 +406,7 @@ function loadCSVFile(){
         let rgb_array = Array.from(tmp_array[i].split(',').slice(1,4), str => parseInt(str, 10));
         array[0][hsv_array[0]] = hsv_array;
         //array[0][hsv_array[0]] = [parseInt(hsv_array[0]),parseInt(hsv_array[1]),parseInt(hsv_array[2])];
-        array[1][rgb_array[0]] = rgb_array;
+        array[1][hsv_array[0]] = rgb_array;
         //array[1][rgb_array[0]] = [parseInt(rgb_array[0]),parseInt(rgb_array[1]),parseInt(rgb_array[2])];
     }
     
