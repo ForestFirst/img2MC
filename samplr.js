@@ -172,15 +172,7 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
     const height = img_data.height;    
     const hsvS = rgb2hsv(img_data.data, width * height);//画像のHSV
     const color_csv = loadCSVFile();//csvファイル
-
-    
-    //画像の色コピー
-    let output_data = [...img_data.data];//rgbInArray(img_data);
-    console.log(color_csv);
-    console.log(color_csv[0]);
-    for(var i = 0;i < angle;i++){
-        console.log(i,color_csv[0][i]);
-    }
+    let output_data = [...img_data.data];//画像の色コピー
 
     //色比較
     for(var y = 0;y < height;y++){
@@ -198,7 +190,7 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
                 //console.log(comp_hsvH);
                 //console.log(comp_hsvH,color_csv[0][comp_hsvH][0]);
                 if(color_csv[0][comp_hsvH][0] > -1){
-                    console.log("v");
+                    console.log(comp_hsvH,"v");
                     let H_diff = Math.abs(hsvS[img_index][0] - color_csv[0][comp_hsvH][0]) * h_mag;
                     let S_diff = Math.abs(hsvS[img_index][1] - color_csv[0][comp_hsvH][1]) * s_mag;
                     let V_diff = Math.abs(hsvS[img_index][2] - color_csv[0][comp_hsvH][2]) * v_mag;
@@ -214,7 +206,7 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
             let comp_num = min_angle;
             for(var i = 1;i < scope;i++){
                 if(tmp_comp_num > diff_value[i]){
-                    console.log("g");
+                    console.log(comp_hsvH,"g");
                     tmp_comp_num = diff_value[i];
                     comp_num = i + min_angle;
                 }
