@@ -257,7 +257,7 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
                     labS[(x - 1) + (y + 1) * width][i] += (error[i] * 2.8) / 16 | 0;
                 }
                 //下
-                if(i < height -1){
+                if(y < height -1){
                     labS[x + (y + 1) * width][i] += (error[i] * 5) / 16 | 0;
                 }
                 //右下
