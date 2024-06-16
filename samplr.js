@@ -177,7 +177,10 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
     let output_data = [...img_data.data];//rgbInArray(img_data);
     console.log(color_csv);
     console.log(color_csv[0]);
-    console.log({...color_csv[0]});
+    for(var i = 0;i < color_csv[0];i++){
+        console.log(color_csv[0][i]);        
+    }
+
     //色比較
     for(var y = 0;y < height;y++){
         for(var x = 0;x < width;x++){
@@ -368,7 +371,7 @@ csv_array[i][1] = {r,g,b}
 */
 function loadCSVFile(){
     let csv = new XMLHttpRequest();
-    var csv_array = [...Array(2)].map(k=>[...Array(360)].map(k=>[...Array(3)].map(k=>-100)));
+    let csv_array = [...Array(2)].map(k=>[...Array(360)].map(k=>[...Array(3)].map(k=>-100)));
     csv.open("get", "BlocksColor.csv",true);
     csv.send(null);
     csv.onload = function(e){
