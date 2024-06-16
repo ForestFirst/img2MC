@@ -374,6 +374,7 @@ function loadCSVFile(){
     let csv = new XMLHttpRequest();
     let array = [...Array(2)].map(k=>[...Array(360)].map(k=>[...Array(3)].map(k=>-100)));
     csv.open("get", "BlocksColor.csv",false);
+    csv.send(null);
     /*
     csv.onload = function(e){
         if (csv.readyState === 4){
@@ -414,7 +415,7 @@ function loadCSVFile(){
         array[1][rgb_array[0]] = rgb_array.map(k => ({...rgb_array}));;
         //array[1][rgb_array[0]] = [parseInt(rgb_array[0]),parseInt(rgb_array[1]),parseInt(rgb_array[2])];
     }
-    csv.send(null);
+    
     return array;
 }
 
