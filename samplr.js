@@ -191,10 +191,26 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
                 //console.log(comp_hsvH,color_csv[0][comp_hsvH][0]);
                 if(color_csv[0][comp_hsvH][0] > -1){
                     //console.log(comp_hsvH,"v");
+                    //元の計算式(hsv)
+                    /*
                     let H_diff = Math.abs(hsvS[img_index][0] - color_csv[0][comp_hsvH][0]) * h_mag;
                     let S_diff = Math.abs(hsvS[img_index][1] - color_csv[0][comp_hsvH][1]) * s_mag;
                     let V_diff = Math.abs(hsvS[img_index][2] - color_csv[0][comp_hsvH][2]) * v_mag;
                     diff_value[i] = H_diff + S_diff + V_diff;
+                    */
+                    
+                    //ユークリッド(rgb)
+                    let R_diff = Math.pow(output_data[img_index] - color_csv[1][comp_hsvH][0],2);
+                    let G_diff = Math.pow(output_data[img_index + 1] - color_csv[1][comp_hsvH][1],2);
+                    let B_diff = Math.pow(output_data[img_index + 2] - color_csv[1][comp_hsvH][2],2);
+                    let bar_R = (output_data[img_index] + color_csv[1][comp_hsvH][0]) / 2;
+                    if(bar_R < 128){
+                        diff_value[i] = Math.sqrt(2*R_diff + 4*G_diff + 3*B_diff);
+                    }
+                    else{
+                        diff_value[i] = Math.sqrt(3*R_diff + 4*G_diff + 2*B_diff);
+                    }
+
                 }
                 comp_hsvH++;
                 if(comp_hsvH >= angle) comp_hsvH = 0;
@@ -275,6 +291,45 @@ function angleSet(num,angle){
     if(num >= 360) num -= angle;
     if(num < 0) num += angle;
     return num;
+}
+
+/*
+rgbからlabに変換
+*/
+function rgbToLab(r,g,b) {
+    var r = r / 255;
+    var g = g / 255;
+    var b = b / 255;
+
+    r = r > 0.04045 ? Math.pow(((r + 0.055) / 1.055), 2.4) : (r / 12.92);
+    g = g > 0.04045 ? Math.pow(((g + 0.055) / 1.055), 2.4) : (g / 12.92);
+    b = b > 0.04045 ? Math.pow(((b + 0.055) / 1.055), 2.4) : (b / 12.92);
+
+    var x = (r * 0.4124) + (g * 0.3576) + (b * 0.1805);
+    var y = (r * 0.2126) + (g * 0.7152) + (b * 0.0722);
+    var z = (r * 0.0193) + (g * 0.1192) + (b * 0.9505);
+
+    var L;
+    var a;
+    var b;
+
+    x *= 100;
+    y *= 100;
+    z *= 100;
+
+    x /= 95.047;
+    y /= 100;
+    z /= 108.883;
+
+    x = x > 0.008856 ? Math.pow(x, 1 / 3) : (7.787 * x) + (4 / 29);
+    y = y > 0.008856 ? Math.pow(y, 1 / 3) : (7.787 * y) + (4 / 29);
+    z = z > 0.008856 ? Math.pow(z, 1 / 3) : (7.787 * z) + (4 / 29);
+
+    L = (116 * y) - 16;
+    a = 500 * (x - y);
+    b = 200 * (y - z);
+
+    return [L, a, b];
 }
 
 /*
