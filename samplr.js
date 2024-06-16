@@ -175,7 +175,7 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
     
     //画像の色コピー
     let output_data = [...img_data.data];//rgbInArray(img_data);
-    
+    console.log(color_csv);
     //色比較
     for(var y = 0;y < height;y++){
         for(var x = 0;x < width;x++){
@@ -183,7 +183,7 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
             let diff_value = [...Array(scope)].map(k=>0);
             //比較範囲計算
             const min_angle = minAngleCalculate(hsvS[index / 4][0],scope,angle);
-            const max_angle = min_angle + scope;
+            const max_angle = maxAngleCalculate(hsvS[index / 4][0],scope,angle);
             //比較
             let comp_hsvH = min_angle;
             const img_index = x + y * width;
@@ -202,6 +202,7 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
                 comp_hsvH = min_angle + i;
                 if(comp_hsvH >= angle) comp_hsvH = 0;
             }
+
 
             let tmp_comp_num = diff_value[0];
             let comp_num = min_angle;
@@ -270,8 +271,8 @@ maxAngle計算
 */
 function maxAngleCalculate(hsvS,scope,angle){
     let max_angle;
-    max_angle = hsvS - (scope / 2);
-    if(max_angle < 0) max_angle += angle;
+    max_angle = hsvS + (scope / 2);
+    if(max_angle < 0) max_angle -= angle;
     return max_angle;
 }
 
