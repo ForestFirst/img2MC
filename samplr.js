@@ -178,7 +178,7 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
     for(var y = 0;y < height;y++){
         for(var x = 0;x < width;x++){
             const index = (x + y * width) * 4;
-            let diff_value = [...Array(scope)].map(k=>0);
+            let diff_value = [...Array(scope)].map(k=>10000);
             //比較範囲計算
             const min_angle = minAngleCalculate(hsvS[index / 4][0],scope,angle);
             const max_angle = maxAngleCalculate(hsvS[index / 4][0],scope,angle);
@@ -196,7 +196,6 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
                     let V_diff = Math.abs(hsvS[img_index][2] - color_csv[0][comp_hsvH][2]) * v_mag;
                     diff_value[i] = H_diff + S_diff + V_diff;
                 }
-                else diff_value[i] = 10000;
                 comp_hsvH++;
                 if(comp_hsvH >= angle) comp_hsvH = 0;
             }
@@ -214,9 +213,10 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
 
             //誤差（rgbそれぞれで算出）
             let error = new Array(3);
-            console.dir(comp_num);
+            console.dir(comp_num,color_csv[1][comp_num]);
             for(var i = 0;i < 3;i++){
-                error[i] = color_csv[1][comp_num][i] - output_data[index + i];
+                error[i] =  output_data[index + i] - color_csv[1][comp_num][i];
+                
                 output_data[index + i] = color_csv[1][comp_num][i];
             }
             output_data[index + 3] = 255;
@@ -225,7 +225,7 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
             for(var i = 0;i < 3; i++){
                 //右
                 if(x < width - 1){
-                    output_data[((x + 1) + y * width)*4 + i] += (error[i] * 5) / 16 | 0;                        
+                    output_data[((x + 1) + y * width) * 4 + i] += (error[i] * 5) / 16 | 0;                        
                 }
                 //左下
                 if(x > 0){
