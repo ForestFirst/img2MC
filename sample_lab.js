@@ -240,9 +240,9 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
             //誤差（rgbそれぞれで算出）
             let error = new Array(3);
             for(var i = 0;i < 3;i++){
-                error[i] = labS[index + i] - color_csv[2][comp_num][i];
+                error[i] = labS[img_index][i] - color_csv[2][comp_num][i];
                 
-                labS[index + i] = color_csv[2][comp_num][i];
+                labS[img_index][i] = color_csv[2][comp_num][i];
             }
             output_data[index + 3] = 255;
 
@@ -271,7 +271,7 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
     //画像化 
 
     for (var i = 0;i < img_data.data.length;i+=4) { 
-        let rgb = lab.rgb(labS[i / 4][0],labS[i / 4][1],labS[i / 4][2]);
+        let rgb = lab2rgb(labS[i / 4][0],labS[i / 4][1],labS[i / 4][2]);
         for (var j = 0;j < 3;j++) {
             processed_data.data[i + j] = rgb[i / 4 + j];
         }
@@ -355,6 +355,41 @@ function rgb2lab(rgb) {
     b = 200 * (y - z);
 
     return [L, a, b];
+}
+
+/*
+labからrgbに変換
+*/
+function lab2rgb(lab) {
+    l = rgb[0];
+    a = rgb[1];
+    b = rgb[2];
+
+    const y = (l + 16) / 116;
+    const x = y + a / 500;
+    const z = y - b / 200;
+    
+    x > 0.206897 ? Math.pow(x , 3) : (x - 0.206897) / 7.787037;
+    y > 0.206897 ? Math.pow(y , 3) : (y - 0.206897) / 7.787037;
+    z > 0.206897 ? Math.pow(z , 3) : (z - 0.206897) / 7.787037;
+
+    x *= 95.047;
+    y *= 100;
+    z *= 108.883;
+
+    x /= 100;
+    y /= 100;
+    z /= 100;
+
+    r = 3.240970 * x - 1.537383 * y - 0.498611 * z;
+    g = 0.969244 * x + 1.875968 * y + 0.041555 * z;
+    b = 0.055630 * x - 0.203977 * y + 1.056972 * z;
+
+    r *= 255;
+    g *= 255;
+    b *= 255;
+
+    return [r, g, b];
 }
 
 /*
