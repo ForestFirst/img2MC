@@ -206,11 +206,12 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
             let comp_num = min_angle;
             for(var i = 1;i < scope;i++){
                 if(tmp_comp_num > diff_value[i]){
-                    console.log(comp_hsvH,"g");
+                    console.log(comp_num,"g");
                     tmp_comp_num = diff_value[i];
                     comp_num = i + min_angle;
                 }
             }
+            comp_num = angleSet(comp_num,angle);
 
             //誤差（rgbそれぞれで算出）
             let error = [];
@@ -270,8 +271,16 @@ maxAngle計算
 function maxAngleCalculate(hsvS,scope,angle){
     let max_angle;
     max_angle = hsvS + (scope / 2);
-    if(max_angle < 0) max_angle -= angle;
+    if(max_angle >= 360) max_angle -= angle;
     return max_angle;
+}
+/*
+0 ~ 359に正規化
+*/
+function angleSet(num,angle){
+    if(num >= 360) num -= angle;
+    if(num < 0) num += angle;
+    return num;
 }
 
 /*
