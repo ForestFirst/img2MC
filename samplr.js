@@ -391,7 +391,7 @@ function loadCSVFile(){
                     array[1][rgb_array[0]] = rgb_array.map(k => ({...rgb_array}));;
                     //array[1][rgb_array[0]] = [parseInt(rgb_array[0]),parseInt(rgb_array[1]),parseInt(rgb_array[2])];
                 }
-
+                return array;
 
             }else{
                 console.error(csv.statusText);
@@ -399,7 +399,6 @@ function loadCSVFile(){
         }
     }
     csv.send(null);
-    return array;
 }
 
 async function filesave(str,filecount,folder){
