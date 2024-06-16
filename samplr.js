@@ -366,7 +366,7 @@ csv_array[i][1] = {r,g,b}
 */
 function loadCSVFile(){
     let csv = new XMLHttpRequest();
-    var csv_array = [...Array(2)].map(k=>[...Array(360)].map(k=>[...Array(3)].map(k=>-1)));
+    var csv_array = [...Array(2)].map(k=>[...Array(360)].map(k=>[...Array(3)].map(k=>-100)));
     csv.open("get", "BlocksColor.csv",true);
     csv.send(null);
     csv.onload = function(e){
