@@ -407,12 +407,10 @@ function loadCSVFile(){
     let tmp_array = str.split("\n");
     for(var i = 1;i < tmp_array.length - 1;i++){
         let hsv_array = Array.from(tmp_array[i].split(',').slice(7,10), str => parseInt(str, 10));
-        console.log(hsv_array,isNaN(hsv_array));
         let rgb_array = Array.from(tmp_array[i].split(',').slice(1,4), str => parseInt(str, 10));
-        console.log(rgb_array,isNaN(rgb_array));
-        array[0][hsv_array[0]] = hsv_array.map(k => ({...hsv_array}));
+        array[0][hsv_array[0]] = hsv_array;
         //array[0][hsv_array[0]] = [parseInt(hsv_array[0]),parseInt(hsv_array[1]),parseInt(hsv_array[2])];
-        array[1][rgb_array[0]] = rgb_array.map(k => ({...rgb_array}));;
+        array[1][rgb_array[0]] = rgb_array;
         //array[1][rgb_array[0]] = [parseInt(rgb_array[0]),parseInt(rgb_array[1]),parseInt(rgb_array[2])];
     }
     
