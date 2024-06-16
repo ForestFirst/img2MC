@@ -199,7 +199,7 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
                     diff_value[i] = H_diff + S_diff + V_diff;
                 }
                 else diff_value[i] = 10000;
-                comp_hsvH = min_angle + i;
+                comp_hsvH++;
                 if(comp_hsvH >= angle) comp_hsvH = 0;
             }
 
