@@ -165,7 +165,7 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
 
     const angle = 360;
     const scope = 90;
-    const h_mag = 1.2;
+    const h_mag = 2;
     const s_mag = 1;
     const v_mag = 1;
     const width = img_data.width;
@@ -213,7 +213,6 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
 
             //誤差（rgbそれぞれで算出）
             let error = new Array(3);
-            console.log(comp_num,color_csv[1][comp_num]);
             for(var i = 0;i < 3;i++){
                 error[i] =  output_data[index + i] - color_csv[1][comp_num][i];
                 
