@@ -373,7 +373,8 @@ csv_array[i][1] = {r,g,b}
 function loadCSVFile(){
     let csv = new XMLHttpRequest();
     let array = [...Array(2)].map(k=>[...Array(360)].map(k=>[...Array(3)].map(k=>-100)));
-    csv.open("get", "BlocksColor.csv",true);
+    csv.open("get", "BlocksColor.csv",false);
+    /*
     csv.onload = function(e){
         if (csv.readyState === 4){
             if(csv.status === 200){
@@ -391,14 +392,30 @@ function loadCSVFile(){
                     array[1][rgb_array[0]] = rgb_array.map(k => ({...rgb_array}));;
                     //array[1][rgb_array[0]] = [parseInt(rgb_array[0]),parseInt(rgb_array[1]),parseInt(rgb_array[2])];
                 }
-                return array;
+                
 
             }else{
                 console.error(csv.statusText);
             }
         }
     }
+    */
+    console.log("ブロック色のファイルは読み込めました。");
+
+    let str = csv.responseText;
+    let tmp_array = str.split("\n");
+    for(var i = 1;i < tmp_array.length - 1;i++){
+        let hsv_array = Array.from(tmp_array[i].split(',').slice(7,10), str => parseInt(str, 10));
+        console.log(hsv_array,isNaN(hsv_array));
+        let rgb_array = Array.from(tmp_array[i].split(',').slice(1,4), str => parseInt(str, 10));
+        console.log(rgb_array,isNaN(rgb_array));
+        array[0][hsv_array[0]] = hsv_array.map(k => ({...hsv_array}));
+        //array[0][hsv_array[0]] = [parseInt(hsv_array[0]),parseInt(hsv_array[1]),parseInt(hsv_array[2])];
+        array[1][rgb_array[0]] = rgb_array.map(k => ({...rgb_array}));;
+        //array[1][rgb_array[0]] = [parseInt(rgb_array[0]),parseInt(rgb_array[1]),parseInt(rgb_array[2])];
+    }
     csv.send(null);
+    return array;
 }
 
 async function filesave(str,filecount,folder){
