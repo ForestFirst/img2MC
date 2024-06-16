@@ -371,7 +371,7 @@ csv_array[i][1] = {r,g,b}
 */
 function loadCSVFile(){
     let csv = new XMLHttpRequest();
-    let csv_array = [...Array(2)].map(k=>[...Array(360)].map(k=>[...Array(3)].map(k=>-100)));
+    let array = [...Array(2)].map(k=>[...Array(360)].map(k=>[...Array(3)].map(k=>-100)));
     csv.open("get", "BlocksColor.csv",true);
     csv.send(null);
     csv.onload = function(e){
@@ -382,19 +382,19 @@ function loadCSVFile(){
                 let str = csv.responseText;
                 let tmp_array = str.split("\n");
                 for(var i = 1;i < tmp_array.length - 1;i++){
-                    let hsv_array = tmp_array[i].split(',').slice(7,10);
-                    let rgb_array = tmp_array[i].split(',').slice(1,4);
-                    //csv_array[0][hsv_array[0]] = hsv_array.map( str => parseInt(str, 10));
-                    csv_array[0][hsv_array[0]] = [parseInt(hsv_array[0]),parseInt(hsv_array[1]),parseInt(hsv_array[2])];
-                    //csv_array[1][rgb_array[0]] = rgb_array.map( str => parseInt(str, 10));
-                    csv_array[1][rgb_array[0]] = [parseInt(rgb_array[0]),parseInt(rgb_array[1]),parseInt(rgb_array[2])];
+                    let hsv_array = Array.from(tmp_array[i].split(',').slice(7,10), str => parseInt(str, 10));
+                    let rgb_array = Array.from(tmp_array[i].split(',').slice(1,4), str => parseInt(str, 10));
+                    array[0][hsv_array[0]] = Array.from(hsv_array);
+                    //array[0][hsv_array[0]] = [parseInt(hsv_array[0]),parseInt(hsv_array[1]),parseInt(hsv_array[2])];
+                    array[1][rgb_array[0]] = Array.from(rgb_array);
+                    //array[1][rgb_array[0]] = [parseInt(rgb_array[0]),parseInt(rgb_array[1]),parseInt(rgb_array[2])];
                 }
             }else{
                 console.error(csv.statusText);
             }
         }
     }
-    return csv_array;
+    return array;
 }
 
 async function filesave(str,filecount,folder){
