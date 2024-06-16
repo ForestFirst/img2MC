@@ -174,6 +174,7 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
     const color_csv = loadCSVFile();//csvファイル
     let output_data = [...img_data.data];//画像の色コピー
 
+
     //色比較
     for(var y = 0;y < height;y++){
         for(var x = 0;x < width;x++){
@@ -200,6 +201,7 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
                     */
                     
                     //ユークリッド(rgb)
+                    /*
                     let R_diff = Math.pow(output_data[img_index] - color_csv[1][comp_hsvH][0],2);
                     let G_diff = Math.pow(output_data[img_index + 1] - color_csv[1][comp_hsvH][1],2);
                     let B_diff = Math.pow(output_data[img_index + 2] - color_csv[1][comp_hsvH][2],2);
@@ -210,6 +212,14 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
                     else{
                         diff_value[i] = Math.sqrt(3*R_diff + 4*G_diff + 2*B_diff);
                     }
+                    */
+
+                    //ユークリッド(lab)
+                    let labS = rgb2lab([output_data[img_index],output_data[img_index + 1],output_data[img_index + 2]])
+                    let L_diff = Math.pow(labS[0] - color_csv[2][comp_hsvH][0],2);
+                    let A_diff = Math.pow(labS[1] - color_csv[2][comp_hsvH][1],2);
+                    let B_diff = Math.pow(labS[2] - color_csv[2][comp_hsvH][2],2);
+                    diff_value[i] = Math.sqrt(L_diff + A_diff + B_diff);
 
                 }
                 comp_hsvH++;
@@ -296,10 +306,14 @@ function angleSet(num,angle){
 /*
 rgbからlabに変換
 */
-function rgbToLab(r,g,b) {
-    var r = r / 255;
-    var g = g / 255;
-    var b = b / 255;
+function rgb2lab(rgb) {
+    r = rgb[0];
+    g = rgb[1];
+    b = rgb[2];
+
+    r = r / 255;
+    g = g / 255;
+    b = b / 255;
 
     r = r > 0.04045 ? Math.pow(((r + 0.055) / 1.055), 2.4) : (r / 12.92);
     g = g > 0.04045 ? Math.pow(((g + 0.055) / 1.055), 2.4) : (g / 12.92);
@@ -422,7 +436,7 @@ csv_array[i][1] = {r,g,b}
 */
 function loadCSVFile(){
     let csv = new XMLHttpRequest();
-    let array = [...Array(2)].map(k=>[...Array(360)].map(k=>[...Array(3)].map(k=>-100)));
+    let array = [...Array(3)].map(k=>[...Array(360)].map(k=>[...Array(3)].map(k=>-100)));
     csv.open("get", "BlocksColor.csv",false);
     csv.send(null);
     /*
@@ -462,6 +476,7 @@ function loadCSVFile(){
         //array[0][hsv_array[0]] = [parseInt(hsv_array[0]),parseInt(hsv_array[1]),parseInt(hsv_array[2])];
         array[1][hsv_array[0]] = rgb_array;
         //array[1][rgb_array[0]] = [parseInt(rgb_array[0]),parseInt(rgb_array[1]),parseInt(rgb_array[2])];
+        array[2][hsv_array[0]] = rgb2lab(rgb_array);
     }
     
     return array;
