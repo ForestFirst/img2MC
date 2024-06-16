@@ -177,7 +177,7 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
     let output_data = [...img_data.data];//rgbInArray(img_data);
     console.log(color_csv);
     console.log(color_csv[0]);
-    for(var i = 0;i < color_csv[0].length;i++){
+    for(var i = 0;i < angle;i++){
         console.log(color_csv[0][i]);
     }
 
@@ -384,9 +384,9 @@ function loadCSVFile(){
                 for(var i = 1;i < tmp_array.length - 1;i++){
                     let hsv_array = Array.from(tmp_array[i].split(',').slice(7,10), str => parseInt(str, 10));
                     let rgb_array = Array.from(tmp_array[i].split(',').slice(1,4), str => parseInt(str, 10));
-                    array[0][hsv_array[0]] = Array.from(hsv_array);
+                    array[0][hsv_array[0]] = hsv_array.map(k => ({...hsv_array}));
                     //array[0][hsv_array[0]] = [parseInt(hsv_array[0]),parseInt(hsv_array[1]),parseInt(hsv_array[2])];
-                    array[1][rgb_array[0]] = Array.from(rgb_array);
+                    array[1][rgb_array[0]] = rgb_array.map(k => ({...rgb_array}));;
                     //array[1][rgb_array[0]] = [parseInt(rgb_array[0]),parseInt(rgb_array[1]),parseInt(rgb_array[2])];
                 }
             }else{
