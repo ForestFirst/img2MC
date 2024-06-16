@@ -164,7 +164,7 @@ function greyErrorDiffusion(img_data,imagecolors,processed_data,origin_xyz,zip,f
 function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
 
     const angle = 360;
-    const scope = 180;
+    const scope = 90;
     const h_mag = 2;
     const s_mag = 1;
     const v_mag = 1;
