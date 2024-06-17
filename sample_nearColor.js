@@ -232,10 +232,9 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
                 if(tmp_comp_num > diff_value[i]){
                     //console.log(comp_num,"g");
                     tmp_comp_num = diff_value[i];
-                    comp_num = i + min_angle;
+                    comp_num = angleSet(i + min_angle,angle);
                 }
             }
-            comp_num = angleSet(comp_num,angle);
             //一番近い色に置き換え
             /*
             for(var i = 0;i < 3; i++){
@@ -245,10 +244,15 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
 
             //誤差（rgbそれぞれで算出）
             if(output_data[index + 3] > 0){
-                let error = new Array(3);
+                let error = [...Array(3)].map(k=>0);
+                
+                let diff_max = Math.max(...color_csv[1][comp_num]);
                 for(var i = 0;i < 3;i++){
-                    error[i] =  output_data[index + i] - color_csv[1][comp_num][i];
+                    //error[i] =  output_data[index + i] - color_csv[1][comp_num][i];
                     
+                    //rgbで一番大きい誤差のみを採用
+                    if(diff_max == color_csv[1][comp_num][i]) error[i] = Math.max(...color_csv[1][comp_num]);
+
                     output_data[index + i] = color_csv[1][comp_num][i];
                 }
 
@@ -267,7 +271,7 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
                         output_data[(x + (y + 1) * width)*4 + i] += (error[i] * 5) / 16 | 0;
                     }
                     //右下
-                    if(x < width - 1 && y > height - 1){
+                    if(x < width - 1 && y < height - 1){
                         output_data[((x + 1) + (y + 1) * width)*4 + i] += (error[i] * 3.2) / 16 | 0;
                     }
                 }
@@ -305,7 +309,7 @@ function maxAngleCalculate(hsvS,scope,angle){
 0 ~ 359に正規化
 */
 function angleSet(num,angle){
-    if(num >= 360) num -= angle;
+    if(num >= angle) num -= angle;
     if(num < 0) num += angle;
     return num;
 }
