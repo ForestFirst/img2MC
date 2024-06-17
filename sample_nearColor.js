@@ -255,7 +255,7 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
                     //if(diff_max == color_csv[1][comp_num][i]) error[i] = Math.max(...color_csv[1][comp_num]);
 
                     //誤差をrgbに分散
-                    error[i] += diff_value[comp_num];
+                    error[i] = diff_value[comp_num];
 
                     output_data[index + i] = color_csv[1][comp_num][i];
                 }
