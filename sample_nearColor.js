@@ -237,19 +237,19 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
             }
             comp_num = angleSet(comp_num,angle);
             //一番近い色に置き換え
+            /*
             for(var i = 0;i < 3; i++){
                 output_data[index + i] = color_csv[1][comp_num][i];
             }
+            */
 
             //誤差（rgbそれぞれで算出）
-            /*
             let error = new Array(3);
             for(var i = 0;i < 3;i++){
                 error[i] =  output_data[index + i] - color_csv[1][comp_num][i];
                 
                 output_data[index + i] = color_csv[1][comp_num][i];
             }
-            output_data[index + 3] = 255;
 
             //誤差拡散
             for(var i = 0;i < 3; i++){
@@ -262,7 +262,7 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
                     output_data[((x - 1) + (y + 1) * width)*4 + i] += (error[i] * 2.8) / 16 | 0;
                 }
                 //下
-                if(i < height -1){
+                if(y < height -1){
                     output_data[(x + (y + 1) * width)*4 + i] += (error[i] * 5) / 16 | 0;
                 }
                 //右下
@@ -270,7 +270,6 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
                     output_data[((x + 1) + (y + 1) * width)*4 + i] += (error[i] * 3.2) / 16 | 0;
                 }
             }
-            */
         }
     }
 
