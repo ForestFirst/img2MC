@@ -165,7 +165,7 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
 
     const angle = 360;
     const scope = 360;
-    const h_mag = 2;
+    const h_mag = 1;
     const s_mag = 1;
     const v_mag = 1;
     const width = img_data.width;
@@ -193,9 +193,9 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
                 if(color_csv[0][comp_hsvH][0] > -1){
                     //console.log(comp_hsvH,"v");
                     //元の計算式(hsv)
-                    let H_diff = Math.abs(hsvS[img_index][0] - color_csv[0][comp_hsvH][0]) * h_mag;
-                    let S_diff = Math.abs(hsvS[img_index][1] - color_csv[0][comp_hsvH][1]) * s_mag;
-                    let V_diff = Math.abs(hsvS[img_index][2] - color_csv[0][comp_hsvH][2]) * v_mag;
+                    let H_diff = Math.pow(output_data[index] - color_csv[1][comp_hsvH][0],2) * h_mag;
+                    let S_diff = Math.pow(output_data[index + 1] - color_csv[1][comp_hsvH][1],2) * s_mag;
+                    let V_diff = Math.pow(output_data[index + 2] - color_csv[1][comp_hsvH][2],2) * v_mag;
                     diff_value[i] = H_diff + S_diff + V_diff;
                     
                     //ユークリッド(rgb)
