@@ -165,9 +165,9 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
 
     const angle = 360;
     const scope = 360;
-    const h_mag = 1;
-    const s_mag = 1;
-    const v_mag = 1;
+    const h_mag = 0.9;
+    const s_mag = 1.2;
+    const v_mag = 0.9;
     const width = img_data.width;
     const height = img_data.height;    
     const hsvS = rgb2hsv(img_data.data, width * height);//画像のHSV
@@ -193,10 +193,10 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
                 if(color_csv[1][comp_hsvH][0] > -1){
                     //console.log(comp_hsvH,"v");
                     //元の計算式(hsv)
-                    let H_diff = Math.pow(output_data[index] - color_csv[1][comp_hsvH][0],2) * h_mag;
-                    let S_diff = Math.pow(output_data[index + 1] - color_csv[1][comp_hsvH][1],2) * s_mag;
-                    let V_diff = Math.pow(output_data[index + 2] - color_csv[1][comp_hsvH][2],2) * v_mag;
-                    diff_value[i] = Math.sqrt((H_diff + S_diff + V_diff) / 3);
+                    let H_diff = (output_data[index] - color_csv[1][comp_hsvH][0])* h_mag;
+                    let S_diff = (output_data[index + 1] - color_csv[1][comp_hsvH][1])* s_mag;
+                    let V_diff = (output_data[index + 2] - color_csv[1][comp_hsvH][2])* v_mag;
+                    diff_value[i] = (H_diff + S_diff + V_diff) / 3;
                     
                     //ユークリッド(rgb)
                     /*
@@ -225,7 +225,6 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
                 comp_hsvH++;
                 if(comp_hsvH >= angle) comp_hsvH = 0;
             }
-            console.log(...diff_value);
 
             let tmp_comp_num = diff_value[0];
             let comp_num = min_angle;
@@ -233,9 +232,10 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
                 if(tmp_comp_num > diff_value[i]){
                     //console.log(comp_num,"g");
                     tmp_comp_num = diff_value[i];
+                    comp_num = i + min_angle;
                 }
             }
-            comp_num = angleSet(i + min_angle,angle);
+            comp_num = angleSet(comp_num,angle);
             //一番近い色に置き換え
             /*
             for(var i = 0;i < 3; i++){
@@ -252,7 +252,10 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
                     //error[i] =  output_data[index + i] - color_csv[1][comp_num][i];
                     
                     //rgbで一番大きい誤差のみを採用
-                    if(diff_max == color_csv[1][comp_num][i]) error[i] = Math.max(...color_csv[1][comp_num]);
+                    //if(diff_max == color_csv[1][comp_num][i]) error[i] = Math.max(...color_csv[1][comp_num]);
+
+                    //誤差をrgbに分散
+                    error[i] += diff_value[comp_num];
 
                     output_data[index + i] = color_csv[1][comp_num][i];
                 }
