@@ -194,8 +194,8 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
                     //console.log(comp_hsvH,"v");
                     //元の計算式(hsv)
                     let H_diff = Math.pow(output_data[index] - color_csv[1][comp_hsvH][0],2)* h_mag;
-                    let S_diff = Math.pow(output_data[index] - color_csv[1][comp_hsvH][1],2)* s_mag;
-                    let V_diff = Math.pow(output_data[index] - color_csv[1][comp_hsvH][2],2)* v_mag;
+                    let S_diff = Math.pow(output_data[index + 1] - color_csv[1][comp_hsvH][1],2)* s_mag;
+                    let V_diff = Math.pow(output_data[index + 2] - color_csv[1][comp_hsvH][2],2)* v_mag;
                     diff_value[i] = H_diff + S_diff + V_diff;
                     
                     //ユークリッド(rgb)
