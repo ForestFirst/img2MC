@@ -249,13 +249,13 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
                 
                 let diff_max = Math.max(...color_csv[1][comp_num]);
                 for(var i = 0;i < 3;i++){
-                    //error[i] =  output_data[index + i] - color_csv[1][comp_num][i];
+                    error[i] =  output_data[index + i] - color_csv[1][comp_num][i];
                     
                     //rgbで一番大きい誤差のみを採用
                     //if(diff_max == color_csv[1][comp_num][i]) error[i] = Math.max(...color_csv[1][comp_num]);
 
                     //誤差をrgbに分散
-                    error[i] = diff_value[comp_num];
+                    //error[i] = diff_value[comp_num];
 
                     output_data[index + i] = color_csv[1][comp_num][i];
                 }
