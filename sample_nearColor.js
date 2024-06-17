@@ -193,10 +193,10 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
                 if(color_csv[1][comp_hsvH][0] > -1){
                     //console.log(comp_hsvH,"v");
                     //元の計算式(hsv)
-                    let H_diff = (output_data[index] - color_csv[1][comp_hsvH][0])* h_mag;
-                    let S_diff = (output_data[index + 1] - color_csv[1][comp_hsvH][1])* s_mag;
-                    let V_diff = (output_data[index + 2] - color_csv[1][comp_hsvH][2])* v_mag;
-                    diff_value[i] = (H_diff + S_diff + V_diff) / 3;
+                    let H_diff = Math.pow(output_data[index] - color_csv[1][comp_hsvH][0],2)* h_mag;
+                    let S_diff = Math.pow(output_data[index] - color_csv[1][comp_hsvH][1],2)* s_mag;
+                    let V_diff = Math.pow(output_data[index] - color_csv[1][comp_hsvH][2],2)* v_mag;
+                    diff_value[i] = H_diff + S_diff + V_diff;
                     
                     //ユークリッド(rgb)
                     /*
@@ -237,13 +237,12 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
             }
             comp_num = angleSet(comp_num,angle);
             //一番近い色に置き換え
-            /*
             for(var i = 0;i < 3; i++){
                 output_data[index + i] = color_csv[1][comp_num][i];
             }
-            */
 
             //誤差（rgbそれぞれで算出）
+            /*
             if(output_data[index + 3] > 0){
                 let error = [...Array(3)].map(k=>0);
                 
@@ -280,6 +279,7 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
                     }
                 }
             }
+            */
         }
     }
 
