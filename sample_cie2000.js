@@ -222,10 +222,9 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
                     let B_diff = Math.pow(labS[img_index][2] - color_csv[2][comp_hsvH][2],2);
                     distance[i] = Math.sqrt(L_diff + A_diff + B_diff);
                     */
-                    distance[i] = Math.round(ciede2000(labS[img_index][0],labS[img_index][1],labS[img_index][2],color_csv[2][i][0],color_csv[2][i][1],color_csv[2][i][2]),2);
+                    distance[i] = ciede2000(labS[img_index][0],labS[img_index][1],labS[img_index][2],color_csv[2][i][0],color_csv[2][i][1],color_csv[2][i][2]);
                 }
             }
-            console.log(...distance);
 
             let tmp_comp_num = distance[0];
             let comp_num = 0;
