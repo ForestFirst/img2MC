@@ -186,7 +186,7 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
             //比較
             //let comp_hsvH = min_angle;
             const img_index = x + y * width;
-            for(var i = 0;i < scope; i++){
+            for(var i = 0;i < angle; i++){
                 //let csv_index = comp_hsvH;
                 //console.log(comp_hsvH);
                 //console.log(comp_hsvH,color_csv[0][comp_hsvH][0]);
@@ -225,17 +225,18 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
                     diff_value[i] = Math.round(ciede2000(labS[img_index][0],labS[img_index][1],labS[img_index][2],color_csv[2][i][0],color_csv[2][i][1],color_csv[2][i][2]));
                 }
             }
+            console.log(...diff_value);
 
             let tmp_comp_num = diff_value[0];
             let comp_num = 0;
-            for(var i = 1;i < scope;i++){
+            for(var i = 1;i < angle;i++){
                 if(tmp_comp_num > diff_value[i]){
                     //console.log(comp_num,"g");
                     tmp_comp_num = diff_value[i];
                     comp_num = i;
                 }
             }
-            comp_num = angleSet(comp_num,angle);
+            //comp_num = angleSet(comp_num,angle);
 
             //console.log(...diff_value);
 
@@ -341,19 +342,18 @@ function rgb2lab(rgb) {
     y /= 1;
     z /= 1.0890;
 
-    //従来式
-    /*
     x = x > 0.008856 ? Math.pow(x, 1 / 3) : (7.787 * x) + (4 / 29);
     y = y > 0.008856 ? Math.pow(y, 1 / 3) : (7.787 * y) + (4 / 29);
     z = z > 0.008856 ? Math.pow(z, 1 / 3) : (7.787 * z) + (4 / 29);
     L = (116 * y) - 16;
     a = 500 * (x - y);
     b = 200 * (y - z);
-    */
     //場合分けなしver
+    /*
     L = 100 * y ** (1/2.44);
     a = 435.8 * Math.pow(x,0.40984) - Math.pow(y,0.40984);
     b = 173.6 * Math.pow(y,0.40984) - Math.pow(z,0.40984);
+    */
 
     return [L, a, b];
 }
