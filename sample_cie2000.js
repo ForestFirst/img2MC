@@ -318,8 +318,7 @@ function angleSet(num,angle){
 function init_rgb2lab(array,array_size){
     let labS = [...Array(array_size)].map(k=>[...Array(3)].map(k=>-1));
     for(var i = 0;i < array_size * 4;i += 4){
-        tmp_labS = rgb2lab(array[i],array[i+1],array[i+2]).map((x) => Math.round(x));
-        labS[i / 4] = [Math.round(tmp_labS[0]),Math.round(tmp_labS[1]),Math.round(tmp_labS[2])];
+        labS[i / 4] = rgb2lab(array[i],array[i+1],array[i+2]).map(x => Math.round(x));
     }
     return labS;
 }
@@ -622,7 +621,7 @@ function loadCSVFile(){
         //array[0][hsv_array[0]] = [parseInt(hsv_array[0]),parseInt(hsv_array[1]),parseInt(hsv_array[2])];
         array[1][hsv_array[0]] = rgb_array;
         //array[1][rgb_array[0]] = [parseInt(rgb_array[0]),parseInt(rgb_array[1]),parseInt(rgb_array[2])];
-        array[2][hsv_array[0]] = rgb2lab(rgb_array);
+        array[2][hsv_array[0]] = rgb2lab(rgb_array).map(x => Math.round(x));
     }
     
     return array;
