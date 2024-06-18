@@ -223,7 +223,7 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
                     diff_value[i] = Math.sqrt(L_diff + A_diff + B_diff);
                     */
 
-                    diff_value[i] = ciede2000(labS[0],labS[1],labS[2],color_csv[2][comp_hsvH][0],color_csv[2][comp_hsvH][1],color_csv[2][comp_hsvH][2]);
+                    diff_value[i] = ciede2000(labS[img_index][0],labS[img_index][1],labS[img_index][2],color_csv[2][comp_hsvH][0],color_csv[2][comp_hsvH][1],color_csv[2][comp_hsvH][2]);
                 }
                 comp_hsvH++;
                 if(comp_hsvH >= angle) comp_hsvH = 0;
