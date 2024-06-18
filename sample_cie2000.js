@@ -279,11 +279,7 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
 
     //画像化 
     for (var i = 0;i < img_data.data.length;i+=4) { 
-        let rgb = lab2rgb(labS[i / 4][0],labS[i / 4][1],labS[i / 4][2]);
-        for (var j = 0;j < 3;j++) {
-            processed_data.data[i + j] = rgb[j];
-        }
-        processed_data.data[i + 3] = 255;
+        processed_data.data[i] = output_data[i];
     }
     return processed_data;
 }
