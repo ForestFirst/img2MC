@@ -165,7 +165,7 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
 
     const angle = 360;
     const scope = 360;
-    const h_mag = 2;
+    const h_mag = 3;
     const s_mag = 1;
     const v_mag = 1;
     const width = img_data.width;
