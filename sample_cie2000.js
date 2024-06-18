@@ -240,7 +240,7 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
             }
             comp_num = angleSet(comp_num,angle);
 
-            console.log(...diff_value);
+            //console.log(...diff_value);
 
             //一番近い色に置き換え
             for(var i = 0;i < 3; i++){
