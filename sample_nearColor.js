@@ -165,9 +165,9 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
 
     const angle = 360;
     const scope = 360;
-    const h_mag = 1.2;
-    const s_mag = 0.9;
-    const v_mag = 0.9;
+    const h_mag = 2;
+    const s_mag = 1;
+    const v_mag = 1;
     const width = img_data.width;
     const height = img_data.height;    
     let hsvS = rgb2hsv(img_data.data, width * height);//画像のHSV
