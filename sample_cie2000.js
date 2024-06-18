@@ -229,12 +229,12 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
             }
 
             let tmp_comp_num = diff_value[0];
-            let comp_num = min_angle;
+            let comp_num = 0;
             for(var i = 1;i < scope;i++){
                 if(tmp_comp_num > diff_value[i]){
                     //console.log(comp_num,"g");
                     tmp_comp_num = diff_value[i];
-                    comp_num = i + min_angle;
+                    comp_num = i;
                 }
             }
             comp_num = angleSet(comp_num,angle);
