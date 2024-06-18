@@ -165,12 +165,12 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
 
     const angle = 360;
     const scope = 360;
-    const h_mag = 0.9;
-    const s_mag = 1.2;
+    const h_mag = 1.2;
+    const s_mag = 0.9;
     const v_mag = 0.9;
     const width = img_data.width;
     const height = img_data.height;    
-    const hsvS = rgb2hsv(img_data.data, width * height);//画像のHSV
+    let hsvS = rgb2hsv(img_data.data, width * height);//画像のHSV
     const color_csv = loadCSVFile();//csvファイル
     let output_data = [...img_data.data];//画像の色コピー
 
@@ -179,23 +179,24 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
     for(var y = 0;y < height;y++){
         for(var x = 0;x < width;x++){
             const index = (x + y * width) * 4;
+            const img_index = x + y * width;
             let diff_value = [...Array(scope)].map(k=>10000);
             //比較範囲計算
-            const min_angle = minAngleCalculate(hsvS[index / 4][0],scope,angle);
-            const max_angle = maxAngleCalculate(hsvS[index / 4][0],scope,angle);
+            const min_angle = minAngleCalculate(hsvS[img_index][0],scope,angle);
+            const max_angle = maxAngleCalculate(hsvS[img_index][0],scope,angle);
             //比較
             let comp_hsvH = min_angle;
-            const img_index = x + y * width;
+            
             for(var i = 0;i < scope; i++){
                 //let csv_index = comp_hsvH;
                 //console.log(comp_hsvH);
                 //console.log(comp_hsvH,color_csv[0][comp_hsvH][0]);
-                if(color_csv[1][comp_hsvH][0] > -1){
+                if(color_csv[0][comp_hsvH][0] > -1){
                     //console.log(comp_hsvH,"v");
                     //元の計算式(hsv)
-                    let H_diff = Math.pow(output_data[index] - color_csv[1][comp_hsvH][0],2)* h_mag;
-                    let S_diff = Math.pow(output_data[index + 1] - color_csv[1][comp_hsvH][1],2)* s_mag;
-                    let V_diff = Math.pow(output_data[index + 2] - color_csv[1][comp_hsvH][2],2)* v_mag;
+                    let H_diff = Math.pow(hsvS[img_index][0] - color_csv[0][comp_hsvH][0],2)* h_mag;
+                    let S_diff = Math.pow(hsvS[img_index][1] - color_csv[0][comp_hsvH][1],2)* s_mag;
+                    let V_diff = Math.pow(hsvS[img_index][2] - color_csv[0][comp_hsvH][2],2)* v_mag;
                     diff_value[i] = H_diff + S_diff + V_diff;
                     
                     //ユークリッド(rgb)
@@ -237,8 +238,9 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
             }
             comp_num = angleSet(comp_num,angle);
             //一番近い色に置き換え
+            let rgb = hsv2rgb(...color_csv[1][comp_num]);
             for(var i = 0;i < 3; i++){
-                output_data[index + i] = color_csv[1][comp_num][i];
+                output_data[index + i] = rgb[i];
             }
 
             //誤差（rgbそれぞれで算出）
@@ -248,7 +250,7 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
                 
                 let diff_max = Math.max(...color_csv[1][comp_num]);
                 for(var i = 0;i < 3;i++){
-                    error[i] =  -(output_data[index + i] - color_csv[1][comp_num][i]);
+                    error[i] =  hsvS[img_index][i] - color_csv[1][comp_num][i];
                     
                     //rgbで一番大きい誤差のみを採用
                     //if(diff_max == color_csv[1][comp_num][i]) error[i] = Math.max(...color_csv[1][comp_num]);
@@ -256,30 +258,30 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
                     //誤差をrgbに分散
                     //error[i] = diff_value[comp_num];
 
-                    output_data[index + i] = color_csv[1][comp_num][i];
+                    hsvS[img_index][i] = color_csv[1][comp_num][i];
                 }
 
                 //誤差拡散
                 for(var i = 0;i < 3; i++){
                     //右
                     if(x < width - 1){
-                        output_data[((x + 1) + y * width) * 4 + i] += (error[i] * 5) / 16 | 0;                        
+                        hsvS[(x + 1) + y * width][i] += (error[i] * 5) / 16 | 0;                        
                     }
                     //左下
                     if(x > 0){
-                        output_data[((x - 1) + (y + 1) * width)*4 + i] += (error[i] * 2.8) / 16 | 0;
+                        hsvS[(x - 1) + (y + 1) * width][i] += (error[i] * 2.8) / 16 | 0;
                     }
                     //下
                     if(y < height -1){
-                        output_data[(x + (y + 1) * width)*4 + i] += (error[i] * 5) / 16 | 0;
+                        hsvS[x + (y + 1) * width][i] += (error[i] * 5) / 16 | 0;
                     }
                     //右下
                     if(x < width - 1 && y < height - 1){
-                        output_data[((x + 1) + (y + 1) * width)*4 + i] += (error[i] * 3.2) / 16 | 0;
+                        hsvS[(x + 1) + (y + 1) * width][i] += (error[i] * 3.2) / 16 | 0;
                     }
                 }
             }
-            */
+                */
         }
     }
 
@@ -403,6 +405,36 @@ function rgb2hsv(rgb,array_size){
         hsvS[i / 4][2] = Math.round(v);
     }        
     return hsvS;
+}
+/*
+hsvからrgb変換
+*/
+function hsv2rgb(h, s, v) {
+    const c = v * s;
+    const hp = h / 60;
+    const x = c * (1 - Math.abs(hp % 2 - 1));
+    let r, g, b;
+
+    if (0 <= hp && hp < 1) {
+        [r, g, b] = [c, x, 0];
+    } else if (1 <= hp && hp < 2) {
+        [r, g, b] = [x, c, 0];
+    } else if (2 <= hp && hp < 3) {
+        [r, g, b] = [0, c, x];
+    } else if (3 <= hp && hp < 4) {
+        [r, g, b] = [0, x, c];
+    } else if (4 <= hp && hp < 5) {
+        [r, g, b] = [x, 0, c];
+    } else if (5 <= hp && hp < 6) {
+        [r, g, b] = [c, 0, x];
+    }
+
+    const m = v - c;
+    r = Math.floor((r + m) * 255);
+    g = Math.floor((g + m) * 255);
+    b = Math.floor((b + m) * 255);
+
+    return [r, g, b];
 }
 
 /*
