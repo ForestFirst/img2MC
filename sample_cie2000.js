@@ -175,6 +175,10 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
     const labS = init_rgb2lab(img_data.data, width * height);//画像のLAB
     let output_data = [...img_data.data];//画像の色コピー
 
+    console.log(color_csv);
+    console.log(labS);
+    console.log(output_data);
+
 
     //色比較
     for(var y = 0;y < height;y++){
