@@ -579,7 +579,7 @@ csv_array[i][1] = {r,g,b}
 */
 function loadCSVFile(){
     let csv = new XMLHttpRequest();
-    let array = [...Array(3)].map(k=>[...Array(360)].map(k=>[...Array(3)].map(k=>-100)));
+    let array = [...Array(3)].map(k=>[...Array(360)].map(k=>[...Array(3)].map(k=>-1)));
     csv.open("get", "BlocksColor.csv",false);
     csv.send(null);
     /*
