@@ -368,6 +368,7 @@ function rgb2lab(rgb) {
 /*
 labからrgbに変換
 */
+/*
 function lab2rgb(lab) {
     l = lab[0];
     a = lab[1];
@@ -399,6 +400,7 @@ function lab2rgb(lab) {
 
     return [r, g, b];
 }
+    */
 
 /*
 rgbからhsv変換
