@@ -191,7 +191,7 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
                 //let csv_index = comp_hsvH;
                 //console.log(comp_hsvH);
                 //console.log(comp_hsvH,color_csv[0][comp_hsvH][0]);
-                if(color_csv[2][comp_hsvH][0] > -1){
+                if(color_csv[2][comp_hsvH][0] > -1 && output_data[index + 3] > 0){
                     //console.log(comp_hsvH,"v");
                     //元の計算式(hsv)
                     /*
@@ -280,7 +280,7 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
     }
 
     //画像化 
-    for (var i = 0;i < img_data.data.length;i+=4) { 
+    for (var i = 0;i < img_data.data.length;i++) { 
         processed_data.data[i] = output_data[i];
     }
     return processed_data;
