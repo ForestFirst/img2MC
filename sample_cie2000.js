@@ -175,16 +175,11 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
     const labS = init_rgb2lab(img_data.data, width * height);//画像のLAB
     let output_data = [...img_data.data];//画像の色コピー
 
-    console.log(color_csv);
-    console.log(labS);
-    console.log(output_data);
-
-
     //色比較
     for(var y = 0;y < height;y++){
         for(var x = 0;x < width;x++){
             const index = (x + y * width) * 4;
-            let diff_value = [...Array(scope)].map(k=>1000);
+            let diff_value = [...Array(scope)].map(k=>100);
             //比較範囲計算
             const min_angle = minAngleCalculate(hsvS[index / 4][0],scope,angle);
             const max_angle = maxAngleCalculate(hsvS[index / 4][0],scope,angle);
@@ -230,7 +225,6 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
                     diff_value[i] = Math.round(ciede2000(labS[img_index][0],labS[img_index][1],labS[img_index][2],color_csv[2][i][0],color_csv[2][i][1],color_csv[2][i][2]));
                 }
             }
-            console.log(...diff_value);
 
             let tmp_comp_num = diff_value[0];
             let comp_num = 0;
