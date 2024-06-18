@@ -238,9 +238,9 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
             }
             comp_num = angleSet(comp_num,angle);
             //一番近い色に置き換え
-            let rgb = hsv2rgb(...color_csv[1][comp_num]);
+            //let rgb = hsv2rgb(...color_csv[1][comp_num]);
             for(var i = 0;i < 3; i++){
-                output_data[index + i] = rgb[i];
+                output_data[index + i] = color_csv[1][comp_num][i];
             }
 
             //誤差（rgbそれぞれで算出）
