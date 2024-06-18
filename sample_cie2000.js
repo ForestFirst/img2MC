@@ -369,9 +369,9 @@ function rgb2lab(rgb) {
 labからrgbに変換
 */
 function lab2rgb(lab) {
-    l = rgb[0];
-    a = rgb[1];
-    b = rgb[2];
+    l = lab[0];
+    a = lab[1];
+    b = lab[2];
 
     const y = (l + 16) / 116;
     const x = y + a / 500;
