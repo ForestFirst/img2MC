@@ -173,6 +173,7 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
     const hsvS = rgb2hsv(img_data.data, width * height);//画像のHSV
     const color_csv = loadCSVFile();//csvファイル
     const labS = init_rgb2lab(img_data.data, width * height);//画像のLAB
+    console.log(...labS);
     let output_data = [...img_data.data];//画像の色コピー
 
 
@@ -180,18 +181,18 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
     for(var y = 0;y < height;y++){
         for(var x = 0;x < width;x++){
             const index = (x + y * width) * 4;
-            let diff_value = [...Array(scope)].map(k=>10000);
+            let diff_value = [...Array(scope)].map(k=>1000);
             //比較範囲計算
             const min_angle = minAngleCalculate(hsvS[index / 4][0],scope,angle);
             const max_angle = maxAngleCalculate(hsvS[index / 4][0],scope,angle);
             //比較
-            let comp_hsvH = min_angle;
+            //let comp_hsvH = min_angle;
             const img_index = x + y * width;
             for(var i = 0;i < scope; i++){
                 //let csv_index = comp_hsvH;
                 //console.log(comp_hsvH);
                 //console.log(comp_hsvH,color_csv[0][comp_hsvH][0]);
-                if(color_csv[2][comp_hsvH][0] > -1 && output_data[index + 3] > 0){
+                if(color_csv[2][i][0] > -1 && output_data[index + 3] > 0){
                     //console.log(comp_hsvH,"v");
                     //元の計算式(hsv)
                     /*
@@ -223,10 +224,8 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
                     diff_value[i] = Math.sqrt(L_diff + A_diff + B_diff);
                     */
 
-                    diff_value[i] = ciede2000(labS[img_index][0],labS[img_index][1],labS[img_index][2],color_csv[2][comp_hsvH][0],color_csv[2][comp_hsvH][1],color_csv[2][comp_hsvH][2]);
+                    diff_value[i] = ciede2000(labS[img_index][0],labS[img_index][1],labS[img_index][2],color_csv[2][i][0],color_csv[2][i][1],color_csv[2][i][2]);
                 }
-                comp_hsvH++;
-                if(comp_hsvH >= angle) comp_hsvH = 0;
             }
 
             let tmp_comp_num = diff_value[0];
