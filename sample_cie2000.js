@@ -318,7 +318,8 @@ function angleSet(num,angle){
 function init_rgb2lab(array,array_size){
     let labS = [...Array(array_size)].map(k=>[...Array(3)].map(k=>-1));
     for(var i = 0;i < array_size * 4;i += 4){
-        labS[i / 4] = [...rgb2lab(array[i],array[i+1],array[i+2])].map(k=>Math.round(k));
+        tmp_labS = rgb2lab(array[i],array[i+1],array[i+2]);
+        labS[i / 4] = [...tmp_labS].map(k=>Math.round(k));
     }
     return labS;
 }
