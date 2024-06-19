@@ -259,25 +259,25 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
                 if(x < width - 1){
                     let indexR = ((x + 1) + y * width)*4;
                     let dataR = output_data[indexR];
-                    output_data[indexR + i] = normalizeOutput(dataR + (error[i] * 5) / 16 | 0);  
+                    output_data[indexR + i] = normalizeOutput(dataR + (error[i] * 5) / 16);  
                 }
                 //左下
                 if(x > 0){
                     let indexUL = ((x - 1) + (y + 1) * width)*4;
                     let dataUL = output_data[indexUL];
-                    output_data[indexUL + i] = normalizeOutput(dataUL + (error[i] * 2.8) / 16 | 0);
+                    output_data[indexUL + i] = normalizeOutput(dataUL + (error[i] * 2.8) / 16);
                 }
                 //下
                 if(y < height -1){
                     let indexU = (x + (y + 1) * width)*4;
                     let dataU = output_data[indexU];
-                    output_data[indexU + i] = normalizeOutput(dataU + (error[i] * 5) / 16 | 0);
+                    output_data[indexU + i] = normalizeOutput(dataU + (error[i] * 5) / 16);
                 }
                 //右下
                 if(x < width - 1 && y > height - 1){
                     let indexUR = ((x + 1) + (y + 1) * width)*4;
                     let dataUR = output_data[indexUR];
-                    output_data[indexUR + i] = normalizeOutput(dataUR + (error[i] * 3.2) / 16 | 0);
+                    output_data[indexUR + i] = normalizeOutput(dataUR + (error[i] * 3.2) / 16);
                 }
             }
         }
