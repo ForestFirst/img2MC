@@ -245,8 +245,8 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
             for(var i = 0;i < 3; i++){
                 //誤差（rgbそれぞれで算出）
                 //error[i] = output_data[index + i] - color_csv[1][comp_num][i];
-                error[i] = Math.sqrt(output_data[index + i] - color_csv[1][comp_num][i]);
-                
+                error[i] = output_data[index + i] - color_csv[1][comp_num][i];
+                if(error[i] < 26) error[i] = 0;
                 output_data[index + i] = color_csv[1][comp_num][i];
             }
 
