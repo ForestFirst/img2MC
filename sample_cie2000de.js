@@ -240,7 +240,7 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
             //console.log(...distance);
 
             //一番近い色に置き換え
-            let error = new [...Array(3)].map(k => 256);
+            let error = [...Array(3)].map(k => 256);
             for(var i = 0;i < 3; i++){
                 //誤差（rgbそれぞれで算出）
                 error[i] = output_data[index + i] - color_csv[1][comp_num][i];
