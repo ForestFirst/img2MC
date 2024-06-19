@@ -222,7 +222,8 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
                     let B_diff = Math.pow(labS[img_index][2] - color_csv[2][comp_hsvH][2],2);
                     distance[i] = Math.sqrt(L_diff + A_diff + B_diff);
                     */
-                    distance[i] = ciede2000(labS[img_index][0],labS[img_index][1],labS[img_index][2],color_csv[2][i][0],color_csv[2][i][1],color_csv[2][i][2]);
+                    let lab = rgb2lab(output_data[index]);
+                    distance[i] = ciede2000(lab[0],lab[1],lab[2],color_csv[2][i][0],color_csv[2][i][1],color_csv[2][i][2]);
                 }
             }
 
