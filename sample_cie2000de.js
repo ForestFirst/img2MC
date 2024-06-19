@@ -252,19 +252,19 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
             for(var i = 0;i < 3; i++){
                 //右
                 if(x < width - 1){
-                    output_data[(x + 1) + y * width + i] += (error[i] * 5) / 16 | 0;                        
+                    output_data[((x + 1) + y * width)*4 + i] += (error[i] * 5) / 16 | 0;                        
                 }
                 //左下
                 if(x > 0){
-                    output_data[(x - 1) + (y + 1) * width + i] += (error[i] * 2.8) / 16 | 0;
+                    output_data[((x - 1) + (y + 1) * width)*4 + i] += (error[i] * 2.8) / 16 | 0;
                 }
                 //下
                 if(y < height -1){
-                    output_data[x + (y + 1) * width + i] += (error[i] * 5) / 16 | 0;
+                    output_data[(x + (y + 1) * width)*4 + i] += (error[i] * 5) / 16 | 0;
                 }
                 //右下
                 if(x < width - 1 && y > height - 1){
-                    output_data[(x + 1) + (y + 1) * width + i] += (error[i] * 3.2) / 16 | 0;
+                    output_data[((x + 1) + (y + 1) * width)*4 + i] += (error[i] * 3.2) / 16 | 0;
                 }
             }
         }
