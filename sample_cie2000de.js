@@ -170,7 +170,6 @@ function colorReplaceCiede2000(img_data,processed_data,origin_xyz,zip,folder){
     const height = img_data.height;  
     let output_data = [...img_data.data];
     const labS = init_rgb2lab(img_data.data,width * height);
-    console.log(...labS);
 
     const color_csv = loadCSVFile();//csvファイル 
 
