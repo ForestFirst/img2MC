@@ -199,6 +199,7 @@ function colorReplaceCiede2000(img_data,processed_data,origin_xyz,zip,folder){
     for (var i = 0;i < img_data.data.length;i++) { 
         processed_data.data[i] = output_data[i];
     }
+    console.log("完了");
     return processed_data;
 }
 
