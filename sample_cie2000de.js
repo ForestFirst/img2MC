@@ -170,7 +170,7 @@ function colorReplaceCiede2000(img_data,processed_data,origin_xyz,zip,folder){
     const height = img_data.height;  
     let output_data = [...img_data.data];
     const labS = init_rgb2lab(img_data.data,width * height);
-    console.log(labS);
+    console.log(...labS);
 
     const color_csv = loadCSVFile();//csvファイル 
 
@@ -181,6 +181,7 @@ function colorReplaceCiede2000(img_data,processed_data,origin_xyz,zip,folder){
                 distance[j] = ciede2000(labS[i],labS[i + 1],labS[i + 2],color_csv[2][j][0],color_csv[2][j][1],color_csv[2][j][2]);
             }   
         }
+        
         //距離比較
         let tmp_comp_num = distance[0];
         let comp_num = 0;
@@ -195,7 +196,6 @@ function colorReplaceCiede2000(img_data,processed_data,origin_xyz,zip,folder){
             //誤差（rgbそれぞれで算出）
             output_data[i + j] = color_csv[1][comp_num][j];
         }
-        console.log(i);
     }
     //画像化 
     for (var i = 0;i < img_data.data.length;i++) { 
@@ -225,6 +225,7 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
                 }
             }
 
+            
             let tmp_comp_num = distance[0];
             let comp_num = 0;
             for(var i = 1;i < angle;i++){
