@@ -64,6 +64,9 @@ function processImageData(num) {
     else if(num == 1){
         processed_data = colorErrorDiffusion(img_data,processed_data,origin_xyz,zip[0],zip[1]);
     }
+    else if(num == 2){
+        processed_data = colorReplaceCiede2000(img_data,processed_data,origin_xyz,zip[0],zip[1]);
+    }
     cv.getContext('2d').putImageData(processed_data, 0, 0);
 }
 
@@ -161,67 +164,59 @@ function greyErrorDiffusion(img_data,imagecolors,processed_data,origin_xyz,zip,f
     return processed_data;
 }
 
+function colorReplaceCiede2000(img_data,processed_data,origin_xyz,zip,folder){
+    const angle = 360;
+    const width = img_data.width;
+    const height = img_data.height;  
+
+    const color_csv = loadCSVFile();//csvファイル 
+
+    for(var i = 0;i < width * height * 4;i += 4){
+        let distance = [...Array()].map(k => 100.0);
+        for(var j = 0;j < angle;j++){
+            if(color_csv > -1 && output_data[i + 3] > 0){
+                let lab = rgb2lab([output_data[index],output_data[index + 1],output_data[index + 2]]);
+                distance[i] = ciede2000(lab[0],lab[1],lab[2],color_csv[2][i][0],color_csv[2][i][1],color_csv[2][i][2]);
+            }   
+        }
+        //距離比較
+        let tmp_comp_num = distance[0];
+        let comp_num = 0;
+        for(var i = 1;i < angle;i++){
+            if(tmp_comp_num > distance[i]){
+                tmp_comp_num = distance[i];
+                comp_num = i;
+            }
+        }
+        //置き換え
+        for(var i = 0;i < 3; i++){
+            //誤差（rgbそれぞれで算出）
+            output_data[index + i] = color_csv[1][comp_num][i];
+        }
+    }
+    //画像化 
+    for (var i = 0;i < img_data.data.length;i++) { 
+        processed_data.data[i] = output_data[i];
+    }
+    return processed_data;
+}
+
 function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
 
     const angle = 360;
-    const scope = 90;
-    const h_mag = 2;
-    const s_mag = 1;
-    const v_mag = 1;
     const width = img_data.width;
     const height = img_data.height;    
-    const hsvS = rgb2hsv(img_data.data, width * height);//画像のHSV
     const color_csv = loadCSVFile();//csvファイル
-    //const labS = init_rgb2lab(img_data.data, width * height);//画像のLAB
     let output_data = [...img_data.data];//画像の色コピー
 
     //色比較
     for(var y = 0;y < height;y++){
         for(var x = 0;x < width;x++){
             const index = (x + y * width) * 4;
-            const img_index = x + y * width;
             let distance = [...Array(angle)].map(k=>100.0);
-            //比較範囲計算
-            const min_angle = minAngleCalculate(hsvS[index / 4][0],scope,angle);
-            const max_angle = maxAngleCalculate(hsvS[index / 4][0],scope,angle);
             //比較
-            //let comp_hsvH = min_angle;
-            
             for(var i = 0;i < angle; i++){
-                //let csv_index = comp_hsvH;
-                //console.log(comp_hsvH);
-                //console.log(comp_hsvH,color_csv[0][comp_hsvH][0]);
                 if(color_csv[2][i][0] > -1 && output_data[index + 3] > 0){
-                    //console.log(comp_hsvH,"v");
-                    //元の計算式(hsv)
-                    /*
-                    let H_diff = Math.abs(hsvS[img_index][0] - color_csv[0][comp_hsvH][0]) * h_mag;
-                    let S_diff = Math.abs(hsvS[img_index][1] - color_csv[0][comp_hsvH][1]) * s_mag;
-                    let V_diff = Math.abs(hsvS[img_index][2] - color_csv[0][comp_hsvH][2]) * v_mag;
-                    distance[i] = H_diff + S_diff + V_diff;
-                    */
-                    
-                    //ユークリッド(rgb)
-                    /*
-                    let R_diff = Math.pow(output_data[img_index] - color_csv[1][comp_hsvH][0],2);
-                    let G_diff = Math.pow(output_data[img_index + 1] - color_csv[1][comp_hsvH][1],2);
-                    let B_diff = Math.pow(output_data[img_index + 2] - color_csv[1][comp_hsvH][2],2);
-                    let bar_R = (output_data[img_index] + color_csv[1][comp_hsvH][0]) / 2;
-                    if(bar_R < 128){
-                        distance[i] = Math.sqrt(2*R_diff + 4*G_diff + 3*B_diff);
-                    }
-                    else{
-                        distance[i] = Math.sqrt(3*R_diff + 4*G_diff + 2*B_diff);
-                    }
-                    */
-
-                    //ユークリッド(lab)
-                    /*
-                    let L_diff = Math.pow(labS[img_index][0] - color_csv[2][comp_hsvH][0],2);
-                    let A_diff = Math.pow(labS[img_index][1] - color_csv[2][comp_hsvH][1],2);
-                    let B_diff = Math.pow(labS[img_index][2] - color_csv[2][comp_hsvH][2],2);
-                    distance[i] = Math.sqrt(L_diff + A_diff + B_diff);
-                    */
                     let lab = rgb2lab([output_data[index],output_data[index + 1],output_data[index + 2]]);
                     distance[i] = ciede2000(lab[0],lab[1],lab[2],color_csv[2][i][0],color_csv[2][i][1],color_csv[2][i][2]);
                 }
@@ -236,20 +231,12 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
                     comp_num = i;
                 }
             }
-            //comp_num = angleSet(comp_num,angle);
-
-            //console.log(...distance);
 
             //一番近い色に置き換え
             let error = [...Array(3)].map(k => 0);
             for(var i = 0;i < 3; i++){
                 //誤差（rgbそれぞれで算出）
                 error[i] = output_data[index + i] - color_csv[1][comp_num][i];
-                /*
-                error[i] = output_data[index + i] - color_csv[1][comp_num][i];
-                if(error[i] < 26) error[i] = 0;
-                */
-                //error[i] = Math.sqrt(output_data[index + i] - color_csv[1][comp_num][i]) * 15.9687;
                 output_data[index + i] = color_csv[1][comp_num][i];
             }
 
@@ -367,43 +354,6 @@ function rgb2lab(rgb) {
 
     return [L, a, b];
 }
-
-/*
-labからrgbに変換
-*/
-/*
-function lab2rgb(lab) {
-    l = lab[0];
-    a = lab[1];
-    b = lab[2];
-
-    const y = (l + 16) / 116;
-    const x = y + a / 500;
-    const z = y - b / 200;
-    
-    x > 0.206897 ? Math.pow(x , 3) : (x - 0.206897) / 7.787037;
-    y > 0.206897 ? Math.pow(y , 3) : (y - 0.206897) / 7.787037;
-    z > 0.206897 ? Math.pow(z , 3) : (z - 0.206897) / 7.787037;
-
-    x *= 95.047;
-    y *= 100;
-    z *= 108.883;
-
-    x /= 100;
-    y /= 100;
-    z /= 100;
-
-    r = 3.240970 * x - 1.537383 * y - 0.498611 * z;
-    g = 0.969244 * x + 1.875968 * y + 0.041555 * z;
-    b = 0.055630 * x - 0.203977 * y + 1.056972 * z;
-
-    r *= 255;
-    g *= 255;
-    b *= 255;
-
-    return [r, g, b];
-}
-    */
 
 /*
 rgbからhsv変換
