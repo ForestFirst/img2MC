@@ -173,7 +173,7 @@ function colorReplaceCiede2000(img_data,processed_data,origin_xyz,zip,folder){
     const color_csv = loadCSVFile();//csvファイル 
 
     for(var i = 0;i < width * height * 4;i += 4){
-        let distance = [...Array()].map(k => 100.0);
+        let distance = [...Array(angle)].map(k => 100.0);
         for(var j = 0;j < angle;j++){
             if(color_csv > -1 && output_data[i + 3] > 0){
                 let lab = rgb2lab([output_data[i],output_data[i + 1],output_data[i + 2]]);
@@ -194,6 +194,7 @@ function colorReplaceCiede2000(img_data,processed_data,origin_xyz,zip,folder){
             //誤差（rgbそれぞれで算出）
             output_data[i + j] = color_csv[1][comp_num][j];
         }
+        console.log(i);
     }
     //画像化 
     for (var i = 0;i < img_data.data.length;i++) { 
