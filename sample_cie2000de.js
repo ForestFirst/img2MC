@@ -443,6 +443,7 @@ function rgbInArray(img_data){
 /*
 ciede距離算出
 */
+/*
 function ciede2000(L1,a1,b1, L2,a2,b2) {
     //http://en.wikipedia.org/wiki/Color_difference#CIEDE2000
     var radianToDegree = function(radian) {return radian * (180 / Math.PI);};
@@ -516,9 +517,10 @@ function ciede2000(L1,a1,b1, L2,a2,b2) {
         * tmp_cp_calculate * tmp_deltaHp
     );
 }
+*/
 /*
 最適化前
-
+*/
 function ciede2000(L1,a1,b1, L2,a2,b2, kL=1,kC=1,kH=1) {
     //http://en.wikipedia.org/wiki/Color_difference#CIEDE2000
     var radianToDegree = function(radian) {return radian * (180 / Math.PI);};
@@ -610,7 +612,7 @@ function ciede2000(L1,a1,b1, L2,a2,b2, kL=1,kC=1,kH=1) {
         RT * (deltaCp / (kC * SC)) * (deltaHp / (kH * SH))
         );
 }
-*/
+
 
 
 /*
