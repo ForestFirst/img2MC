@@ -435,8 +435,84 @@ function rgbInArray(img_data){
 }
 
 /*
-hsv比較
+ciede距離算出
 */
+function ciede2000(L1,a1,b1, L2,a2,b2) {
+    //http://en.wikipedia.org/wiki/Color_difference#CIEDE2000
+    var radianToDegree = function(radian) {return radian * (180 / Math.PI);};
+    var degreeToRadian = function(degree) {return degree * (Math.PI / 180);};
+
+    var C1 = Math.sqrt(Math.pow(a1, 2) + Math.pow(b1, 2));
+    var C2 = Math.sqrt(Math.pow(a2, 2) + Math.pow(b2, 2));
+    var powC_7 = Math.pow((C1 + C2) / 2, 7);
+    var pow25_7 = Math.pow(25, 7);
+
+    var tmp_ap_alculate = (1 - Math.sqrt(powC_7 /(powC_7 + pow25_7)));     
+    var ap1 = a1 + (a1 / 2) * tmp_ap_alculate;
+    var ap2 = a2 + (a2 / 2) * tmp_ap_alculate;
+    var Cp1 = Math.sqrt(Math.pow(ap1, 2) + Math.pow(b1, 2));
+    var Cp2 = Math.sqrt(Math.pow(ap2, 2) + Math.pow(b2, 2));
+    var Cp_ = (Cp1 + Cp2) / 2;
+
+    var hp1;
+    if (b1 == 0 && ap1 == 0) {
+        hp1 = 0;
+    } else {
+        hp1 = radianToDegree(Math.atan2(b1, ap1));
+        if (hp1 < 0) {hp1 += 360;}
+    }
+    var hp2;
+    if (b2 == 0 && ap2 == 0) {
+        hp2 = 0;
+    } else {
+        hp2 = radianToDegree(Math.atan2(b2, ap2));
+        if (hp2 < 0) {hp2 += 360;}
+    }
+
+    var tmp_dis = hp2 - hp1;
+    var tmp_hp1_dis_hp2 = Math.abs(tmp_dis);
+    var deltahp;
+    if (C1 == 0 || C2 == 0) {
+        deltahp = 0;
+    } else if (tmp_hp1_dis_hp2 <= 180) {
+        deltahp = tmp_dis;
+    } else if (hp2 <= hp1) {
+        deltahp = tmp_dis + 360;
+    } else {
+        deltahp = tmp_dis - 360;
+    }
+
+    var deltaHp = 2 * Math.sqrt(Cp1 * Cp2) * Math.sin(degreeToRadian(deltahp) / 2);
+
+    var Hp_;
+    if (tmp_hp1_dis_hp2 > 180) {
+        Hp_ =  (hp1 + hp2 + 360) / 2;
+    } else {
+        Hp_ = (hp1 + hp2) / 2;
+    };
+
+    var T = 1 -
+        0.17 * Math.cos(degreeToRadian(Hp_ - 30)) +
+        0.24 * Math.cos(degreeToRadian(2 * Hp_)) +
+        0.32 * Math.cos(degreeToRadian(3 * Hp_ + 6)) -
+        0.20 * Math.cos(degreeToRadian(4 * Hp_ - 63));
+
+    var pow_50_2 = Math.pow((L1 + L2) / 2 - 50, 2);
+    var powCp_7 = Math.pow(Cp_, 7);
+    var tmp_cp_calculate = (Cp2 - Cp1) / (1 + 0.045 * Cp_);
+    var tmp_deltaHp = deltaHp / (1 + 0.015 * Cp_ * T);
+    return Math.sqrt(
+        Math.pow(L2 - L1 / (1 + ((0.015 * pow_50_2) / Math.sqrt(20 + pow_50_2))), 2) +
+        Math.pow(tmp_cp_calculate, 2) +
+        Math.pow(tmp_deltaHp, 2) + 
+        -2 * Math.sqrt(powCp_7 /(powCp_7 + pow25_7)) *
+        Math.sin(degreeToRadian(60 * Math.exp(-Math.pow((Hp_ - 275) / 25, 2)))) 
+        * tmp_cp_calculate * tmp_deltaHp
+    );
+}
+/*
+最適化前
+
 function ciede2000(L1,a1,b1, L2,a2,b2, kL=1,kC=1,kH=1) {
     //http://en.wikipedia.org/wiki/Color_difference#CIEDE2000
     var radianToDegree = function(radian) {return radian * (180 / Math.PI);};
@@ -528,6 +604,7 @@ function ciede2000(L1,a1,b1, L2,a2,b2, kL=1,kC=1,kH=1) {
         RT * (deltaCp / (kC * SC)) * (deltaHp / (kH * SH))
         );
 }
+*/
 
 
 /*
