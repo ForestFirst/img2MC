@@ -169,6 +169,7 @@ function colorReplaceCiede2000(img_data,processed_data,origin_xyz,zip,folder){
     const width = img_data.width;
     const height = img_data.height;  
     let output_data = [...img_data.data];
+    const labS = init_rgb2lab(img_data.data,width * height);
 
     const color_csv = loadCSVFile();//csvファイル 
 
@@ -176,8 +177,7 @@ function colorReplaceCiede2000(img_data,processed_data,origin_xyz,zip,folder){
         let distance = [...Array(angle)].map(k => 100.0);
         for(var j = 0;j < angle;j++){
             if(color_csv > -1 && output_data[i + 3] > 0){
-                let lab = rgb2lab([output_data[i],output_data[i + 1],output_data[i + 2]]);
-                distance[j] = ciede2000(lab[0],lab[1],lab[2],color_csv[2][j][0],color_csv[2][j][1],color_csv[2][j][2]);
+                distance[j] = ciede2000(labS[i],labS[i + 1],labS[i + 2],color_csv[2][j][0],color_csv[2][j][1],color_csv[2][j][2]);
             }   
         }
         //距離比較
@@ -311,6 +311,9 @@ function angleSet(num,angle){
     if(num < 0) num += angle;
     return num;
 }
+/*
+rgbからlabに変換(配列初期化)
+*/
 function init_rgb2lab(array,array_size){
     let labS = [...Array(array_size)].map(k=>[...Array(3)].map(k=>-1));
     for(var i = 0;i < array_size * 4;i += 4){
@@ -318,6 +321,7 @@ function init_rgb2lab(array,array_size){
     }
     return labS;
 }
+
 /*
 rgbからlabに変換
 */
@@ -326,25 +330,27 @@ function rgb2lab(rgb) {
     g = rgb[1];
     b = rgb[2];
 
-    r = r > 0.04045 ? Math.pow(((r/ 255 + 0.055) / 1.055), 2.4) : (r / 12.92);
-    g = g > 0.04045 ? Math.pow(((g/ 255 + 0.055) / 1.055), 2.4) : (g / 12.92);
-    b = b > 0.04045 ? Math.pow(((b/ 255 + 0.055) / 1.055), 2.4) : (b / 12.92);
+    /*
+    r = r > 0.04045 ? Math.pow(((r / 255 + 0.055) / 1.055), 2.4) : (r / 12.92);
+    g = g > 0.04045 ? Math.pow(((g / 255 + 0.055) / 1.055), 2.4) : (g / 12.92);
+    b = b > 0.04045 ? Math.pow(((b / 255 + 0.055) / 1.055), 2.4) : (b / 12.92);
+    */
 
-    var x = (r * 0.4124) + (g * 0.3576) + (b * 0.1805);
+    r = r > 0.04045 ? Math.pow((r / 269.025 + 0.05213), 2.4) : (r / 12.92);
+    g = g > 0.04045 ? Math.pow((g / 269.025 + 0.05213), 2.4) : (g / 12.92);
+    b = b > 0.04045 ? Math.pow((b / 269.025 + 0.05213), 2.4) : (b / 12.92);
+
+    var x = ((r * 0.4124) + (g * 0.3576) + (b * 0.1805)) / 0.9595;
     var y = (r * 0.2126) + (g * 0.7152) + (b * 0.0722);
-    var z = (r * 0.0193) + (g * 0.1192) + (b * 0.9505);
+    var z = ((r * 0.0193) + (g * 0.1192) + (b * 0.9505)) / 1.0890;
 
     var L;
     var a;
     var b;
 
-    x /= 0.9595;
-    y /= 1;
-    z /= 1.0890;
-
-    x = x > 0.008856 ? Math.pow(x, 1 / 3) : (7.787 * x) + (4 / 29);
-    y = y > 0.008856 ? Math.pow(y, 1 / 3) : (7.787 * y) + (4 / 29);
-    z = z > 0.008856 ? Math.pow(z, 1 / 3) : (7.787 * z) + (4 / 29);
+    x = x > 0.008856 ? Math.pow(x, 0.3333) : (7.787 * x) + 0.1379;
+    y = y > 0.008856 ? Math.pow(y, 0.3333) : (7.787 * y) + 0.1379;
+    z = z > 0.008856 ? Math.pow(z, 0.3333) : (7.787 * z) + 0.1379;
     L = (116 * y) - 16;
     a = 500 * (x - y);
     b = 200 * (y - z);
