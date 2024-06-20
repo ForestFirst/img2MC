@@ -184,9 +184,9 @@ function colorReplaceCiede2000(img_data,processed_data,origin_xyz,zip,folder){
         let tmp_comp_num = distance[0];
         let comp_num = 0;
         for(var j = 1;j < angle;j++){
-            if(tmp_comp_num > distance[i]){
-                tmp_comp_num = distance[i];
-                comp_num = i;
+            if(tmp_comp_num > distance[j]){
+                tmp_comp_num = distance[j];
+                comp_num = j;
             }
         }
         //置き換え
