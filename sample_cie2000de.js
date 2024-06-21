@@ -344,22 +344,20 @@ function rgb2lab(rgb) {
     var y = (r * 0.2126) + (g * 0.7152) + (b * 0.0722);
     var z = ((r * 0.0193) + (g * 0.1192) + (b * 0.9505)) / 1.0890;
 
-    var L;
-    var a;
-    var b;
-
+    /*
     x = x > 0.008856 ? Math.pow(x, 0.3333) : (7.787 * x) + 0.1379;
     y = y > 0.008856 ? Math.pow(y, 0.3333) : (7.787 * y) + 0.1379;
     z = z > 0.008856 ? Math.pow(z, 0.3333) : (7.787 * z) + 0.1379;
-    L = (116 * y) - 16;
-    a = 500 * (x - y);
-    b = 200 * (y - z);
-    //場合分けなしver
-    /*
-    L = 100 * y ** (1/2.44);
-    a = 435.8 * Math.pow(x,0.40984) - Math.pow(y,0.40984);
-    b = 173.6 * Math.pow(y,0.40984) - Math.pow(z,0.40984);
+    var L = (116 * y) - 16;
+    var a = 500 * (x - y);
+    var b = 200 * (y - z);
     */
+    //場合分けなしver
+
+    var L = 100 * y ** (1/2.44);
+    var a = 435.8 * Math.pow(x,0.40984) - Math.pow(y,0.40984);
+    var b = 173.6 * Math.pow(y,0.40984) - Math.pow(z,0.40984);
+
 
     return [L, a, b];
 }
@@ -613,7 +611,7 @@ function ciede2000(L1,a1,b1, L2,a2,b2, kL=1,kC=1,kH=1) {
     var ap2 = a2 + a2 * tmp_math;
     var Cp1 = Math.sqrt(ap1*ap1 + b1*b1);
     var Cp2 = Math.sqrt(ap2*ap2 + b2*b2);
-    var Cp_ = (Cp1 + Cp2) / 2;
+    var Cp_ = Cp1 + Cp2;
 
     var hp1;
     if (b1 == 0 && ap1 == 0) {
@@ -655,19 +653,21 @@ function ciede2000(L1,a1,b1, L2,a2,b2, kL=1,kC=1,kH=1) {
         0.32 * Math.cos(0.0523599 * Hp_ + 0.1047198) -
         0.20 * Math.cos(0.0698132 * Hp_ - 1.0995579);
 
-    var tmp_50 = ((L1 + L2) / 2) - 50;
+    var tmp_50 = ((L1 + L2) * 0.5) - 50;
     var pow_tmp_50 = tmp_50*tmp_50;
 
-    var cp_pow7 = pow7(Cp_);
+    var cp_pow7 = pow7(Cp_ * 0.5);
     var hp_25 = Hp_ * 0.04 - 11 ;
-    var RT = -2 *Math.sqrt(cp_pow7 / (cp_pow7 + c_7_coe)) * 
-        Math.sin(1.047198 * Math.exp(-hp_25*hp_25));
 
     var ddLp = deltaLp / (1 + ((0.015 * pow_tmp_50) / Math.sqrt(20 + pow_tmp_50)));
-    var ddCp = (Cp2 - Cp1) / (1 + 0.045 * Cp_);
+    var ddCp = (Cp2 - Cp1) / (1 + 0.0225 * Cp_);
     var ddHp = 2 * Math.sqrt(Cp1 * Cp2) * Math.sin(0.00872665 * deltahp) 
-        / (1 + 0.015 * Cp_ * T);
-    return Math.sqrt(ddLp*ddLp +ddCp*ddCp +ddHp*ddHp +RT * ddCp * ddHp);
+        / (1 + 0.0075 * Cp_ * T);
+    return Math.sqrt(
+        ddLp*ddLp +ddCp*ddCp +ddHp*ddHp + 
+        (-2) * 
+        Math.sqrt(cp_pow7 / (cp_pow7 + c_7_coe)) * 
+        Math.sin(1.047198 * Math.exp(-hp_25*hp_25)) * ddCp * ddHp);
 }
 
 /*
