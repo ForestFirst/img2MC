@@ -591,17 +591,17 @@ function ciede2000(L1,a1,b1, L2,a2,b2) {
 }
         */
 
-function ciede2000(L1,a1,b1, L2,a2,b2, kL=1,kC=1,kH=1) {
+function ciede2000(L1,a1,b1, L2,a2,b2) {
     //http://en.wikipedia.org/wiki/Color_difference#CIEDE2000
     var pow7 = function(num) {return num*num*num*num*num*num*num};
 
     const c_7_coe = 6103515625;
     const degree = 57.2957732;
     const angle = 360;
-    var deltaLp = L2 - L1;
+    const half_angle = 180;
     var C1 = Math.sqrt(a1*a1 + b1*b1);
     var C2 = Math.sqrt(a2*a2 + b2*b2);
-    var pow_c_7 =pow7((C1 + C2) / 2);
+    var pow_c_7 = pow7((C1 + C2) / 2);
     var tmp_math = 0.5 * (1 - Math.sqrt(pow_c_7 / ( pow_c_7 + c_7_coe)));
     var ap1 = a1 + a1 * tmp_math;
     var ap2 = a2 + a2 * tmp_math;
@@ -628,7 +628,7 @@ function ciede2000(L1,a1,b1, L2,a2,b2, kL=1,kC=1,kH=1) {
     var deltahp;
     if (C1 == 0 || C2 == 0) {
         deltahp = 0;
-    } else if (Math.abs(dis_hp1_hp2) <= 180) {
+    } else if (Math.abs(dis_hp1_hp2) <= half_angle) {
         deltahp = dis_hp1_hp2;
     } else if (hp2 <= hp1) {
         deltahp = dis_hp1_hp2 + angle;
@@ -637,7 +637,7 @@ function ciede2000(L1,a1,b1, L2,a2,b2, kL=1,kC=1,kH=1) {
     }
 
     var Hp_;
-    if (Math.abs(dis_hp1_hp2) > 180) {
+    if (Math.abs(dis_hp1_hp2) > half_angle) {
         Hp_ =  (hp1 + hp2 + angle) * 0.5;
     } else {
         Hp_ = (hp1 + hp2) * 0.5;
@@ -655,12 +655,12 @@ function ciede2000(L1,a1,b1, L2,a2,b2, kL=1,kC=1,kH=1) {
     var cp_pow7 = pow7(Cp_ * 0.5);
     var hp_25 = Hp_ * 0.04 - 11 ;
 
-    var ddLp = deltaLp / (1 + ((0.015 * pow_tmp_50) / Math.sqrt(20 + pow_tmp_50)));
+    var ddLp = (L2 - L1) / (1 + ((0.015 * pow_tmp_50) / Math.sqrt(20 + pow_tmp_50)));
     var ddCp = (Cp2 - Cp1) / (1 + 0.0225 * Cp_);
     var ddHp = 2 * Math.sqrt(Cp1 * Cp2) * Math.sin(0.00872665 * deltahp) 
         / (1 + 0.0075 * Cp_ * T);
     return Math.sqrt(
-        ddLp*ddLp +ddCp*ddCp +ddHp*ddHp + 
+        ddLp*ddLp + ddCp*ddCp + ddHp*ddHp + 
         (-2) * 
         Math.sqrt(cp_pow7 / (cp_pow7 + c_7_coe)) * 
         Math.sin(1.047198 * Math.exp(-hp_25*hp_25)) * ddCp * ddHp);
