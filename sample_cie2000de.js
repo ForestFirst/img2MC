@@ -225,6 +225,8 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
                     //distance[i] = ciede2000(labS[img_index][0],labS[img_index][1],labS[img_index][2],color_csv[2][i][0],color_csv[2][i][1],color_csv[2][i][2]);
                 }
             }
+
+            
             let tmp_comp_num = distance[0];
             let comp_num = 0;
             for(var i = 1;i < angle;i++){
@@ -240,9 +242,7 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
             for(var i = 0;i < 3; i++){
                 //誤差（rgbそれぞれで算出）
                 error[i] = output_data[index + i] - color_csv[1][comp_num][i];
-                //注目画素代入
                 output_data[index + i] = color_csv[1][comp_num][i];
-                //processed_data.data[index + i] = color_csv[1][comp_num][i];
             }
 
             //誤差拡散
