@@ -225,8 +225,6 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
                     //distance[i] = ciede2000(labS[img_index][0],labS[img_index][1],labS[img_index][2],color_csv[2][i][0],color_csv[2][i][1],color_csv[2][i][2]);
                 }
             }
-
-            
             let tmp_comp_num = distance[0];
             let comp_num = 0;
             for(var i = 1;i < angle;i++){
@@ -242,14 +240,17 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
             for(var i = 0;i < 3; i++){
                 //誤差（rgbそれぞれで算出）
                 error[i] = output_data[index + i] - color_csv[1][comp_num][i];
-                output_data[index + i] = color_csv[1][comp_num][i];
+                //注目画素代入
+                processed_data.data[index + i] = color_csv[1][comp_num][i];
             }
 
             //誤差拡散
-            let indexR = ((x + 1) + y * width)*4;
-            let indexUL = ((x - 1) + (y + 1) * width)*4;
-            let indexU = (x + (y + 1) * width)*4;
-            let indexUR = ((x + 1) + (y + 1) * width)*4;
+            let x_i = x + 1;
+            let y_i = y + 1;
+            let indexR = (x_i + y * width)*4;
+            let indexUL = ((x - 1) + y_i * width)*4;
+            let indexU = (x + y_i * width)*4;
+            let indexUR = (x_i + y_i * width)*4;
             for(var i = 0;i < 3; i++){
                 //右
                 if(x < width - 1){
@@ -273,7 +274,7 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
 
     //画像化 
     for (var i = 0;i < img_data.data.length;i++) { 
-        processed_data.data[i] = output_data[i];
+        [i] = output_data[i];
     }
     return processed_data;
 }
@@ -502,7 +503,7 @@ function ciede2000(L1,a1,b1, L2,a2,b2) {
 
     let ddLp = (L2 - L1) / (1 + ((0.015 * pow_tmp_50) / Math.sqrt(20 + pow_tmp_50)));
     let ddCp = (Cp2 - Cp1) / (1 + 0.0225 * Cp_);
-    var ddHp = 2 * Math.sqrt(Cp1 * Cp2) * Math.sin(0.0087266462595 * deltahp) 
+    let ddHp = 2 * Math.sqrt(Cp1 * Cp2) * Math.sin(0.0087266462595 * deltahp) 
         / (1 + 0.0075 * Cp_ * T);
     return Math.sqrt(
         (-2) * ddLp*ddLp + ddCp*ddCp + ddHp*ddHp + 
@@ -589,4 +590,3 @@ async function zipDL(zip){
     console.log(img_element.name);
     });
 }
-
