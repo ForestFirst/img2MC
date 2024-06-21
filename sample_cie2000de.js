@@ -320,7 +320,7 @@ rgbからlabに変換(配列初期化)
 function init_rgb2lab(array,array_size){
     let labS = [...Array(array_size)].map(k=>[...Array(3)].map(k=>-1));
     for(var i = 0;i < array_size * 4;i += 4){
-        labS[i / 4] = rgb2lab([array[i],array[i + 1],array[i + 2]]).map(x => Math.round(x));
+        labS[i / 4] = rgb2lab([array[i],array[i + 1],array[i + 2]]);
     }
     return labS;
 }
