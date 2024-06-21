@@ -609,9 +609,9 @@ function ciede2000(L1,a1,b1, L2,a2,b2, kL=1,kC=1,kH=1) {
     var C2 = Math.sqrt(a2*a2 + b2*b2);
     var C_ = (C1 + C2) / 2;
     var pow_c_7 =pow7(C_);
-    var tmp_math = 1 - Math.sqrt(pow_c_7 /(pow_c_7 + 6103515625));
-    var ap1 = a1 * tmp_math;
-    var ap2 = a2 * tmp_math;
+    var tmp_math = 0.5 * (1 - Math.sqrt(pow_c_7 /(pow_c_7 + 6103515625)));
+    var ap1 = a1 + a1 * tmp_math;
+    var ap2 = a2 + a2 * tmp_math;
     var Cp1 = Math.sqrt(ap1*ap1 + b1*b1);
     var Cp2 = Math.sqrt(ap2*ap2 + b2*b2);
     var Cp_ = (Cp1 + Cp2) / 2;
@@ -621,14 +621,14 @@ function ciede2000(L1,a1,b1, L2,a2,b2, kL=1,kC=1,kH=1) {
         hp1 = 0;
     } else {
         hp1 = radianToDegree(Math.atan2(b1, ap1));
-        if (hp1 < 0) {hp1 += 360;}
+        if (hp1 < 0) {hp1 = hp1 + 360;}
     }
     var hp2;
     if (b2 == 0 && ap2 == 0) {
         hp2 = 0;
     } else {
         hp2 = radianToDegree(Math.atan2(b2, ap2));
-        if (hp2 < 0) {hp2 += 360;}
+        if (hp2 < 0) {hp2 = hp2 + 360;}
     }
 
     var dis_hp1_hp2 = hp2 - hp1;
