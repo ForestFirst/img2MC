@@ -246,12 +246,10 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
             }
 
             //誤差拡散
-            let x_i = x + 1;
-            let y_i = y + 1;
-            let indexR = (x_i + y * width)*4;
-            let indexUL = ((x - 1) + y_i * width)*4;
-            let indexU = (x + y_i * width)*4;
-            let indexUR = (x_i + y_i * width)*4;
+            let indexR = ((x + 1) + y * width)*4;
+            let indexUL = ((x - 1) + (y + 1) * width)*4;
+            let indexU = (x + (y + 1) * width)*4;
+            let indexUR = ((x + 1) + (y + 1) * width)*4;
             for(var i = 0;i < 3; i++){
                 //右
                 if(x < width - 1){
@@ -504,7 +502,7 @@ function ciede2000(L1,a1,b1, L2,a2,b2) {
 
     let ddLp = (L2 - L1) / (1 + ((0.015 * pow_tmp_50) / Math.sqrt(20 + pow_tmp_50)));
     let ddCp = (Cp2 - Cp1) / (1 + 0.0225 * Cp_);
-    let ddHp = 2 * Math.sqrt(Cp1 * Cp2) * Math.sin(0.0087266462595 * deltahp) 
+    var ddHp = 2 * Math.sqrt(Cp1 * Cp2) * Math.sin(0.0087266462595 * deltahp) 
         / (1 + 0.0075 * Cp_ * T);
     return Math.sqrt(
         (-2) * ddLp*ddLp + ddCp*ddCp + ddHp*ddHp + 
