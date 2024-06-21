@@ -599,8 +599,8 @@ function ciede2000(L1,a1,b1, L2,a2,b2) {
 
 function ciede2000(L1,a1,b1, L2,a2,b2, kL=1,kC=1,kH=1) {
     //http://en.wikipedia.org/wiki/Color_difference#CIEDE2000
-    var radianToDegree = function(radian) {return radian * 57.2957914;};
-    var degreeToRadian = function(degree) {return degree * 0.0174533;};
+    var radianToDegree = function(radian) {return radian * (180 / Math.PI);};
+    var degreeToRadian = function(degree) {return degree * (Math.PI / 180);};
     var pow7 = function(num) {return num*num*num*num*num*num*num};
 
     var deltaLp = L2 - L1;
@@ -643,7 +643,7 @@ function ciede2000(L1,a1,b1, L2,a2,b2, kL=1,kC=1,kH=1) {
         deltahp = dis_hp1_hp2 - 360;
     }
 
-    var deltaHp = 2 * Math.sqrt(Cp1 * Cp2) * Math.sin(0.0174533 * deltahp / 2);
+    var deltaHp = 2 * Math.sqrt(Cp1 * Cp2) * Math.sin(degreeToRadian(deltahp) / 2);
 
     var Hp_;
     if (Math.abs(dis_hp1_hp2) > 180) {
@@ -653,10 +653,10 @@ function ciede2000(L1,a1,b1, L2,a2,b2, kL=1,kC=1,kH=1) {
     };
 
     var T = 1 -
-        0.17 * Math.cos(0.0174533 * (Hp_ - 30)) +
-        0.24 * Math.cos(0.0174533 * (2 * Hp_)) +
-        0.32 * Math.cos(0.0174533 * (3 * Hp_ + 6)) -
-        0.20 * Math.cos(0.0174533 * (4 * Hp_ - 63));
+        0.17 * Math.cos(degreeToRadian(Hp_ - 30)) +
+        0.24 * Math.cos(degreeToRadian(2 * Hp_)) +
+        0.32 * Math.cos(degreeToRadian(3 * Hp_ + 6)) -
+        0.20 * Math.cos(degreeToRadian(4 * Hp_ - 63));
 
     var tmp_50 = L_ - 50;
     var pow_tmp_50 = tmp_50*tmp_50;
@@ -667,7 +667,7 @@ function ciede2000(L1,a1,b1, L2,a2,b2, kL=1,kC=1,kH=1) {
     var hp_25 = (Hp_ - 275) / 25;
     var RT = -2 *
         Math.sqrt(pow7(Cp_) / (pow7(Cp_) + 6103515625)) *
-        Math.sin(0.0174533 * (60 * Math.exp(-hp_25*hp_25)));
+        Math.sin(degreeToRadian(60 * Math.exp(-hp_25*hp_25)));
 
     var ddLp = deltaLp / SL;
     var ddCp = (Cp2 - Cp1) / SC;
