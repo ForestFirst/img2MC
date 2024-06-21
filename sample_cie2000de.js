@@ -209,18 +209,21 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
     const width = img_data.width;
     const height = img_data.height;    
     const color_csv = loadCSVFile();//csvファイル
+    const labS = init_rgb2lab(img_data.data,width * height);//画像のlab
     let output_data = [...img_data.data];//画像の色コピー
 
     //色比較
     for(var y = 0;y < height;y++){
         for(var x = 0;x < width;x++){
             const index = (x + y * width) * 4;
+            const img_index = index / 4;
             let distance = [...Array(angle)].map(k=>100.0);
             //比較
             for(var i = 0;i < angle; i++){
                 if(color_csv[2][i][0] > -1 && output_data[index + 3] > 0){
-                    let lab = rgb2lab([output_data[index],output_data[index + 1],output_data[index + 2]]);
-                    distance[i] = ciede2000(lab[0],lab[1],lab[2],color_csv[2][i][0],color_csv[2][i][1],color_csv[2][i][2]);
+                    //let lab = rgb2lab([output_data[index],output_data[index + 1],output_data[index + 2]]);
+                    //distance[i] = ciede2000(lab[0],lab[1],lab[2],color_csv[2][i][0],color_csv[2][i][1],color_csv[2][i][2]);
+                    distance[i] = ciede2000(labS[img_index][0],labS[img_index][1],labS[img_index][2],color_csv[2][i][0],color_csv[2][i][1],color_csv[2][i][2]);
                 }
             }
 
@@ -330,12 +333,6 @@ function rgb2lab(rgb) {
     g = rgb[1];
     b = rgb[2];
 
-    /*
-    r = r > 0.04045 ? Math.pow(((r / 255 + 0.055) / 1.055), 2.4) : (r / 12.92);
-    g = g > 0.04045 ? Math.pow(((g / 255 + 0.055) / 1.055), 2.4) : (g / 12.92);
-    b = b > 0.04045 ? Math.pow(((b / 255 + 0.055) / 1.055), 2.4) : (b / 12.92);
-    */
-
     r = r > 0.04045 ? Math.pow((r / 269.025 + 0.05213), 2.4) : (r / 12.92);
     g = g > 0.04045 ? Math.pow((g / 269.025 + 0.05213), 2.4) : (g / 12.92);
     b = b > 0.04045 ? Math.pow((b / 269.025 + 0.05213), 2.4) : (b / 12.92);
@@ -350,7 +347,8 @@ function rgb2lab(rgb) {
     var L = (116 * y) - 16;
     var a = 500 * (x - y);
     var b = 200 * (y - z);
-    //場合分けなしver
+
+    //場合分けなしver(cidedと合わせて使うと精度がよくない)
     /*
     var L = 100 * y ** (1/2.44);
     var a = 435.8 * Math.pow(x,0.40984) - Math.pow(y,0.40984);
