@@ -212,24 +212,22 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
     let output_data = [...img_data.data];//画像の色コピー
 
     //色比較
-    for(var y = 0;y < height;y++){
-        for(var x = 0;x < width;x++){
+    for(var y = 0;y < height;y = (y + 1)|0){
+        for(var x = 0;x < width;x = (x + 1)|0){
             const index = (x + y * width) * 4;
             let distance = [...Array(angle)].map(k=>100.0);
             //比較
-            for(var i = 0;i < angle; i++){
+            for(var i = 0;i < angle; i = (i + 1)|0){
                 if(color_csv[2][i][0] > -1 && output_data[index + 3] > 0){
                     let lab = rgb2lab([output_data[index],output_data[index + 1],output_data[index + 2]]);
                     distance[i] = ciede2000(lab[0],lab[1],lab[2],color_csv[2][i][0],color_csv[2][i][1],color_csv[2][i][2]);
-                    //それぞれ誤差拡散後にrgb2labしなきゃダメ
-                    //distance[i] = ciede2000(labS[img_index][0],labS[img_index][1],labS[img_index][2],color_csv[2][i][0],color_csv[2][i][1],color_csv[2][i][2]);
                 }
             }
 
             
             let tmp_comp_num = distance[0];
             let comp_num = 0;
-            for(var i = 1;i < angle;i++){
+            for(var i = 1;i < angle;i = (i + 1)|0){
                 if(tmp_comp_num > distance[i]){
                     //console.log(comp_num,"g");
                     tmp_comp_num = distance[i];
@@ -239,7 +237,7 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
 
             //一番近い色に置き換え
             let error = [...Array(3)].map(k => 0);
-            for(var i = 0;i < 3; i++){
+            for(var i = 0;i < 3; i = (i + 1)|0){
                 //誤差（rgbそれぞれで算出）
                 error[i] = output_data[index + i] - color_csv[1][comp_num][i];
                 output_data[index + i] = color_csv[1][comp_num][i];
@@ -252,7 +250,7 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
             let indexUL = ((x - 1) + y_i * width)*4;
             let indexU = (x + y_i * width)*4;
             let indexUR = (x_i + y_i * width)*4;
-            for(var i = 0;i < 3; i++){
+            for(var i = 0;i < 3; i = (i + 1)|0){
                 //右
                 if(x < width - 1){
                     output_data[indexR + i] = normalizeOutput(output_data[indexR + i] + (error[i] * 5) / 16);  
@@ -274,7 +272,7 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
     }
 
     //画像化 
-    for (var i = 0;i < img_data.data.length;i++) { 
+    for (var i = 0;i < img_data.data.length;i = (i + 1)|0) { 
         processed_data.data[i] = output_data[i];
     }
     return processed_data;
@@ -427,7 +425,7 @@ function rgb2grey(img_data,imagecolors){
 function rgbInArray(img_data){
     let color_data = [];//[...Array(img_data.width * img_data.height * 4)].map(k=>0);
     for(var i = 0;i < img_data.width * img_data.height * 4;i += 4){
-        for(var j = 0;j < 3;j++){
+        for(var j = 0;j < 3;j = j + 1){
             color_data[i + j] = img_data.data[i + j];
         }
         color_data[i + 3] = 255;
@@ -461,14 +459,14 @@ function ciede2000(L1,a1,b1, L2,a2,b2) {
         hp1 = 0;
     } else {
         hp1 = degree * Math.atan2(b1, ap1);
-        if (hp1 < 0) {hp1 += angle;}
+        if (hp1 < 0) {hp1 = hp1 + angle;}
     }
     var hp2;
     if (b2 == 0 && ap2 == 0) {
         hp2 = 0;
     } else {
         hp2 = degree * Math.atan2(b2, ap2);
-        if (hp2 < 0) {hp2 += angle;}
+        if (hp2 < 0) {hp2 = hp2 + angle;}
     }
 
     var dis_hp1_hp2 = hp2 - hp1;
