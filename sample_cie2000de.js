@@ -216,14 +216,14 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
     for(var y = 0;y < height;y++){
         for(var x = 0;x < width;x++){
             const index = (x + y * width) * 4;
-            const img_index = index / 4;
             let distance = [...Array(angle)].map(k=>100.0);
             //比較
             for(var i = 0;i < angle; i++){
                 if(color_csv[2][i][0] > -1 && output_data[index + 3] > 0){
-                    //let lab = rgb2lab([output_data[index],output_data[index + 1],output_data[index + 2]]);
-                    //distance[i] = ciede2000(lab[0],lab[1],lab[2],color_csv[2][i][0],color_csv[2][i][1],color_csv[2][i][2]);
-                    distance[i] = ciede2000(labS[img_index][0],labS[img_index][1],labS[img_index][2],color_csv[2][i][0],color_csv[2][i][1],color_csv[2][i][2]);
+                    let lab = rgb2lab([output_data[index],output_data[index + 1],output_data[index + 2]]);
+                    distance[i] = ciede2000(lab[0],lab[1],lab[2],color_csv[2][i][0],color_csv[2][i][1],color_csv[2][i][2]);
+                    //それぞれ誤差拡散後にrgb2labしなきゃダメ
+                    //distance[i] = ciede2000(labS[img_index][0],labS[img_index][1],labS[img_index][2],color_csv[2][i][0],color_csv[2][i][1],color_csv[2][i][2]);
                 }
             }
 
@@ -337,13 +337,14 @@ function rgb2lab(rgb) {
     g = g > 0.04045 ? Math.pow((g / 269.025 + 0.05213), 2.4) : (g / 12.92);
     b = b > 0.04045 ? Math.pow((b / 269.025 + 0.05213), 2.4) : (b / 12.92);
 
-    var x = ((r * 0.4124) + (g * 0.3576) + (b * 0.1805)) / 0.9595;
+    var x = (r * 0.4298072) + (g * 0.3726941) + (b * 0.1881188);
     var y = (r * 0.2126) + (g * 0.7152) + (b * 0.0722);
-    var z = ((r * 0.0193) + (g * 0.1192) + (b * 0.9505)) / 1.0890;
+    var z = (r * 0.0177227) + (g * 0.1094582) + (b * 0.8728191);
 
-    x = x > 0.008856 ? Math.pow(x, 0.3333) : (7.787 * x) + 0.1379;
-    y = y > 0.008856 ? Math.pow(y, 0.3333) : (7.787 * y) + 0.1379;
-    z = z > 0.008856 ? Math.pow(z, 0.3333) : (7.787 * z) + 0.1379;
+    x = x > 0.008856 ? Math.cbrt(x) : (7.787 * x) + 0.1379;
+    y = y > 0.008856 ? Math.cbrt(y) : (7.787 * y) + 0.1379;
+    z = z > 0.008856 ? Math.cbrt(z) : (7.787 * z) + 0.1379;
+    
     var L = (116 * y) - 16;
     var a = 500 * (x - y);
     var b = 200 * (y - z);
@@ -354,7 +355,6 @@ function rgb2lab(rgb) {
     var a = 435.8 * Math.pow(x,0.40984) - Math.pow(y,0.40984);
     var b = 173.6 * Math.pow(y,0.40984) - Math.pow(z,0.40984);
     */
-
     return [L, a, b];
 }
 
