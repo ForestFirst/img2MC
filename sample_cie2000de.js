@@ -643,7 +643,7 @@ function ciede2000(L1,a1,b1, L2,a2,b2, kL=1,kC=1,kH=1) {
         deltahp = dis_hp1_hp2 - 360;
     }
 
-    var deltaHp = 2 * Math.sqrt(Cp1 * Cp2) * Math.sin(0.0087266 * deltahp);
+    var deltaHp = 2 * Math.sqrt(Cp1 * Cp2) * Math.sin(0.0174533 * deltahp / 2);
 
     var Hp_;
     if (Math.abs(dis_hp1_hp2) > 180) {
@@ -654,9 +654,9 @@ function ciede2000(L1,a1,b1, L2,a2,b2, kL=1,kC=1,kH=1) {
 
     var T = 1 -
         0.17 * Math.cos(0.0174533 * (Hp_ - 30)) +
-        0.24 * Math.cos(0.0349066 * Hp_) +
-        0.32 * Math.cos(0.0523599 * Hp_ + 0.1047198) -
-        0.20 * Math.cos(0.0174533 * (0.0698132 * Hp_ - 1.0995579));
+        0.24 * Math.cos(0.0174533 * (2 * Hp_)) +
+        0.32 * Math.cos(0.0174533 * (3 * Hp_ + 6)) -
+        0.20 * Math.cos(0.0174533 * (4 * Hp_ - 63));
 
     var tmp_50 = L_ - 50;
     var pow_tmp_50 = tmp_50*tmp_50;
