@@ -599,19 +599,16 @@ function ciede2000(L1,a1,b1, L2,a2,b2) {
 
 function ciede2000(L1,a1,b1, L2,a2,b2, kL=1,kC=1,kH=1) {
     //http://en.wikipedia.org/wiki/Color_difference#CIEDE2000
-    var radianToDegree = function(radian) {return radian * 57.2957732;};
-    var degreeToRadian = function(degree) {return degree * 0.0174533;};
     var pow7 = function(num) {return num*num*num*num*num*num*num};
 
     const c_7_coe = 6103515625;
+    const degree = 57.2957732;
     const angle = 360;
     var deltaLp = L2 - L1;
-    var L_ = (L1 + L2) / 2;
     var C1 = Math.sqrt(a1*a1 + b1*b1);
     var C2 = Math.sqrt(a2*a2 + b2*b2);
-    var C_ = (C1 + C2) / 2;
-    var pow_c_7 =pow7(C_);
-    var tmp_math = 0.5 * (1 - Math.sqrt(pow_c_7 /(pow_c_7 + c_7_coe)));
+    var pow_c_7 =pow7((C1 + C2) / 2);
+    var tmp_math = 0.5 * (1 - Math.sqrt(pow_c_7 / ( pow_c_7 + c_7_coe)));
     var ap1 = a1 + a1 * tmp_math;
     var ap2 = a2 + a2 * tmp_math;
     var Cp1 = Math.sqrt(ap1*ap1 + b1*b1);
@@ -622,14 +619,14 @@ function ciede2000(L1,a1,b1, L2,a2,b2, kL=1,kC=1,kH=1) {
     if (b1 == 0 && ap1 == 0) {
         hp1 = 0;
     } else {
-        hp1 = radianToDegree(Math.atan2(b1, ap1));
+        hp1 = degree * Math.atan2(b1, ap1);
         if (hp1 < 0) {hp1 += angle;}
     }
     var hp2;
     if (b2 == 0 && ap2 == 0) {
         hp2 = 0;
     } else {
-        hp2 = radianToDegree(Math.atan2(b2, ap2));
+        hp2 = degree * Math.atan2(b2, ap2);
         if (hp2 < 0) {hp2 += angle;}
     }
 
@@ -647,18 +644,18 @@ function ciede2000(L1,a1,b1, L2,a2,b2, kL=1,kC=1,kH=1) {
 
     var Hp_;
     if (Math.abs(dis_hp1_hp2) > 180) {
-        Hp_ =  (hp1 + hp2 + angle) / 2
+        Hp_ =  (hp1 + hp2 + angle) * 0.5;
     } else {
-        Hp_ = (hp1 + hp2) / 2
+        Hp_ = (hp1 + hp2) * 0.5;
     };
 
     var T = 1 -
-        0.17 * Math.cos(0.0174533* (Hp_ - 30)) +
+        0.17 * Math.cos(0.0174533 * (Hp_ - 30)) +
         0.24 * Math.cos(0.0349066 * Hp_) +
         0.32 * Math.cos(0.0523599 * Hp_ + 0.1047198) -
         0.20 * Math.cos(0.0698132 * Hp_ - 1.0995579);
 
-    var tmp_50 = L_ - 50;
+    var tmp_50 = ((L1 + L2) / 2) - 50;
     var pow_tmp_50 = tmp_50*tmp_50;
 
     var cp_pow7 = pow7(Cp_);
@@ -671,12 +668,6 @@ function ciede2000(L1,a1,b1, L2,a2,b2, kL=1,kC=1,kH=1) {
     var ddHp = 2 * Math.sqrt(Cp1 * Cp2) * Math.sin(0.00872665 * deltahp) 
         / (1 + 0.015 * Cp_ * T);
     return Math.sqrt(ddLp*ddLp +ddCp*ddCp +ddHp*ddHp +RT * ddCp * ddHp);
-}
-/*
-7乗forVer(powが計算時間かかりすぎのためお試し)
-*/
-function pow7(){
-
 }
 
 /*
