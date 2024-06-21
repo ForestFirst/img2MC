@@ -518,8 +518,6 @@ function ciede2000(L1,a1,b1, L2,a2,b2) {
     );
 }
 */
-最適化前
-
 function ciede2000(L1,a1,b1, L2,a2,b2) {
     //http://en.wikipedia.org/wiki/Color_difference#CIEDE2000
     var radianToDegree = function(radian) {return radian * 57.2957795;};
