@@ -601,13 +601,14 @@ function ciede2000(L1,a1,b1, L2,a2,b2, kL=1,kC=1,kH=1) {
     //http://en.wikipedia.org/wiki/Color_difference#CIEDE2000
     var radianToDegree = function(radian) {return radian * (180 / Math.PI);};
     var degreeToRadian = function(degree) {return degree * (Math.PI / 180);};
+    var pow7 = function(num) {return num*num*num*num*num*num*num};
 
     var deltaLp = L2 - L1;
     var L_ = (L1 + L2) / 2;
     var C1 = Math.sqrt(a1*a1 + b1*b1);
     var C2 = Math.sqrt(a2*a2 + b2*b2);
     var C_ = (C1 + C2) / 2;
-    var pow_c_7 = Math.pow(C_, 7);
+    var pow_c_7 =pow7(C_);
     var tmp_math = 0.5 * (1 - Math.sqrt(pow_c_7 /(pow_c_7 + 6103515625)));
     var ap1 = a1 + a1 * tmp_math;
     var ap2 = a2 + a2 * tmp_math
@@ -666,13 +667,19 @@ function ciede2000(L1,a1,b1, L2,a2,b2, kL=1,kC=1,kH=1) {
 
     var hp_25 = (Hp_ - 275) / 25;
     var RT = -2 *
-        Math.sqrt(Math.pow(Cp_, 7) / (Math.pow(Cp_, 7) + 6103515625)) *
+        Math.sqrt(pow7(Cp_) / (pow7(Cp_) + 6103515625)) *
         Math.sin(degreeToRadian(60 * Math.exp(-hp_25*hp_25)));
 
     var ddLp = deltaLp / SL;
     var ddCp = deltaCp / SC;
     var ddHp = deltaHp / SH;
     return Math.sqrt(ddLp*ddLp +ddCp*ddCp +ddHp*ddHp +RT * ddCp * ddHp);
+}
+/*
+7乗forVer(powが計算時間かかりすぎのためお試し)
+*/
+function pow7(){
+
 }
 
 /*
