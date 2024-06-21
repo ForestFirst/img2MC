@@ -273,9 +273,11 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
     }
 
     //画像化 
+    /*
     for (var i = 0;i < img_data.data.length;i++) { 
-        [i] = output_data[i];
+        processed_data.data[i] = output_data[i];
     }
+    */
     return processed_data;
 }
 /*
