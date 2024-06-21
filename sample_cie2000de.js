@@ -210,7 +210,6 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
     const height = img_data.height;    
     const color_csv = loadCSVFile();//csvファイル
     let output_data = [...img_data.data];//画像の色コピー
-    processed_data.data = [...img_data.data];//画像出力
 
     //色比較
     for(var y = 0;y < height;y++){
@@ -244,7 +243,6 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
                 //誤差（rgbそれぞれで算出）
                 error[i] = output_data[index + i] - color_csv[1][comp_num][i];
                 output_data[index + i] = color_csv[1][comp_num][i];
-                processed_data.data[i] = color_csv[1][comp_num][i];
             }
 
             //誤差拡散
@@ -276,11 +274,9 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
     }
 
     //画像化 
-    /*
     for (var i = 0;i < img_data.data.length;i++) { 
         processed_data.data[i] = output_data[i];
     }
-    */
     return processed_data;
 }
 /*
