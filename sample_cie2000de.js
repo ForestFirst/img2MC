@@ -209,6 +209,7 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
     const width = img_data.width;
     const height = img_data.height;    
     const color_csv = loadCSVFile();//csvファイル
+    const labS = init_rgb2lab(img_data.data,width * height);//画像のlab
     let output_data = [...img_data.data];//画像の色コピー
 
     //色比較
@@ -221,6 +222,8 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
                 if(color_csv[2][i][0] > -1 && output_data[index + 3] > 0){
                     let lab = rgb2lab([output_data[index],output_data[index + 1],output_data[index + 2]]);
                     distance[i] = ciede2000(lab[0],lab[1],lab[2],color_csv[2][i][0],color_csv[2][i][1],color_csv[2][i][2]);
+                    //それぞれ誤差拡散後にrgb2labしなきゃダメ
+                    //distance[i] = ciede2000(labS[img_index][0],labS[img_index][1],labS[img_index][2],color_csv[2][i][0],color_csv[2][i][1],color_csv[2][i][2]);
                 }
             }
 
@@ -317,7 +320,7 @@ rgbからlabに変換(配列初期化)
 function init_rgb2lab(array,array_size){
     let labS = [...Array(array_size)].map(k=>[...Array(3)].map(k=>-1));
     for(var i = 0;i < array_size * 4;i += 4){
-        labS[i / 4] = rgb2lab([array[i],array[i + 1],array[i + 2]]).map(x => Math.round(x));
+        labS[i / 4] = rgb2lab([array[i],array[i + 1],array[i + 2]]);
     }
     return labS;
 }
@@ -330,33 +333,28 @@ function rgb2lab(rgb) {
     g = rgb[1];
     b = rgb[2];
 
-    /*
-    r = r > 0.04045 ? Math.pow(((r / 255 + 0.055) / 1.055), 2.4) : (r / 12.92);
-    g = g > 0.04045 ? Math.pow(((g / 255 + 0.055) / 1.055), 2.4) : (g / 12.92);
-    b = b > 0.04045 ? Math.pow(((b / 255 + 0.055) / 1.055), 2.4) : (b / 12.92);
-    */
-
     r = r > 0.04045 ? Math.pow((r / 269.025 + 0.05213), 2.4) : (r / 12.92);
     g = g > 0.04045 ? Math.pow((g / 269.025 + 0.05213), 2.4) : (g / 12.92);
     b = b > 0.04045 ? Math.pow((b / 269.025 + 0.05213), 2.4) : (b / 12.92);
 
-    var x = ((r * 0.4124) + (g * 0.3576) + (b * 0.1805)) / 0.9595;
+    var x = (r * 0.4338906) + (g * 0.3762349) + (b * 0.1899060);
     var y = (r * 0.2126) + (g * 0.7152) + (b * 0.0722);
-    var z = ((r * 0.0193) + (g * 0.1192) + (b * 0.9505)) / 1.0890;
+    var z = (r * 0.0177254) + (g * 0.1094753) + (b * 0.8729554);
 
-    x = x > 0.008856 ? Math.pow(x, 0.3333) : (7.787 * x) + 0.1379;
-    y = y > 0.008856 ? Math.pow(y, 0.3333) : (7.787 * y) + 0.1379;
-    z = z > 0.008856 ? Math.pow(z, 0.3333) : (7.787 * z) + 0.1379;
+    x = x > 0.008856 ? Math.cbrt(x) : (7.787 * x) + 0.13793103;
+    y = y > 0.008856 ? Math.cbrt(y) : (7.787 * y) + 0.13793103;
+    z = z > 0.008856 ? Math.cbrt(z) : (7.787 * z) + 0.13793103;
+
     var L = (116 * y) - 16;
     var a = 500 * (x - y);
     var b = 200 * (y - z);
-    //場合分けなしver
+
+    //場合分けなしver(cidedと合わせて使うと精度がよくない)
     /*
     var L = 100 * y ** (1/2.44);
     var a = 435.8 * Math.pow(x,0.40984) - Math.pow(y,0.40984);
     var b = 173.6 * Math.pow(y,0.40984) - Math.pow(z,0.40984);
     */
-
     return [L, a, b];
 }
 
