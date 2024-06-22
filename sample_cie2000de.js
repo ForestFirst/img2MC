@@ -179,7 +179,9 @@ function colorReplaceCiede2000(img_data,processed_data,origin_xyz,zip,folder){
         let distance = [...Array(array_size)].map(k => 100.0);
         for(var j = 0;j < array_size;j++){
             if(output_data[i + 3] > 0){
-                distance[j] = ciede2000(labS[img_index],labS[img_index + 1],labS[img_index + 2],color_csv[2][j][0],color_csv[2][j][1],color_csv[2][j][2]);
+                let lab = rgb2lab([output_data[index],output_data[index + 1],output_data[index + 2]]);
+                distance[j] = ciede2000(lab[0],lab[1],lab[2],color_csv[2][j][0],color_csv[2][j][1],color_csv[2][j][2]);
+                //distance[j] = ciede2000(labS[img_index],labS[img_index + 1],labS[img_index + 2],color_csv[2][j][0],color_csv[2][j][1],color_csv[2][j][2]);
             }   
         }
         
