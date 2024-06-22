@@ -506,8 +506,7 @@ function ciede2000(L1,a1,b1, L2,a2,b2) {
 
     var ddLp = (L2 - L1) / (1 + ((0.015 * pow_tmp_50) / Math.sqrt(20 + pow_tmp_50)));
     var ddCp = (Cp2 - Cp1) / (1 + 0.0225 * Cp_);
-    var ddHp = 2 * Math.sqrt(Cp1 * Cp2) * Math.sin(0.00872665 * deltahp) 
-        / (1 + 0.0075 * Cp_ * T);
+    var ddHp = Math.sqrt(Cp1 * Cp2) * Math.sin(0.00872665 * deltahp) / (0.5 + 0.00375 * Cp_ * T);
     return Math.sqrt(
         ddLp*ddLp + ddCp*ddCp + ddHp*ddHp + 
         (-2) * 
@@ -525,32 +524,7 @@ function loadCSVFile(){
     let array = [...Array(3)].map(k=>[...Array(360)].map(k=>[...Array(3)].map(k=>-1)));
     csv.open("get", "BlocksColor.csv",false);
     csv.send(null);
-    /*
-    csv.onload = function(e){
-        if (csv.readyState === 4){
-            if(csv.status === 200){
-                console.log("ブロック色のファイルは読み込めました。");
 
-                let str = csv.responseText;
-                let tmp_array = str.split("\n");
-                for(var i = 1;i < tmp_array.length - 1;i++){
-                    let hsv_array = Array.from(tmp_array[i].split(',').slice(7,10), str => parseInt(str, 10));
-                    console.log(hsv_array,isNaN(hsv_array));
-                    let rgb_array = Array.from(tmp_array[i].split(',').slice(1,4), str => parseInt(str, 10));
-                    console.log(rgb_array,isNaN(rgb_array));
-                    array[0][hsv_array[0]] = hsv_array.map(k => ({...hsv_array}));
-                    //array[0][hsv_array[0]] = [parseInt(hsv_array[0]),parseInt(hsv_array[1]),parseInt(hsv_array[2])];
-                    array[1][rgb_array[0]] = rgb_array.map(k => ({...rgb_array}));;
-                    //array[1][rgb_array[0]] = [parseInt(rgb_array[0]),parseInt(rgb_array[1]),parseInt(rgb_array[2])];
-                }
-                
-
-            }else{
-                console.error(csv.statusText);
-            }
-        }
-    }
-    */
     console.log("ブロック色のファイルは読み込めました。");
 
     let str = csv.responseText;
@@ -577,32 +551,7 @@ function loadCSVFile2(){
     let csv = new XMLHttpRequest();
     csv.open("get", "BlocksColor.csv",false);
     csv.send(null);
-    /*
-    csv.onload = function(e){
-        if (csv.readyState === 4){
-            if(csv.status === 200){
-                console.log("ブロック色のファイルは読み込めました。");
 
-                let str = csv.responseText;
-                let tmp_array = str.split("\n");
-                for(var i = 1;i < tmp_array.length - 1;i++){
-                    let hsv_array = Array.from(tmp_array[i].split(',').slice(7,10), str => parseInt(str, 10));
-                    console.log(hsv_array,isNaN(hsv_array));
-                    let rgb_array = Array.from(tmp_array[i].split(',').slice(1,4), str => parseInt(str, 10));
-                    console.log(rgb_array,isNaN(rgb_array));
-                    array[0][hsv_array[0]] = hsv_array.map(k => ({...hsv_array}));
-                    //array[0][hsv_array[0]] = [parseInt(hsv_array[0]),parseInt(hsv_array[1]),parseInt(hsv_array[2])];
-                    array[1][rgb_array[0]] = rgb_array.map(k => ({...rgb_array}));;
-                    //array[1][rgb_array[0]] = [parseInt(rgb_array[0]),parseInt(rgb_array[1]),parseInt(rgb_array[2])];
-                }
-                
-
-            }else{
-                console.error(csv.statusText);
-            }
-        }
-    }
-    */
     console.log("ブロック色のファイルは読み込めました。");
 
     let str = csv.responseText;
@@ -614,9 +563,7 @@ function loadCSVFile2(){
         
         let index = i - 1;
         array[0][index] = hsv_array;
-        //array[0][hsv_array[0]] = [parseInt(hsv_array[0]),parseInt(hsv_array[1]),parseInt(hsv_array[2])];
         array[1][index] = rgb_array;
-        //array[1][rgb_array[0]] = [parseInt(rgb_array[0]),parseInt(rgb_array[1]),parseInt(rgb_array[2])];
         array[2][index] = rgb2lab(rgb_array);
     }
     
