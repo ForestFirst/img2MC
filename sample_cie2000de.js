@@ -47,27 +47,28 @@ function processImageData(num) {
     
     //画像が選択されてるか確認
     if (!img_data) alert("画像が選択されてないよ！");
+    try{
+        let zip = init_zip();
 
-    let zip = init_zip();
+        //左上のブロック設置座標
+        let origin_xyz = [0,0,0];
 
-    //左上のブロック設置座標
-    let origin_xyz = [0,0,0];
+        let processed_data = cv.getContext('2d').createImageData(img_data.width, img_data.height);
+        //色格納
+        let imagecolors = [...Array(img_data.width * img_data.height * 4)].map(k=>0);
 
-    let processed_data = cv.getContext('2d').createImageData(img_data.width, img_data.height);
-    //色格納
-    let imagecolors = [...Array(img_data.width * img_data.height * 4)].map(k=>0);
-
-    if(num == 0){
-        //誤差拡散法
-        processed_data = greyErrorDiffusion(img_data,imagecolors,processed_data,origin_xyz,zip[0],zip[1]);
-    }
-    else if(num == 1){
-        processed_data = colorErrorDiffusion(img_data,processed_data,origin_xyz,zip[0],zip[1]);
-    }
-    else if(num == 2){
-        processed_data = colorReplaceCiede2000(img_data,processed_data,origin_xyz,zip[0],zip[1]);
-    }
-    cv.getContext('2d').putImageData(processed_data, 0, 0);
+        if(num == 0){
+            //誤差拡散法
+            processed_data = greyErrorDiffusion(img_data,imagecolors,processed_data,origin_xyz,zip[0],zip[1]);
+        }
+        else if(num == 1){
+            processed_data = colorErrorDiffusion(img_data,processed_data,origin_xyz,zip[0],zip[1]);
+        }
+        else if(num == 2){
+            processed_data = colorReplaceCiede2000(img_data,processed_data,origin_xyz,zip[0],zip[1]);
+        }
+        cv.getContext('2d').putImageData(processed_data, 0, 0);
+    }catch(e){}
 }
 
 /*
@@ -205,7 +206,6 @@ function colorReplaceCiede2000(img_data,processed_data,origin_xyz,zip,folder){
 
 function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
 
-    const angle = 360;
     const width = img_data.width;
     const height = img_data.height;    
     const color_csv = loadCSVFile2();//csvファイル
@@ -215,13 +215,13 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
     let output_data = [...img_data.data];//画像の色コピー
 
     //色比較
-    for(var y = 0;y < height;y = (y + 1)|0){
-        for(var x = 0;x < width;x = (x + 1)|0){
+    for(var y = 0;y < height;y++){
+        for(var x = 0;x < width;x++){
             const index = (x + y * width) * 4;
             
             let distance = [...Array(lab_array_size)].map(k=>100.0);
             //比較
-            for(var i = 0;i < lab_array_size; i = (i + 1)|0){
+            for(var i = 0;i < lab_array_size; i++){
                 if(output_data[index + 3] > 0){
                     let lab = rgb2lab([output_data[index],output_data[index + 1],output_data[index + 2]]);
                     distance[i] = ciede2000(lab[0],lab[1],lab[2],color_csv[2][i][0],color_csv[2][i][1],color_csv[2][i][2]);
@@ -231,9 +231,8 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
             
             let tmp_comp_num = distance[0];
             let comp_num = 0;
-            for(var i = 1;i < lab_array_size;i = (i + 1)|0){
+            for(var i = 1;i < lab_array_size;i++){
                 if(tmp_comp_num > distance[i]){
-                    //console.log(comp_num,"g");
                     tmp_comp_num = distance[i];
                     comp_num = i;
                 }
@@ -241,7 +240,7 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
 
             //一番近い色に置き換え
             let error = [...Array(3)].map(k => 0);
-            for(var i = 0;i < 3; i = (i + 1)|0){
+            for(var i = 0;i < 3; i++){
                 //誤差（rgbそれぞれで算出）
                 error[i] = output_data[index + i] - color_csv[1][comp_num][i];
                 output_data[index + i] = color_csv[1][comp_num][i];
@@ -254,7 +253,7 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
             let indexUL = ((x - 1) + y_i * width)*4;
             let indexU = (x + y_i * width)*4;
             let indexUR = (x_i + y_i * width)*4;
-            for(var i = 0;i < 3; i = (i + 1)|0){
+            for(var i = 0;i < 3; i++){
                 //右
                 if(x < width - 1){
                     output_data[indexR + i] = normalizeOutput(output_data[indexR + i] + (error[i] * 5) / 16);  
@@ -276,7 +275,7 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
     }
 
     //画像化 
-    for (var i = 0;i < img_data.data.length;i = (i + 1)|0) { 
+    for (var i = 0;i < img_data.data.length;i++) { 
         processed_data.data[i] = output_data[i];
     }
     return processed_data;
@@ -556,8 +555,9 @@ function loadCSVFile2(){
 
     let str = csv.responseText;
     let tmp_array = str.split("\n");
-    let array = [...Array(3)].map(k=>[...Array(tmp_array.length - 2)].map(k=>[...Array(3)].map(k=>-1)));
-    for(var i = 1;i < tmp_array.length - 1;i = (i + 1)|0){
+    let array_size = tmp_array.length;
+    let array = [...Array(3)].map(k=>[...Array(array_size - 2)].map(k=>[...Array(3)].map(k=>-1)));
+    for(var i = 1;i < array_size - 1;i++){
         let hsv_array = Array.from(tmp_array[i].split(',').slice(7,10), str => parseInt(str, 10));
         let rgb_array = Array.from(tmp_array[i].split(',').slice(1,4), str => parseInt(str, 10));
         
