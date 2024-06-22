@@ -56,16 +56,17 @@ function processImageData(num) {
         let processed_data = cv.getContext('2d').createImageData(img_data.width, img_data.height);
         //色格納
         let imagecolors = [...Array(img_data.width * img_data.height * 4)].map(k=>0);
-
+        //チェックボックス確認
+        let checkbox = checkboxConfirm();
         if(num == 0){
             //誤差拡散法
-            processed_data = greyErrorDiffusion(img_data,imagecolors,processed_data,origin_xyz,zip[0],zip[1]);
+            processed_data = greyErrorDiffusion(img_data,imagecolors,processed_data,checkbox,origin_xyz,zip[0],zip[1]);
         }
         else if(num == 1){
-            processed_data = colorErrorDiffusion(img_data,processed_data,origin_xyz,zip[0],zip[1]);
+            processed_data = colorErrorDiffusion(img_data,processed_data,checkbox,origin_xyz,zip[0],zip[1]);
         }
         else if(num == 2){
-            processed_data = colorReplaceCiede2000(img_data,processed_data,origin_xyz,zip[0],zip[1]);
+            processed_data = colorReplaceCiede2000(img_data,processed_data,checkbox,origin_xyz,zip[0],zip[1]);
         }
         cv.getContext('2d').putImageData(processed_data, 0, 0);
     }catch(e){}
@@ -74,7 +75,7 @@ function processImageData(num) {
 /*
 誤差拡散法（グレースケールver完成）
 */
-function greyErrorDiffusion(img_data,imagecolors,processed_data,origin_xyz,zip,folder){
+function greyErrorDiffusion(img_data,imagecolors,processed_data,checkbox,origin_xyz,zip,folder){
 
     //グレースケール化
     imagecolors = rgb2grey(img_data,imagecolors);
@@ -165,11 +166,11 @@ function greyErrorDiffusion(img_data,imagecolors,processed_data,origin_xyz,zip,f
     return processed_data;
 }
 
-function colorReplaceCiede2000(img_data,processed_data,origin_xyz,zip,folder){
+function colorReplaceCiede2000(img_data,processed_data,checkbox,origin_xyz,zip,folder){
 
     const width = img_data.width;
     const height = img_data.height;    
-    const color_csv = loadCSVFile2();//csvファイル
+    const color_csv = loadCSVFile2(checkbox);//csvファイル
     const lab_array_size = color_csv[2].length;
 
     let output_data = [...img_data.data];//画像の色コピー
@@ -212,11 +213,11 @@ function colorReplaceCiede2000(img_data,processed_data,origin_xyz,zip,folder){
     return processed_data;
 }
 
-function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
+function colorErrorDiffusion(img_data,processed_data,checkbox,origin_xyz,zip,folder){
 
     const width = img_data.width;
     const height = img_data.height;    
-    const color_csv = loadCSVFile2();//csvファイル
+    const color_csv = loadCSVFile2(checkbox);//csvファイル
     const lab_array_size = color_csv[2].length;
 
     let output_data = [...img_data.data];//画像の色コピー
@@ -294,6 +295,16 @@ function normalizeOutput(color){
     if(color > 255) color = 255;
     else if(color < 0) color = 0;
     return color;
+}
+/*
+チェックボックス確認
+*/
+function checkboxConfirm(){
+    return [
+        document.getElementById("blockType1").checked,
+        document.getElementById("blockType2").checked,
+        document.getElementById("blockType3").checked
+    ];
 }
 
 /*
@@ -553,7 +564,22 @@ excelファイル読み込み
 csv_array[i][0] = {h,s,v}
 csv_array[i][1] = {r,g,b}
 */
-function loadCSVFile2(){
+function loadCSVFile2(checkbox){
+    let ArraySlice = function(endindex,array){
+        const array_size = array[2].length;
+        for(var i = array_size;i < endindex + array_size;i++){
+            let hsv_array = Array.from(tmp_array[i].split(',').slice(7,10), str => parseInt(str, 10));
+            let rgb_array = Array.from(tmp_array[i].split(',').slice(1,4), str => parseInt(str, 10));
+            
+            let index = i - 1;
+            array[0][index] = hsv_array;
+            array[1][index] = rgb_array;
+            array[2][index] = rgb2lab(rgb_array);
+        }
+        return array;
+    }
+    const scope_type1 = 16;
+    const scope_type2 = 16;
     let csv = new XMLHttpRequest();
     csv.open("get", "BlocksColor.csv",false);
     csv.send(null);
@@ -564,16 +590,11 @@ function loadCSVFile2(){
     let tmp_array = str.split("\n");
     let array_size = tmp_array.length;
     let array = [...Array(3)].map(k=>[...Array(array_size - 2)].map(k=>[...Array(3)].map(k=>-1)));
-    for(var i = 1;i < array_size - 1;i++){
-        let hsv_array = Array.from(tmp_array[i].split(',').slice(7,10), str => parseInt(str, 10));
-        let rgb_array = Array.from(tmp_array[i].split(',').slice(1,4), str => parseInt(str, 10));
-        
-        let index = i - 1;
-        array[0][index] = hsv_array;
-        array[1][index] = rgb_array;
-        array[2][index] = rgb2lab(rgb_array);
+    if(checkbox[0]){
+        array = ArraySlice(scope_type1,array);
+        array = ArraySlice(scope_type2,array);
     }
-    
+    console.log(array);
     return array;
 }
 
