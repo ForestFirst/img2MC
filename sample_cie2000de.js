@@ -208,17 +208,19 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
     const angle = 360;
     const width = img_data.width;
     const height = img_data.height;    
-    const color_csv = loadCSVFile();//csvファイル
+    const color_csv = loadCSVFile2();//csvファイル
+    const lab_array_size = color_csv[2].length;
     let output_data = [...img_data.data];//画像の色コピー
 
     //色比較
     for(var y = 0;y < height;y = (y + 1)|0){
         for(var x = 0;x < width;x = (x + 1)|0){
             const index = (x + y * width) * 4;
-            let distance = [...Array(angle)].map(k=>100.0);
+            
+            let distance = [...Array(lab_array_size)].map(k=>100.0);
             //比較
-            for(var i = 0;i < angle; i = (i + 1)|0){
-                if(color_csv[2][i][0] > -1 && output_data[index + 3] > 0){
+            for(var i = 0;i < lab_array_size; i = (i + 1)|0){
+                if(output_data[index + 3] > 0){
                     let lab = rgb2lab([output_data[index],output_data[index + 1],output_data[index + 2]]);
                     distance[i] = ciede2000(lab[0],lab[1],lab[2],color_csv[2][i][0],color_csv[2][i][1],color_csv[2][i][2]);
                 }
@@ -227,7 +229,7 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
             
             let tmp_comp_num = distance[0];
             let comp_num = 0;
-            for(var i = 1;i < angle;i = (i + 1)|0){
+            for(var i = 1;i < lab_array_size;i = (i + 1)|0){
                 if(tmp_comp_num > distance[i]){
                     //console.log(comp_num,"g");
                     tmp_comp_num = distance[i];
@@ -559,6 +561,61 @@ function loadCSVFile(){
         array[1][hsv_array[0]] = rgb_array;
         //array[1][rgb_array[0]] = [parseInt(rgb_array[0]),parseInt(rgb_array[1]),parseInt(rgb_array[2])];
         array[2][hsv_array[0]] = rgb2lab(rgb_array).map(x => Math.round(x));
+    }
+    
+    return array;
+}
+
+/*
+excelファイル読み込み
+csv_array[i][0] = {h,s,v}
+csv_array[i][1] = {r,g,b}
+*/
+function loadCSVFile2(){
+    let csv = new XMLHttpRequest();
+    let array = [...Array(3)].map(k=>[...Array(360)].map(k=>[...Array(3)].map(k=>-1)));
+    csv.open("get", "BlocksColor.csv",false);
+    csv.send(null);
+    /*
+    csv.onload = function(e){
+        if (csv.readyState === 4){
+            if(csv.status === 200){
+                console.log("ブロック色のファイルは読み込めました。");
+
+                let str = csv.responseText;
+                let tmp_array = str.split("\n");
+                for(var i = 1;i < tmp_array.length - 1;i++){
+                    let hsv_array = Array.from(tmp_array[i].split(',').slice(7,10), str => parseInt(str, 10));
+                    console.log(hsv_array,isNaN(hsv_array));
+                    let rgb_array = Array.from(tmp_array[i].split(',').slice(1,4), str => parseInt(str, 10));
+                    console.log(rgb_array,isNaN(rgb_array));
+                    array[0][hsv_array[0]] = hsv_array.map(k => ({...hsv_array}));
+                    //array[0][hsv_array[0]] = [parseInt(hsv_array[0]),parseInt(hsv_array[1]),parseInt(hsv_array[2])];
+                    array[1][rgb_array[0]] = rgb_array.map(k => ({...rgb_array}));;
+                    //array[1][rgb_array[0]] = [parseInt(rgb_array[0]),parseInt(rgb_array[1]),parseInt(rgb_array[2])];
+                }
+                
+
+            }else{
+                console.error(csv.statusText);
+            }
+        }
+    }
+    */
+    console.log("ブロック色のファイルは読み込めました。");
+
+    let str = csv.responseText;
+    let tmp_array = str.split("\n");
+    for(var i = 1;i < tmp_array.length - 1;i = (i + 1)|0){
+        let hsv_array = Array.from(tmp_array[i].split(',').slice(7,10), str => parseInt(str, 10));
+        let rgb_array = Array.from(tmp_array[i].split(',').slice(1,4), str => parseInt(str, 10));
+        
+        let index = i - 1;
+        array[0][index] = hsv_array;
+        //array[0][hsv_array[0]] = [parseInt(hsv_array[0]),parseInt(hsv_array[1]),parseInt(hsv_array[2])];
+        array[1][index] = rgb_array;
+        //array[1][rgb_array[0]] = [parseInt(rgb_array[0]),parseInt(rgb_array[1]),parseInt(rgb_array[2])];
+        array[2][index] = rgb2lab(rgb_array);
     }
     
     return array;
