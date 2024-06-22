@@ -595,7 +595,7 @@ function loadCSVFile2(checkbox){
     if(checkbox[0]){
         array = ArraySlice(scope_type1,array);
     }
-    if(checkbox[0]){
+    if(checkbox[1]){
         array = ArraySlice(scope_type2,array);        
     }
     console.log(array);
