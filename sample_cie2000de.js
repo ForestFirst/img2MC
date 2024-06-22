@@ -171,7 +171,6 @@ function colorReplaceCiede2000(img_data,processed_data,origin_xyz,zip,folder){
     const height = img_data.height;    
     const color_csv = loadCSVFile2();//csvファイル
     const lab_array_size = color_csv[2].length;
-    const labS = init_rgb2lab(img_data.data);
 
     let output_data = [...img_data.data];//画像の色コピー
 
@@ -179,14 +178,13 @@ function colorReplaceCiede2000(img_data,processed_data,origin_xyz,zip,folder){
     for(var y = 0;y < height;y++){
         for(var x = 0;x < width;x++){
             const index = (x + y * width) * 4;
-            const img_index = index / 4;
             
             let distance = [...Array(lab_array_size)].map(k=>100.0);
             //比較
             for(var i = 0;i < lab_array_size; i++){
                 if(output_data[index + 3] > 0){
                     let lab = rgb2lab([output_data[index],output_data[index + 1],output_data[index + 2]]);
-                    distance[i] = ciede2000(labS[img_index][0],labS[img_index][1],labS[img_index][2],color_csv[2][i][0],color_csv[2][i][1],color_csv[2][i][2]);
+                    distance[i] = ciede2000(lab[0],lab[1],lab[2],color_csv[2][i][0],color_csv[2][i][1],color_csv[2][i][2]);
                 }
             }
 
