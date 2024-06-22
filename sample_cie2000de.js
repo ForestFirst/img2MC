@@ -166,18 +166,18 @@ function greyErrorDiffusion(img_data,imagecolors,processed_data,origin_xyz,zip,f
 }
 
 function colorReplaceCiede2000(img_data,processed_data,origin_xyz,zip,folder){
-    const angle = 360;
     const width = img_data.width;
     const height = img_data.height;  
     let output_data = [...img_data.data];
     const labS = init_rgb2lab(img_data.data,width * height);
 
-    const color_csv = loadCSVFile();//csvファイル 
+    const color_csv = loadCSVFile2();//csvファイル 
+    const array_size = color_csv[2].length;
 
     for(var i = 0;i < width * height * 4;i += 4){
-        let distance = [...Array(angle)].map(k => 100.0);
-        for(var j = 0;j < angle;j++){
-            if(color_csv > -1 && output_data[i + 3] > 0){
+        let distance = [...Array(array_size)].map(k => 100.0);
+        for(var j = 0;j < array_size;j++){
+            if(output_data[i + 3] > 0){
                 distance[j] = ciede2000(labS[i],labS[i + 1],labS[i + 2],color_csv[2][j][0],color_csv[2][j][1],color_csv[2][j][2]);
             }   
         }
@@ -185,7 +185,7 @@ function colorReplaceCiede2000(img_data,processed_data,origin_xyz,zip,folder){
         //距離比較
         let tmp_comp_num = distance[0];
         let comp_num = 0;
-        for(var j = 1;j < angle;j++){
+        for(var j = 1;j < array_sizee;j++){
             if(tmp_comp_num > distance[j]){
                 tmp_comp_num = distance[j];
                 comp_num = j;
