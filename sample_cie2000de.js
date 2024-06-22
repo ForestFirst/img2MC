@@ -57,7 +57,9 @@ function processImageData(num) {
         //色格納
         let imagecolors = [...Array(img_data.width * img_data.height * 4)].map(k=>0);
         //チェックボックス確認
+        console.log("開始");
         let checkbox = checkboxConfirm();
+        console.log(checkbox);
         if(num == 0){
             //誤差拡散法
             processed_data = greyErrorDiffusion(img_data,imagecolors,processed_data,checkbox,origin_xyz,zip[0],zip[1]);
