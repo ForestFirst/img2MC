@@ -592,7 +592,9 @@ function loadCSVFile2(checkbox){
     let array = [...Array(3)].map(k=>[...Array(array_size - 2)].map(k=>[...Array(3)].map(k=>-1)));
     if(checkbox[0]){
         array = ArraySlice(scope_type1,array);
-        array = ArraySlice(scope_type2,array);
+    }
+    if(checkbox[0]){
+        array = ArraySlice(scope_type2,array);        
     }
     console.log(array);
     return array;
