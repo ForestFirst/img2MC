@@ -567,19 +567,6 @@ csv_array[i][0] = {h,s,v}
 csv_array[i][1] = {r,g,b}
 */
 function loadCSVFile2(checkbox){
-    let ArraySlice = function(endindex,array){
-        const array_size = array[2].length;
-        for(var i = array_size;i < endindex + array_size;i++){
-            let hsv_array = Array.from(tmp_array[i].split(',').slice(7,10), str => parseInt(str, 10));
-            let rgb_array = Array.from(tmp_array[i].split(',').slice(1,4), str => parseInt(str, 10));
-            
-            let index = i - 1;
-            array[0][index] = hsv_array;
-            array[1][index] = rgb_array;
-            array[2][index] = rgb2lab(rgb_array);
-        }
-        return array;
-    }
     const scope_type1 = 16;
     const scope_type2 = 16;
     let csv = new XMLHttpRequest();
@@ -591,14 +578,28 @@ function loadCSVFile2(checkbox){
     let str = csv.responseText;
     let tmp_array = str.split("\n");
     let array_size = tmp_array.length;
-    let array = [...Array(3)].map(k=>[...Array(array_size - 2)].map(k=>[...Array(3)].map(k=>-1)));
+    //let array = [...Array(3)].map(k=>[...Array(array_size - 2)].map(k=>[...Array(3)].map(k=>-1)));
+    let array = [...Array(3)].map(k => 0);
     if(checkbox[0]){
-        array = ArraySlice(scope_type1,array);
+        array = ArraySlice(scope_type1,array,tmp_array);
     }
     if(checkbox[1]){
-        array = ArraySlice(scope_type2,array);        
+        array = ArraySlice(scope_type2,array,tmp_array);
     }
     console.log(array);
+    return array;
+}
+function ArraySlice(endindex,array,tmp_array){
+    const array_size = array[2].length;
+    for(var i = array_size;i < endindex + array_size;i++){
+        let hsv_array = Array.from(tmp_array[i].split(',').slice(7,10), str => parseInt(str, 10));
+        let rgb_array = Array.from(tmp_array[i].split(',').slice(1,4), str => parseInt(str, 10));
+        
+        let index = i - 1;
+        array[0][index] = hsv_array;
+        array[1][index] = rgb_array;
+        array[2][index] = rgb2lab(rgb_array);
+    }
     return array;
 }
 
