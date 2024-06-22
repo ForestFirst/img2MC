@@ -166,40 +166,47 @@ function greyErrorDiffusion(img_data,imagecolors,processed_data,origin_xyz,zip,f
 }
 
 function colorReplaceCiede2000(img_data,processed_data,origin_xyz,zip,folder){
+
     const width = img_data.width;
-    const height = img_data.height;  
-    let output_data = [...img_data.data];
-    const labS = init_rgb2lab(img_data.data,width * height);
+    const height = img_data.height;    
+    const color_csv = loadCSVFile2();//csvファイル
+    const lab_array_size = color_csv[2].length;
+    const labS = init_rgb2lab(img_data.data);
 
-    const color_csv = loadCSVFile2();//csvファイル 
-    const array_size = color_csv[2].length;
+    let output_data = [...img_data.data];//画像の色コピー
 
-    for(var i = 0;i < width * height * 4;i += 4){
-        const img_index = i / 4;
-        let distance = [...Array(array_size)].map(k => 100.0);
-        for(var j = 0;j < array_size;j++){
-            if(output_data[i + 3] > 0){
-                let lab = rgb2lab([output_data[index],output_data[index + 1],output_data[index + 2]]);
-                distance[j] = ciede2000(lab[0],lab[1],lab[2],color_csv[2][j][0],color_csv[2][j][1],color_csv[2][j][2]);
-                //distance[j] = ciede2000(labS[img_index],labS[img_index + 1],labS[img_index + 2],color_csv[2][j][0],color_csv[2][j][1],color_csv[2][j][2]);
-            }   
-        }
-        
-        //距離比較
-        let tmp_comp_num = distance[0];
-        let comp_num = 0;
-        for(var j = 1;j < array_size;j++){
-            if(tmp_comp_num > distance[j]){
-                tmp_comp_num = distance[j];
-                comp_num = j;
+    //色比較
+    for(var y = 0;y < height;y++){
+        for(var x = 0;x < width;x++){
+            const index = (x + y * width) * 4;
+            const img_index = index / 4;
+            
+            let distance = [...Array(lab_array_size)].map(k=>100.0);
+            //比較
+            for(var i = 0;i < lab_array_size; i++){
+                if(output_data[index + 3] > 0){
+                    let lab = rgb2lab([output_data[index],output_data[index + 1],output_data[index + 2]]);
+                    distance[i] = ciede2000(labS[img_index][0],labS[img_index][1],labS[img_index][2],color_csv[2][i][0],color_csv[2][i][1],color_csv[2][i][2]);
+                }
+            }
+
+            
+            let tmp_comp_num = distance[0];
+            let comp_num = 0;
+            for(var i = 1;i < lab_array_size;i++){
+                if(tmp_comp_num > distance[i]){
+                    tmp_comp_num = distance[i];
+                    comp_num = i;
+                }
+            }
+
+            //一番近い色に置き換え
+            for(var i = 0;i < 3; i++){
+                output_data[index + i] = color_csv[1][comp_num][i];
             }
         }
-        //置き換え
-        for(var j = 0;j < 3; j++){
-            //誤差（rgbそれぞれで算出）
-            output_data[i + j] = color_csv[1][comp_num][j];
-        }
     }
+
     //画像化 
     for (var i = 0;i < img_data.data.length;i++) { 
         processed_data.data[i] = output_data[i];
