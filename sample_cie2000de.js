@@ -209,7 +209,6 @@ function colorErrorDiffusion(img_data,processed_data,origin_xyz,zip,folder){
     const width = img_data.width;
     const height = img_data.height;    
     const color_csv = loadCSVFile2();//csvファイル
-    console.log(...color_csv);
     const lab_array_size = color_csv[2].length;
 
     let output_data = [...img_data.data];//画像の色コピー
