@@ -57,9 +57,7 @@ function processImageData(num) {
         //色格納
         let imagecolors = [...Array(img_data.width * img_data.height * 4)].map(k=>0);
         //チェックボックス確認
-        console.log("開始");
         let checkbox = checkboxConfirm();
-        console.log(checkbox);
         if(num == 0){
             //誤差拡散法
             processed_data = greyErrorDiffusion(img_data,imagecolors,processed_data,checkbox,origin_xyz,zip[0],zip[1]);
@@ -567,8 +565,6 @@ csv_array[i][0] = {h,s,v}
 csv_array[i][1] = {r,g,b}
 */
 function loadCSVFile2(checkbox){
-    const scope_type1 = 16;
-    const scope_type2 = 16;
     let csv = new XMLHttpRequest();
     csv.open("get", "BlocksColor.csv",false);
     csv.send(null);
@@ -578,20 +574,11 @@ function loadCSVFile2(checkbox){
     let str = csv.responseText;
     let tmp_array = str.split("\n");
     let array_size = tmp_array.length;
-    //let array = [...Array(3)].map(k=>[...Array(array_size - 2)].map(k=>[...Array(3)].map(k=>-1)));
-    let array = [...Array(3)].map(k => 0);
+    let array = [...Array(3)].map(k=>[...Array(array_size - 2)].map(k=>[...Array(3)].map(k=>-1)));
     if(checkbox[0]){
-        array = ArraySlice(scope_type1,array,tmp_array);
+
     }
-    if(checkbox[1]){
-        array = ArraySlice(scope_type2,array,tmp_array);
-    }
-    console.log(array);
-    return array;
-}
-function ArraySlice(endindex,array,tmp_array){
-    const array_size = array[2].length;
-    for(var i = array_size;i < endindex + array_size;i++){
+    for(var i = 1;i < array_size - 1;i++){
         let hsv_array = Array.from(tmp_array[i].split(',').slice(7,10), str => parseInt(str, 10));
         let rgb_array = Array.from(tmp_array[i].split(',').slice(1,4), str => parseInt(str, 10));
         
@@ -600,6 +587,34 @@ function ArraySlice(endindex,array,tmp_array){
         array[1][index] = rgb_array;
         array[2][index] = rgb2lab(rgb_array);
     }
+    
+    return array;
+}
+
+function loadCSVFile3(checkbox){
+    let csv = new XMLHttpRequest();
+    csv.open("get", "BlocksColor.csv",false);
+    csv.send(null);
+
+    console.log("ブロック色のファイルは読み込めました。");
+
+    let str = csv.responseText;
+    let tmp_array = str.split("\n");
+    let array_size = tmp_array.length;
+    let array = [...Array(3)].map(k=>[...Array(array_size - 2)].map(k=>[...Array(3)].map(k=>-1)));
+    if(checkbox[0]){
+
+    }
+    for(var i = 1;i < array_size - 1;i++){
+        let hsv_array = Array.from(tmp_array[i].split(',').slice(7,10), str => parseInt(str, 10));
+        let rgb_array = Array.from(tmp_array[i].split(',').slice(1,4), str => parseInt(str, 10));
+        
+        let index = i - 1;
+        array[0][index] = hsv_array;
+        array[1][index] = rgb_array;
+        array[2][index] = rgb2lab(rgb_array);
+    }
+    
     return array;
 }
 
