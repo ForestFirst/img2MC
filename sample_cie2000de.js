@@ -261,6 +261,25 @@ function colorErrorDiffusion(img_data,processed_data,checkbox,origin_xyz,zip,fol
             let indexUL = ((x - 1) + y_i * width)*4;
             let indexU = (x + y_i * width)*4;
             let indexUR = (x_i + y_i * width)*4;
+
+            //右
+            if(x < width - 1){
+                output_data[indexR] = normalizeOutput2(output_data[indexR],[...error].map(k => k * 5 / 16));  
+            }
+            //左下
+            if(x > 0){
+                output_data[indexUL] = normalizeOutput2(output_data[indexUL],[...error].map(k => k * 2.8 / 16));
+            }
+            //下
+            if(y < height -1){
+                output_data[indexU] = normalizeOutput2(output_data[indexU],[...error].map(k => k * 5 / 16));
+            }
+            //右下
+            if(x < width - 1 && y > height - 1){
+                output_data[indexUR] = normalizeOutput2(output_data[indexUR],[...error].map(k => k * 3.2 / 16));
+            }
+            
+            /*
             for(var i = 0;i < 3; i++){
                 //右
                 if(x < width - 1){
@@ -279,6 +298,7 @@ function colorErrorDiffusion(img_data,processed_data,checkbox,origin_xyz,zip,fol
                     output_data[indexUR + i] = normalizeOutput(output_data[indexUR + i] + (error[i] * 3.2) / 16);
                 }
             }
+            */
         }
     }
 
@@ -294,6 +314,29 @@ function colorErrorDiffusion(img_data,processed_data,checkbox,origin_xyz,zip,fol
 function normalizeOutput(color){
     if(color > 255) color = 255;
     else if(color < 0) color = 0;
+    return color;
+}
+/*
+アウトプットカラー正規化
+*/
+function normalizeOutput2(color,error){
+    let dis_error;
+    for(var i = 0;i < 3;i++){
+        if(color[i] > 255) {
+            dis_error = color[i] - 255;
+            color = Array.from([...color].map(k => k - dis_error / 2));
+            color[i] = 255;
+        }
+        else if(color[i] < 0) {
+            dis_error = color[i];
+            color = Array.from([...color].map(k => k - dis_error / 2));
+            color[i] = 0;
+        }
+        else{
+            color[i] = error[i];
+        }
+    }
+
     return color;
 }
 /*
