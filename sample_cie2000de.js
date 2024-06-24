@@ -338,9 +338,7 @@ function normalizeOutput2(color,error){
         color[i] += error[i];
         if(color[i] > 255) {
             dis_error = color[i] - 255;
-            console.log(color);
             color = Array.from([...color].map(k => k - (dis_error / 2)));
-            console.log(color);
             color[i] = 255;
         }
         else if(color[i] < 0) {
