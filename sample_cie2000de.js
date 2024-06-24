@@ -264,19 +264,19 @@ function colorErrorDiffusion(img_data,processed_data,checkbox,origin_xyz,zip,fol
 
             //右
             if(x < width - 1){
-                output_data[indexR] = normalizeOutput2(output_data[indexR],[...error].map(k => k * 5 / 16));  
+                output_data[indexR] = normalizeOutput2([output_data[indexR],output_data[indexR + 1],output_data[indexR + 2]],[...error].map(k => k * 5 / 16));  
             }
             //左下
             if(x > 0){
-                output_data[indexUL] = normalizeOutput2(output_data[indexUL],[...error].map(k => k * 2.8 / 16));
+                output_data[indexUL] = normalizeOutput2([output_data[indexUL],output_data[indexUL + 1],output_data[indexUL + 2]],[...error].map(k => k * 2.8 / 16));
             }
             //下
             if(y < height -1){
-                output_data[indexU] = normalizeOutput2(output_data[indexU],[...error].map(k => k * 5 / 16));
+                output_data[indexU] = normalizeOutput2([output_data[indexU],output_data[indexU + 1],output_data[indexU + 2]],[...error].map(k => k * 5 / 16));
             }
             //右下
             if(x < width - 1 && y > height - 1){
-                output_data[indexUR] = normalizeOutput2(output_data[indexUR],[...error].map(k => k * 3.2 / 16));
+                output_data[indexUR] = normalizeOutput2([output_data[indexUR],output_data[indexUR + 1],output_data[indexUR + 2]],[...error].map(k => k * 3.2 / 16));
             }
             
             /*
