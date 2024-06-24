@@ -320,7 +320,6 @@ function normalizeOutput(color){
 アウトプットカラー正規化
 */
 function normalizeOutput2(color,error){
-    console.log(color,error);
     let dis_error = [...Array(3)].map(k => 0);
     for(var i = 0;i < 3;i++){
         if(color[i] > 255) {
@@ -336,7 +335,6 @@ function normalizeOutput2(color,error){
         else{
             color[i] = error[i];
         }
-        console.log(i);
     }
 
     return color;
