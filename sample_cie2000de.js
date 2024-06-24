@@ -272,23 +272,23 @@ function colorErrorDiffusion(img_data,processed_data,checkbox,origin_xyz,zip,fol
             }
             //左下
             if(x > 0){
-                output_data[indexUL] = normalizeOutput2([output_data[indexUL],output_data[indexUL + 1],output_data[indexUL + 2]],[...error].map(k => k * 2.8 / 16));
+                tmp_array = normalizeOutput2([output_data[indexUL],output_data[indexUL + 1],output_data[indexUL + 2]],[...error].map(k => k * 2.8 / 16));
                 for(var i = 0;i < 3;i++){
-                    output_data[indexR + i] = tmp_array[i];
+                    output_data[indexUL + i] = tmp_array[i];
                 }
             }
             //下
             if(y < height -1){
-                output_data[indexU] = normalizeOutput2([output_data[indexU],output_data[indexU + 1],output_data[indexU + 2]],[...error].map(k => k * 5 / 16));
+                tmp_array = normalizeOutput2([output_data[indexU],output_data[indexU + 1],output_data[indexU + 2]],[...error].map(k => k * 5 / 16));
                 for(var i = 0;i < 3;i++){
-                    output_data[indexR + i] = tmp_array[i];
+                    output_data[indexU + i] = tmp_array[i];
                 }
             }
             //右下
             if(x < width - 1 && y > height - 1){
-                output_data[indexUR] = normalizeOutput2([output_data[indexUR],output_data[indexUR + 1],output_data[indexUR + 2]],[...error].map(k => k * 3.2 / 16));
+                tmp_array = normalizeOutput2([output_data[indexUR],output_data[indexUR + 1],output_data[indexUR + 2]],[...error].map(k => k * 3.2 / 16));
                 for(var i = 0;i < 3;i++){
-                    output_data[indexR + i] = tmp_array[i];
+                    output_data[indexUR + i] = tmp_array[i];
                 }
             }
             
