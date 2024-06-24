@@ -261,22 +261,35 @@ function colorErrorDiffusion(img_data,processed_data,checkbox,origin_xyz,zip,fol
             let indexUL = ((x - 1) + y_i * width)*4;
             let indexU = (x + y_i * width)*4;
             let indexUR = (x_i + y_i * width)*4;
+            let tmp_array = [...Array(3)].map(k => 0);
 
             //右
             if(x < width - 1){
-                [output_data[indexR],output_data[indexR + 1],output_data[indexR + 2]] = normalizeOutput2([output_data[indexR],output_data[indexR + 1],output_data[indexR + 2]],[...error].map(k => k * 5 / 16));  
+                tmp_array = normalizeOutput2([output_data[indexR],output_data[indexR + 1],output_data[indexR + 2]],[...error].map(k => k * 5 / 16));  
+                for(var i = 0;i < 3;i++){
+                    output_data[indexR + i] = tmp_array[i];
+                }
             }
             //左下
             if(x > 0){
-                [output_data[indexUL],output_data[indexUL + 1],output_data[indexUL + 2]] = normalizeOutput2([output_data[indexUL],output_data[indexUL + 1],output_data[indexUL + 2]],[...error].map(k => k * 2.8 / 16));
+                output_data[indexUL] = normalizeOutput2([output_data[indexUL],output_data[indexUL + 1],output_data[indexUL + 2]],[...error].map(k => k * 2.8 / 16));
+                for(var i = 0;i < 3;i++){
+                    output_data[indexR + i] = tmp_array[i];
+                }
             }
             //下
             if(y < height -1){
-                [output_data[indexU],output_data[indexU + 1],output_data[indexU + 2]] = normalizeOutput2([output_data[indexU],output_data[indexU + 1],output_data[indexU + 2]],[...error].map(k => k * 5 / 16));
+                output_data[indexU] = normalizeOutput2([output_data[indexU],output_data[indexU + 1],output_data[indexU + 2]],[...error].map(k => k * 5 / 16));
+                for(var i = 0;i < 3;i++){
+                    output_data[indexR + i] = tmp_array[i];
+                }
             }
             //右下
             if(x < width - 1 && y > height - 1){
-                [output_data[indexUR],output_data[indexUR + 1],output_data[indexUR + 2]] = normalizeOutput2([output_data[indexUR],output_data[indexUR + 1],output_data[indexUR + 2]],[...error].map(k => k * 3.2 / 16));
+                output_data[indexUR] = normalizeOutput2([output_data[indexUR],output_data[indexUR + 1],output_data[indexUR + 2]],[...error].map(k => k * 3.2 / 16));
+                for(var i = 0;i < 3;i++){
+                    output_data[indexR + i] = tmp_array[i];
+                }
             }
             
             /*
