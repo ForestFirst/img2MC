@@ -334,6 +334,7 @@ function normalizeOutput(color){
 */
 function normalizeOutput2(color,error){
     let dis_error = [...Array(3)].map(k => 0);
+    color[i] += error[i];
     for(var i = 0;i < 3;i++){
         if(color[i] > 255) {
             dis_error = color[i] - 255;
