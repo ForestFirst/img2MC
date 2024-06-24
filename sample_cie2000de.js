@@ -345,9 +345,6 @@ function normalizeOutput2(color,error){
             color = Array.from([...color].map(k => k - (dis_error / 2)));
             color[i] = 0;
         }
-        else{
-            color[i] = error[i];
-        }
     }
 
     return color;
