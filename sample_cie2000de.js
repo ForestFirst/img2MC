@@ -328,13 +328,16 @@ function colorErrorDiffusion(img_data,processed_data,checkbox,origin_xyz,zip,fol
 function initBlockImg(str){
     var canvas = document.getElementById('black_concrete');
     var imgc = canvas.getContext('2d');
-    // imgc.fillStyle = "rgb(255,255,255)"
-    // imgc.fillRect(0,0,50,50);
+    imgc.fillStyle = "rgb(255,255,255)"
+    imgc.fillRect(0,0,50,50);
 
     size = 50;
     var img = new Image();
     img.src = str;
-    imgc.drawImage(img,100,100,size,size);
+    var rect = canvas.target.getBoundingClientRect();
+    x = canvas.clientX- rect.left-size;
+    y = canvas.clientY- rect.top-size;
+    imgc.drawImage(img,x,y,size,size);
 }
 /*
 アウトプットカラー正規化
