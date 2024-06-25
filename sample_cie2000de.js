@@ -58,6 +58,8 @@ function processImageData(num) {
         let imagecolors = [...Array(img_data.width * img_data.height * 4)].map(k=>0);
         //チェックボックス確認
         let checkbox = checkboxConfirm();
+        //画像初期化
+        initBlockImg("./textures/concrete/black_concrete.png");
         if(num == 0){
             //誤差拡散法
             processed_data = greyErrorDiffusion(img_data,imagecolors,processed_data,checkbox,origin_xyz,zip[0],zip[1]);
@@ -263,6 +265,7 @@ function colorErrorDiffusion(img_data,processed_data,checkbox,origin_xyz,zip,fol
             let indexUR = (x_i + y_i * width)*4;
             let tmp_array = [...Array(3)].map(k => 0);
 
+            /*
             //右
             if(x < width - 1){
                 tmp_array = normalizeOutput2([output_data[indexR],output_data[indexR + 1],output_data[indexR + 2]],[...error].map(k => k * 5 / 16));  
@@ -291,8 +294,7 @@ function colorErrorDiffusion(img_data,processed_data,checkbox,origin_xyz,zip,fol
                     output_data[indexUR + i] = tmp_array[i];
                 }
             }
-            
-            /*
+            */
             for(var i = 0;i < 3; i++){
                 //右
                 if(x < width - 1){
@@ -311,7 +313,6 @@ function colorErrorDiffusion(img_data,processed_data,checkbox,origin_xyz,zip,fol
                     output_data[indexUR + i] = normalizeOutput(output_data[indexUR + i] + (error[i] * 3.2) / 16);
                 }
             }
-            */
         }
     }
 
@@ -322,6 +323,20 @@ function colorErrorDiffusion(img_data,processed_data,checkbox,origin_xyz,zip,fol
     return processed_data;
 }
 /*
+画像初期化
+*/
+function initBlockImg(str){
+    var canvas = document.getElementById('black_concrete');
+    var imgc = canvas.getContext('2d');
+    imgc.fillStyle = "rgb(255,255,255)"
+    imgc.fillRect(0,0,50,50);
+
+    size = 50;
+    var img = new Image();
+    img.src = str;
+    imgc.drawImage(img,100,100,size,size);
+}
+/*
 アウトプットカラー正規化
 */
 function normalizeOutput(color){
@@ -330,7 +345,7 @@ function normalizeOutput(color){
     return color;
 }
 /*
-アウトプットカラー正規化
+アウトプットカラー正規化(ぶつぶつ感がかなり強い。ただ、画素数を増やすと多少いい感じ)
 */
 function normalizeOutput2(color,error){
     let dis_error = [...Array(3)].map(k => 0);
