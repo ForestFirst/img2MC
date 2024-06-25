@@ -331,12 +331,12 @@ function initBlockImg(str){
     imgc.fillStyle = "rgb(255,255,255)"
     imgc.fillRect(0,0,50,50);
 
-    size = 50;
+    var size = 50;
     var img = new Image();
     img.src = str;
     var rect = canvas.target.getBoundingClientRect();
-    x = canvas.clientX- rect.left-size;
-    y = canvas.clientY- rect.top-size;
+    var x = canvas.clientX- rect.left-size;
+    var y = canvas.clientY- rect.top-size;
     imgc.drawImage(img,x,y,size,size);
 }
 /*
