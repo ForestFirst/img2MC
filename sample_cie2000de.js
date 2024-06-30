@@ -59,7 +59,7 @@ function processImageData(num) {
         //チェックボックス確認
         let checkbox = checkboxConfirm();
         //画像初期化
-        initBlockImg("./textures/concrete/black_concrete.png");
+        //initBlockImg("./textures/concrete/black_concrete.png");
         if(num == 0){
             //誤差拡散法
             processed_data = greyErrorDiffusion(img_data,imagecolors,processed_data,checkbox,origin_xyz,zip[0],zip[1]);
