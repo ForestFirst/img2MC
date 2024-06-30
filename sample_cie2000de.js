@@ -263,7 +263,8 @@ function colorErrorDiffusion(img_data,processed_data,checkbox,origin_xyz,zip,fol
             let indexUL = ((x - 1) + y_i * width)*4;
             let indexU = (x + y_i * width)*4;
             let indexUR = (x_i + y_i * width)*4;
-            let tmp_array = [...Array(3)].map(k => 0);
+            
+            //let tmp_array = [...Array(3)].map(k => 0);
 
             /*
             //右
@@ -343,6 +344,8 @@ function initBlockImg(str){
 アウトプットカラー正規化
 */
 function normalizeOutput(color){
+    //誤差拡散
+    console.log("n");
     if(color > 255) color = 255;
     else if(color < 0) color = 0;
     return color;
