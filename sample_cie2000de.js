@@ -364,9 +364,9 @@ function loadCombinedCSVFiles(checkboxes) {
     const files = [];
     
     // チェックボックスの状態に基づいてファイルを選択
-    if (checkboxes[0]) files.push("BlocksColor_wool.csv");
-    if (checkboxes[1]) files.push("BlocksColor_concrete.csv");
-    if (checkboxes[2]) files.push("BlocksColor_concrete_powder.csv");
+    if (checkboxes[0]) files.push("BlocksColor_wool.xlsx");
+    if (checkboxes[1]) files.push("BlocksColor_concrete.xlsx");
+    if (checkboxes[2]) files.push("BlocksColor_concrete_powder.xlsx");
     
     // どのファイルも選択されていない場合は、デフォルトとして羊毛を使用
     if (files.length === 0) {
