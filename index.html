@@ -2,6 +2,30 @@
 <html>
 <head>
 <meta charset="utf-8">
+<style>
+  #drop_zone {
+    border: 2px dashed #ccc;
+    border-radius: 5px;
+    width: 300px;
+    height: 200px;
+    padding: 20px;
+    text-align: center;
+    margin: 20px 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  #drop_zone.highlight {
+    border-color: #000;
+    background-color: rgba(0, 0, 0, 0.05);
+  }
+
+  #preview {
+    margin-top: 20px;
+  }
+</style>
 </head>
 <body>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.7.1/jszip.min.js"></script>
@@ -9,49 +33,68 @@
     <script src="https://d3js.org/d3.v5.min.js"></script>
     <script src="sample_cie2000de.js"></script>
 
-<p>
-<input type="file" id="inputImage" onchange="onFileSelected(this)">
-</p>
+<h1>img2MC - 画像変換ツール</h1>
 
-<p>
-<canvas id="test_canvas" width=256 height=256 style="border: 1px solid;"></canvas>
-</p>
+<div id="drop_zone">
+    <p>画像をここにドラッグ＆ドロップ</p>
+    <p>または</p>
+    <input type="file" id="inputImage" accept="image/*" onchange="onFileSelected(this)">
+</div>
+
+<div id="preview">
+    <canvas id="test_canvas" width=256 height=256 style="border: 1px solid;"></canvas>
+</div>
+
 <p>
     <label><input type="checkbox" id="blockType1" value="羊毛" checked>羊毛</label>
     <label><input type="checkbox" id="blockType2" value="コンクリート" checked>コンクリート</label>
     <label><input type="checkbox" id="blockType3" value="かためたやつ" checked>固めたコンクリ</label>
 </p>
-<!--
-<p>
-    <article>
-        <h1>Blocks</h1>
-        <canvas id="black_concrete" width="30" height="30"></canvas>
-        <img data-src="./textures/concrete/blue_concrete.png" alt="Bear" width="100">
-        <img data-src="./textures/concrete/brown_concrete.png" alt="Bear" width="100">
-        <img data-src="./textures/concrete/cyan_concrete.png" alt="Bear" width="100">
-        <img data-src="./textures/concrete/gray_concrete.png" alt="Bear" width="100">
-        <img data-src="./textures/concrete/green_concrete.png" alt="Bear" width="100">
-        <img data-src="./textures/concrete/light_blue_concrete.png" alt="Bear" width="100">
-        <img data-src="./textures/concrete/light_gray_concrete.png" alt="Bear" width="100">
-        <img data-src="./textures/concrete/lime_concrete.png" alt="Bear" width="100">
-        <img data-src="./textures/concrete/magenta_concrete.png" alt="Bear" width="100">
-        <img data-src="./textures/concrete/orange_concrete.png" alt="Bear" width="100">
-        <img data-src="./textures/concrete/pink_concrete.png" alt="Bear" width="100">
-        <img data-src="./textures/concrete/purple_concrete.png" alt="Bear" width="100">
-        <img data-src="./textures/concrete/red_concrete.png" alt="Bear" width="100">
-        <img data-src="./textures/concrete/white_concrete.png" alt="Bear" width="100">
-        <img data-src="./textures/concrete/yellow_concrete.png" alt="Bear" width="100">
-    </article>
-</p>
--->
 
 <p>
-<input type="button" value="白黒" onclick="processImageData(0)">
-
-<input type="button" value="カラー(高)" onclick="processImageData(1)">
-
-<input type="button" value="カラー（低）" onclick="processImageData(2)">
+    <input type="button" value="白黒" onclick="processImageData(0)">
+    <input type="button" value="カラー(高)" onclick="processImageData(1)">
+    <input type="button" value="カラー（低）" onclick="processImageData(2)">
 </p>
+
+<script>
+    // ドラッグ＆ドロップのイベント処理
+    let dropZone = document.getElementById('drop_zone');
+    
+    // ドラッグオーバーイベントの処理
+    dropZone.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        this.classList.add('highlight');
+    });
+    
+    // ドラッグリーブイベントの処理
+    dropZone.addEventListener('dragleave', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        this.classList.remove('highlight');
+    });
+    
+    // ドロップイベントの処理
+    dropZone.addEventListener('drop', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        this.classList.remove('highlight');
+        
+        let files = e.dataTransfer.files;
+        if (files.length > 0) {
+            let file = files[0];
+            // 画像ファイルかどうかチェック
+            if (file.type.match('image.*')) {
+                document.getElementById('inputImage').files = files;
+                // 既存の画像処理関数を呼び出し
+                onFileSelected(document.getElementById('inputImage'));
+            } else {
+                alert('画像ファイルをドロップしてください');
+            }
+        }
+    });
+</script>
 
 </body>
 </html>
