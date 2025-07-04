@@ -76,6 +76,10 @@
         transition: transform 0.2s ease;
         max-width: 500px;
         max-height: 500px;
+        object-fit: contain;
+        image-rendering: pixelated;
+        image-rendering: -moz-crisp-edges;
+        image-rendering: crisp-edges;
     }
     
     #test_canvas:hover {
@@ -420,21 +424,19 @@
         window.onImageSetted = function(e) {
             const img_data = createImageData(e.target);
             
-            // キャンバスサイズを調整（最大500px）
-            const { width, height } = calculateDisplaySize(img_data.width, img_data.height, 500);
+            // キャンバスの実際のサイズは元画像と同じに設定
+            canvas.width = img_data.width;
+            canvas.height = img_data.height;
             
-            canvas.width = width;
-            canvas.height = height;
+            // 表示サイズのみを調整（CSS）
+            const { width, height } = calculateDisplaySize(img_data.width, img_data.height, 500);
+            canvas.style.width = width + 'px';
+            canvas.style.height = height + 'px';
             canvas.style.display = 'block';
             
-            // 画像を描画
+            // 画像を描画（実サイズで）
             const ctx = canvas.getContext('2d');
-            const tempCanvas = document.createElement('canvas');
-            tempCanvas.width = img_data.width;
-            tempCanvas.height = img_data.height;
-            tempCanvas.getContext('2d').putImageData(img_data, 0, 0);
-            
-            ctx.drawImage(tempCanvas, 0, 0, width, height);
+            ctx.putImageData(img_data, 0, 0);
             
             // 元のデータを保存
             canvas.img_data = img_data;
@@ -501,13 +503,17 @@
         function showModal() {
             if (!currentImageData) return;
             
-            const ctx = canvas.getContext('2d');
-            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            // 現在のキャンバスの内容を取得
+            const currentCanvas = canvas;
             
-            // モーダルキャンバスに描画
-            modalCanvas.width = canvas.width;
-            modalCanvas.height = canvas.height;
-            modalCanvas.getContext('2d').putImageData(imageData, 0, 0);
+            // モーダルキャンバスに実サイズで描画
+            modalCanvas.width = currentCanvas.width;
+            modalCanvas.height = currentCanvas.height;
+            
+            const modalCtx = modalCanvas.getContext('2d');
+            const currentCtx = currentCanvas.getContext('2d');
+            const imageData = currentCtx.getImageData(0, 0, currentCanvas.width, currentCanvas.height);
+            modalCtx.putImageData(imageData, 0, 0);
             
             modal.style.display = 'block';
         }
