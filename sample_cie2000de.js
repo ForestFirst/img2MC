@@ -26,549 +26,596 @@ function createImageData(img) {
     cv.height = img.naturalHeight;
     var ct = cv.getContext('2d');
     ct.drawImage(img, 0, 0);
-    return ct.getImageData(0, 0, cv.width, cv.height);
+    var data = ct.getImageData(0, 0, cv.width, cv.height);
+    return data;
 }
-
-// グローバルキャッシュ変数
-let colorCache = null;
-let labCache = new Map();
 
 function processImageData(num) {
     var cv = document.getElementById('test_canvas');
     var img_data = cv.img_data;
     
-    if (!img_data) {
-        alert("画像が選択されてないよ！");
-        return;
-    }
-    
+    // 画像が選択されてるか確認
+    if (!img_data) alert("画像が選択されてないよ！");
     try {
         let zip = init_zip();
-        let origin_xyz = [0,0,0];
-        let processed_data = cv.getContext('2d').createImageData(img_data.width, img_data.height);
-        let imagecolors = new Uint8ClampedArray(img_data.width * img_data.height * 4);
-        let checkbox = checkboxConfirm();
 
-        if(num === 0){
-            processed_data = greyErrorDiffusion(img_data, imagecolors, processed_data, checkbox, origin_xyz, zip[0], zip[1]);
-        } else if(num === 1){
-            processed_data = colorErrorDiffusion(img_data, processed_data, checkbox, origin_xyz, zip[0], zip[1]);
-        } else if(num === 2){
-            processed_data = colorReplaceCiede2000(img_data, processed_data, checkbox, origin_xyz, zip[0], zip[1]);
+        // 左上のブロック設置座標
+        let origin_xyz = [0,0,0];
+
+        let processed_data = cv.getContext('2d').createImageData(img_data.width, img_data.height);
+        // 色格納
+        let imagecolors = [...Array(img_data.width * img_data.height * 4)].map(k=>0);
+        // チェックボックス確認
+        let checkboxes = checkboxConfirm();
+        
+        if(num == 0){
+            // 誤差拡散法
+            processed_data = greyErrorDiffusion(img_data,imagecolors,processed_data,checkboxes,origin_xyz,zip[0],zip[1]);
+        }
+        else if(num == 1){
+            processed_data = colorErrorDiffusion(img_data,processed_data,checkboxes,origin_xyz,zip[0],zip[1]);
+        }
+        else if(num == 2){
+            processed_data = colorReplaceCiede2000(img_data,processed_data,checkboxes,origin_xyz,zip[0],zip[1]);
         }
         cv.getContext('2d').putImageData(processed_data, 0, 0);
     } catch(e) {
-        console.error('Processing error:', e);
+        console.error("エラーが発生しました:", e);
     }
 }
 
-function greyErrorDiffusion(img_data, imagecolors, processed_data, checkbox, origin_xyz, zip, folder) {
+// 誤差拡散法（グレースケールver完成）
+function greyErrorDiffusion(img_data,imagecolors,processed_data,checkboxes,origin_xyz,zip,folder){
     // グレースケール化
-    imagecolors = rgb2grey(img_data, imagecolors);
+    imagecolors = rgb2grey(img_data,imagecolors);
 
-    const width = img_data.width;
-    const height = img_data.height;
-    
-    // 誤差拡散処理
-    for (let y = 0; y < height - 1; y++) {
-        for (let x = 0; x < width - 1; x++) {
-            // 中間色の閾値配列を初期化
-            let mid_set_color = new Array(256);
-            let error_add = new Array(256);
-            
-            for (let i = 0; i < 128; i++) {
-                mid_set_color[i] = 0;
+    var error;
+    for (var y = 0;y < img_data.height - 1;y++) {
+        for (var x = 0;x < img_data.width - 1;x++) {
+            var mid_set_color = new Array(256);
+            var error_add = new Array(256);
+            for(var i = 0;i < 128;i++){
+                mid_set_color [i] = 0;
                 error_add[i] = 0;
             }
-            for (let i = 128; i <= 255; i++) {
-                mid_set_color[i] = 255;
+            for(var i = 128;i <= 255;i++){
+                mid_set_color [i] = 255;
                 error_add[i] = 255;
             }
 
-            const index = (x + y * width) * 4;
-            
-            // 誤差計算（現在のピクセルの値と量子化後の値の差）
-            const pixelValue = Math.round(imagecolors[index]);
-            const error = imagecolors[index] - error_add[pixelValue];
-            
-            // ピクセルの値を設定（白か黒）
-            for (let i = 0; i < 3; i++) {
-                imagecolors[index + i] = mid_set_color[pixelValue];
+            var index = (x + y * img_data.width)*4;
+            // 誤差計算
+            error = imagecolors[index] - error_add[Math.round(imagecolors[index])];
+            for(var i = 0;i < 3; i++){
+                imagecolors[index + i] = mid_set_color[Math.round(imagecolors[index + i])];             
             }
-            imagecolors[index + 3] = 255; // アルファ値を255に
 
-            // 誤差拡散（フロイド・シュタインベルグ法）
-            for (let i = 0; i < 3; i++) {
+            // 拡散(7 5 3 1 を試したがノイズが大きい)
+            for(var i = 0;i < 3; i++){
                 // 右
-                if (x < width - 1) {
-                    imagecolors[((x + 1) + y * width) * 4 + i] += (error * 5) / 16 | 0;
+                if(x < img_data.width - 1){
+                    imagecolors[((x + 1) + y * img_data.width)*4 + i] += (error * 5) / 16 | 0;                        
                 }
                 // 左下
-                if (x > 0 && y < height - 1) {
-                    imagecolors[((x - 1) + (y + 1) * width) * 4 + i] += (error * 3) / 16 | 0;
+                if(x > 0){
+                    imagecolors[((x - 1) + (y + 1) * img_data.width)*4 + i] += (error * 2.8) / 16 | 0;
                 }
-                // 下 - ここが間違っていた
-                if (y < height - 1) {
-                    imagecolors[(x + (y + 1) * width) * 4 + i] += (error * 5) / 16 | 0;
+                // 下
+                if(i < img_data.height -1){
+                    imagecolors[(x + (y + 1) * img_data.width)*4 + i] += (error * 5) / 16 | 0;
                 }
                 // 右下
-                if (x < width - 1 && y < height - 1) {
-                    imagecolors[((x + 1) + (y + 1) * width) * 4 + i] += (error * 3) / 16 | 0;
+                if(x < img_data.width - 1 && y > img_data.height - 1){
+                    imagecolors[((x + 1) + (y + 1) * img_data.width)*4 + i] += (error * 3.2) / 16 | 0;
                 }
             }
         }
     }
     
     // 画像化
-    for (let i = 0; i < img_data.data.length; i++) {
+    for (var i = 0;i < img_data.data.length;i++) {
         processed_data.data[i] = imagecolors[i];
     }
     
-    // マイクラドット絵コマンド書き込み
+    // マイクラドット絵コマンド書き込み(ゲーム内のコマンド/functionで実行)
+    let tmp_num;
     let count = 0;
     let filecount = 0;
-    let functionStr = '';
+    var functionStr = '';
     
-    for (let y = 0; y < height; y++) {
-        for (let x = 0; x < width; x++) {
+    // グレースケールの場合は羊毛ブロックのみを使用
+    let blockTypes = ["black_wool", "white_wool"];
+    
+    for (var y = 0;y < img_data.height;y++) {
+        for (var x = 0;x < img_data.width;x++) {
             count++;
-            const index = (x + y * width) * 4;
+            var index = (x + y * img_data.width)*4;
             
-            // 連続する同じ色のピクセル数をカウント
-            let runLength = 0;
-            for (let c = 0; c < width - x; c++) {
-                if (imagecolors[((x + c) + y * width) * 4] === imagecolors[index] && (x + c) < width) {
-                    runLength += 1;
-                } else {
-                    break;
+            tmp_num = 0;
+            for(var c = 1;c < img_data.width;c++) {
+                if(imagecolors[((x + c) + y * img_data.width)*4] == imagecolors[index] && (x + c) <= img_data.width) {
+                    tmp_num += 1;
                 }
+                else break;
             }
 
-            // Minecraftコマンドを生成
-            if (imagecolors[index] === 0) {
-                functionStr += `fill ${x + origin_xyz[0]} ${origin_xyz[1]} ${y + origin_xyz[2]} ${x + origin_xyz[0] + runLength - 1} ${origin_xyz[1]} ${y + origin_xyz[2]} minecraft:black_wool\n`;
-            } else if (imagecolors[index] === 255) {
-                functionStr += `fill ${x + origin_xyz[0]} ${origin_xyz[1]} ${y + origin_xyz[2]} ${x + origin_xyz[0] + runLength - 1} ${origin_xyz[1]} ${y + origin_xyz[2]} minecraft:white_wool\n`;
+            if(imagecolors[index] == 0){
+                functionStr += "fill " + (x + origin_xyz[0]) + " " + origin_xyz[1] + " " +  (y + origin_xyz[2]) + " " + (x + origin_xyz[0] + tmp_num) + " " + origin_xyz[1] + " " +  (y + origin_xyz[2]) + " minecraft:black_wool\n";
             }
-            
-            // x座標を進める
-            x += runLength - 1; // -1は次のforループで+1されるため
-            
-            // 10000コマンドごとにファイル分割
-            if (count >= 10000) {
+            else if(imagecolors[index] == 255){
+                functionStr += "fill " + (x + origin_xyz[0]) + " " + origin_xyz[1] + " " +  (y + origin_xyz[2]) + " " + (x + origin_xyz[0] + tmp_num) + " " + origin_xyz[1] + " " +  (y + origin_xyz[2]) + " minecraft:white_wool\n";
+            }
+            x += tmp_num;
+            if(count >= 10000){
                 filecount++;
-                filesave(functionStr, filecount, folder);
+                filesave(functionStr,filecount,folder);
                 functionStr = "";
                 count = 0;
             }
         }
     }
-    
-    // 残りのコマンドを保存
-    filesave(functionStr, filecount, folder);
+    filesave(functionStr,filecount,folder);
     zipDL(zip);
 
     return processed_data;
 }
 
-// 最適化されたCIEDE2000色置換
-function colorReplaceCiede2000(img_data, processed_data, checkbox, origin_xyz, zip, folder) {
+function colorReplaceCiede2000(img_data,processed_data,checkboxes,origin_xyz,zip,folder){
     const width = img_data.width;
-    const height = img_data.height;
-    
-    // 色データをキャッシュから取得または生成
-    if (!colorCache) {
-        colorCache = loadCSVFile2(checkbox);
-    }
-    const color_csv = colorCache;
+    const height = img_data.height;    
+    const color_csv = loadCombinedCSVFiles(checkboxes); // 新しい関数で選択されたブロックタイプだけを読み込む
     const lab_array_size = color_csv[2].length;
 
-    const output_data = new Uint8ClampedArray(img_data.data);
+    let output_data = [...img_data.data]; // 画像の色コピー
 
-    // バッチ処理用の配列
-    const batchSize = 1000;
-    const totalPixels = width * height;
-    
-    for (let batch = 0; batch < totalPixels; batch += batchSize) {
-        const endBatch = Math.min(batch + batchSize, totalPixels);
-        
-        for (let pixel = batch; pixel < endBatch; pixel++) {
-            const index = pixel * 4;
-            
-            if (output_data[index + 3] === 0) continue; // 透明ピクセルをスキップ
-            
-            // RGB値をキーとしてキャッシュを確認
-            const rgbKey = `${output_data[index]},${output_data[index + 1]},${output_data[index + 2]}`;
-            let bestColor;
-            
-            if (labCache.has(rgbKey)) {
-                bestColor = labCache.get(rgbKey);
-            } else {
-                // LAB変換と最近色検索
-                const lab = rgb2lab([output_data[index], output_data[index + 1], output_data[index + 2]]);
-                let minDistance = Infinity;
-                let bestIndex = 0;
-                
-                // 最適化されたCIEDE2000計算
-                for (let i = 0; i < lab_array_size; i++) {
-                    const distance = ciede2000Fast(lab[0], lab[1], lab[2], 
-                                                 color_csv[2][i][0], color_csv[2][i][1], color_csv[2][i][2]);
-                    if (distance < minDistance) {
-                        minDistance = distance;
-                        bestIndex = i;
-                    }
-                }
-                
-                bestColor = color_csv[1][bestIndex];
-                labCache.set(rgbKey, bestColor);
-            }
-            
-            // 色を設定
-            output_data[index] = bestColor[0];
-            output_data[index + 1] = bestColor[1];
-            output_data[index + 2] = bestColor[2];
-        }
-    }
-
-    processed_data.data.set(output_data);
-    return processed_data;
-}
-
-// 最適化された誤差拡散
-function colorErrorDiffusion(img_data, processed_data, checkbox, origin_xyz, zip, folder) {
-    const width = img_data.width;
-    const height = img_data.height;
-    
-    if (!colorCache) {
-        colorCache = loadCSVFile2(checkbox);
-    }
-    const color_csv = colorCache;
-    const lab_array_size = color_csv[2].length;
-
-    const output_data = new Uint8ClampedArray(img_data.data);
-
-    for (let y = 0; y < height; y++) {
-        for (let x = 0; x < width; x++) {
+    // 色比較
+    for(var y = 0;y < height;y++){
+        for(var x = 0;x < width;x++){
             const index = (x + y * width) * 4;
             
-            if (output_data[index + 3] === 0) continue;
-
-            // RGB値をキーとしてキャッシュを確認
-            const rgbKey = `${output_data[index]},${output_data[index + 1]},${output_data[index + 2]}`;
-            let bestColor;
-            
-            if (labCache.has(rgbKey)) {
-                bestColor = labCache.get(rgbKey);
-            } else {
-                const lab = rgb2lab([output_data[index], output_data[index + 1], output_data[index + 2]]);
-                let minDistance = Infinity;
-                let bestIndex = 0;
-                
-                for (let i = 0; i < lab_array_size; i++) {
-                    const distance = ciede2000Fast(lab[0], lab[1], lab[2], 
-                                                 color_csv[2][i][0], color_csv[2][i][1], color_csv[2][i][2]);
-                    if (distance < minDistance) {
-                        minDistance = distance;
-                        bestIndex = i;
-                    }
+            let distance = [...Array(lab_array_size)].map(k=>100.0);
+            // 比較
+            for(var i = 0;i < lab_array_size; i++){
+                if(output_data[index + 3] > 0){
+                    let lab = rgb2lab([output_data[index],output_data[index + 1],output_data[index + 2]]);
+                    distance[i] = ciede2000(lab[0],lab[1],lab[2],color_csv[2][i][0],color_csv[2][i][1],color_csv[2][i][2]);
                 }
-                
-                bestColor = color_csv[1][bestIndex];
-                labCache.set(rgbKey, bestColor);
             }
 
-            // 誤差計算
-            const error = [
-                output_data[index] - bestColor[0],
-                output_data[index + 1] - bestColor[1],
-                output_data[index + 2] - bestColor[2]
-            ];
-
-            // 新しい色を設定
-            output_data[index] = bestColor[0];
-            output_data[index + 1] = bestColor[1];
-            output_data[index + 2] = bestColor[2];
-
-            // 誤差拡散（フロイド・シュタインベルグ法）
-            const indices = [
-                x < width - 1 ? ((x + 1) + y * width) * 4 : null,           // 右
-                x > 0 && y < height - 1 ? ((x - 1) + (y + 1) * width) * 4 : null,  // 左下
-                y < height - 1 ? (x + (y + 1) * width) * 4 : null,         // 下
-                x < width - 1 && y < height - 1 ? ((x + 1) + (y + 1) * width) * 4 : null  // 右下
-            ];
-            const weights = [7, 3, 5, 1];
-
-            for (let i = 0; i < 4; i++) {
-                if (indices[i] !== null) {
-                    for (let c = 0; c < 3; c++) {
-                        const newValue = output_data[indices[i] + c] + (error[c] * weights[i]) / 16;
-                        output_data[indices[i] + c] = Math.min(255, Math.max(0, newValue));
-                    }
+            let tmp_comp_num = distance[0];
+            let comp_num = 0;
+            for(var i = 1;i < lab_array_size;i++){
+                if(tmp_comp_num > distance[i]){
+                    tmp_comp_num = distance[i];
+                    comp_num = i;
                 }
+            }
+
+            // 一番近い色に置き換え
+            for(var i = 0;i < 3; i++){
+                output_data[index + i] = color_csv[1][comp_num][i];
             }
         }
     }
 
-    processed_data.data.set(output_data);
+    // 画像化 
+    for (var i = 0;i < img_data.data.length;i++) { 
+        processed_data.data[i] = output_data[i];
+    }
+    
+    // マイクラドット絵コマンド書き込み
+    generateMinecraftCommands(color_csv, output_data, width, height, origin_xyz, folder);
+    zipDL(zip);
+    
     return processed_data;
 }
 
-// 最適化されたCIEDE2000計算（高速版）
-function ciede2000Fast(L1, a1, b1, L2, a2, b2) {
-    // 定数を事前計算
-    const kL = 1, kC = 1, kH = 1;
-    const deg2rad = Math.PI / 180;
-    const rad2deg = 180 / Math.PI;
-    
-    const deltaL = L2 - L1;
-    const L_bar = (L1 + L2) * 0.5;
-    
-    const C1 = Math.sqrt(a1 * a1 + b1 * b1);
-    const C2 = Math.sqrt(a2 * a2 + b2 * b2);
-    const C_bar = (C1 + C2) * 0.5;
-    
-    const C_bar7 = C_bar ** 7;
-    const G = 0.5 * (1 - Math.sqrt(C_bar7 / (C_bar7 + 6103515625))); // 25^7 = 6103515625
-    
-    const a1_prime = a1 * (1 + G);
-    const a2_prime = a2 * (1 + G);
-    const C1_prime = Math.sqrt(a1_prime * a1_prime + b1 * b1);
-    const C2_prime = Math.sqrt(a2_prime * a2_prime + b2 * b2);
-    const C_bar_prime = (C1_prime + C2_prime) * 0.5;
-    const deltaC_prime = C2_prime - C1_prime;
-    
-    // hue angle calculation
-    const h1_prime = Math.atan2(b1, a1_prime) * rad2deg;
-    const h2_prime = Math.atan2(b2, a2_prime) * rad2deg;
-    
-    let deltah_prime;
-    if (C1_prime * C2_prime === 0) {
-        deltah_prime = 0;
-    } else {
-        const diff = h2_prime - h1_prime;
-        if (Math.abs(diff) <= 180) {
-            deltah_prime = diff;
-        } else if (diff > 180) {
-            deltah_prime = diff - 360;
-        } else {
-            deltah_prime = diff + 360;
+function colorErrorDiffusion(img_data,processed_data,checkboxes,origin_xyz,zip,folder){
+    const width = img_data.width;
+    const height = img_data.height;    
+    const color_csv = loadCombinedCSVFiles(checkboxes); // 新しい関数で選択されたブロックタイプだけを読み込む
+    const lab_array_size = color_csv[2].length;
+
+    let output_data = [...img_data.data]; // 画像の色コピー
+
+    // 色比較
+    for(var y = 0;y < height;y++){
+        for(var x = 0;x < width;x++){
+            const index = (x + y * width) * 4;
+            
+            let distance = [...Array(lab_array_size)].map(k=>100.0);
+            // 比較
+            for(var i = 0;i < lab_array_size; i++){
+                if(output_data[index + 3] > 0){
+                    let lab = rgb2lab([output_data[index],output_data[index + 1],output_data[index + 2]]);
+                    distance[i] = ciede2000(lab[0],lab[1],lab[2],color_csv[2][i][0],color_csv[2][i][1],color_csv[2][i][2]);
+                }
+            }
+            
+            let tmp_comp_num = distance[0];
+            let comp_num = 0;
+            for(var i = 1;i < lab_array_size;i++){
+                if(tmp_comp_num > distance[i]){
+                    tmp_comp_num = distance[i];
+                    comp_num = i;
+                }
+            }
+
+            // 一番近い色に置き換え
+            let error = [...Array(3)].map(k => 0);
+            for(var i = 0;i < 3; i++){
+                // 誤差（rgbそれぞれで算出）
+                error[i] = output_data[index + i] - color_csv[1][comp_num][i];
+                output_data[index + i] = color_csv[1][comp_num][i];
+            }
+
+            // 誤差拡散
+            let x_i = x + 1;
+            let y_i = y + 1;
+            let indexR = (x_i + y * width)*4;
+            let indexUL = ((x - 1) + y_i * width)*4;
+            let indexU = (x + y_i * width)*4;
+            let indexUR = (x_i + y_i * width)*4;
+            
+            for(var i = 0;i < 3; i++){
+                // 右
+                if(x < width - 1){
+                    output_data[indexR + i] = normalizeOutput(output_data[indexR + i] + (error[i] * 5) / 16);  
+                }
+                // 左下
+                if(x > 0){
+                    output_data[indexUL + i] = normalizeOutput(output_data[indexUL + i] + (error[i] * 2.8) / 16);
+                }
+                // 下
+                if(y < height -1){
+                    output_data[indexU + i] = normalizeOutput(output_data[indexU + i] + (error[i] * 5) / 16);
+                }
+                // 右下
+                if(x < width - 1 && y > height - 1){
+                    output_data[indexUR + i] = normalizeOutput(output_data[indexUR + i] + (error[i] * 3.2) / 16);
+                }
+            }
         }
     }
-    
-    const deltaH_prime = 2 * Math.sqrt(C1_prime * C2_prime) * Math.sin(deltah_prime * 0.5 * deg2rad);
-    
-    let H_bar_prime;
-    if (C1_prime * C2_prime === 0) {
-        H_bar_prime = h1_prime + h2_prime;
-    } else {
-        const sum = h1_prime + h2_prime;
-        const diff = Math.abs(h1_prime - h2_prime);
-        if (diff > 180) {
-            H_bar_prime = sum < 360 ? (sum + 360) * 0.5 : (sum - 360) * 0.5;
-        } else {
-            H_bar_prime = sum * 0.5;
-        }
+
+    // 画像化 
+    for (var i = 0;i < img_data.data.length;i++) { 
+        processed_data.data[i] = output_data[i];
     }
     
-    const T = 1 - 0.17 * Math.cos((H_bar_prime - 30) * deg2rad) +
-              0.24 * Math.cos(2 * H_bar_prime * deg2rad) +
-              0.32 * Math.cos((3 * H_bar_prime + 6) * deg2rad) -
-              0.20 * Math.cos((4 * H_bar_prime - 63) * deg2rad);
+    // マイクラドット絵コマンド書き込み
+    generateMinecraftCommands(color_csv, output_data, width, height, origin_xyz, folder);
+    zipDL(zip);
     
-    const L_bar_minus50_squared = (L_bar - 50) ** 2;
-    const SL = 1 + (0.015 * L_bar_minus50_squared) / Math.sqrt(20 + L_bar_minus50_squared);
-    const SC = 1 + 0.045 * C_bar_prime;
-    const SH = 1 + 0.015 * C_bar_prime * T;
-    
-    const C_bar_prime7 = C_bar_prime ** 7;
-    const RT = -2 * Math.sqrt(C_bar_prime7 / (C_bar_prime7 + 6103515625)) *
-               Math.sin(60 * Math.exp(-1*((H_bar_prime - 275) / 25) ** 2) * deg2rad);
-    
-    const deltaL_over_kLSL = deltaL / (kL * SL);
-    const deltaC_over_kCSC = deltaC_prime / (kC * SC);
-    const deltaH_over_kHSH = deltaH_prime / (kH * SH);
-    
-    return Math.sqrt(
-        deltaL_over_kLSL ** 2 +
-        deltaC_over_kCSC ** 2 +
-        deltaH_over_kHSH ** 2 +
-        RT * deltaC_over_kCSC * deltaH_over_kHSH
-    );
+    return processed_data;
 }
 
-// 最適化されたMinecraftコマンド生成
-function generateMinecraftCommands(imagecolors, width, height, origin_xyz, folder, isGrayscale = false) {
+// マイクラドット絵コマンド生成の新しい関数
+function generateMinecraftCommands(color_csv, output_data, width, height, origin_xyz, folder) {
     let count = 0;
     let filecount = 0;
-    let functionStr = '';
+    var functionStr = '';
     
-    for (let y = 0; y < height; y++) {
-        for (let x = 0; x < width; ) {
-            const index = (x + y * width) * 4;
-            const currentColor = imagecolors[index];
+    // ブロック名とブロックIDの対応表
+    const blockNames = color_csv[3]; // 新しく追加したブロック名の配列
+    
+    for (var y = 0; y < height; y++) {
+        for (var x = 0; x < width; x++) {
+            count++;
+            var index = (x + y * width) * 4;
             
-            // 連続する同じ色のピクセル数をカウント
-            let runLength = 1;
-            while (x + runLength < width && 
-                   imagecolors[((x + runLength) + y * width) * 4] === currentColor) {
-                runLength++;
-            }
+            // 現在のピクセルのRGB値
+            let currentR = output_data[index];
+            let currentG = output_data[index + 1];
+            let currentB = output_data[index + 2];
             
-            // Minecraftコマンドを生成
-            if (isGrayscale) {
-                const blockType = currentColor === 0 ? "minecraft:black_wool" : "minecraft:white_wool";
-                if (runLength > 1) {
-                    functionStr += `fill ${x + origin_xyz[0]} ${origin_xyz[1]} ${y + origin_xyz[2]} ${x + origin_xyz[0] + runLength - 1} ${origin_xyz[1]} ${y + origin_xyz[2]} ${blockType}\n`;
-                } else {
-                    functionStr += `setblock ${x + origin_xyz[0]} ${origin_xyz[1]} ${y + origin_xyz[2]} ${blockType}\n`;
+            // 一致するブロックを探す
+            let blockIndex = -1;
+            for (let i = 0; i < color_csv[1].length; i++) {
+                if (color_csv[1][i][0] === currentR && 
+                    color_csv[1][i][1] === currentG && 
+                    color_csv[1][i][2] === currentB) {
+                    blockIndex = i;
+                    break;
                 }
             }
             
-            x += runLength;
-            count++;
-            
-            // ファイル分割
-            if (count >= 10000) {
-                filecount++;
-                filesave(functionStr, filecount, folder);
-                functionStr = "";
-                count = 0;
+            if (blockIndex >= 0) {
+                // 対応するブロック名を取得
+                let blockName = blockNames[blockIndex];
+                
+                // fillコマンドを生成
+                functionStr += `setblock ${x + origin_xyz[0]} ${origin_xyz[1]} ${y + origin_xyz[2]} minecraft:${blockName}\n`;
+                
+                if (count >= 10000) {
+                    filecount++;
+                    filesave(functionStr, filecount, folder);
+                    functionStr = "";
+                    count = 0;
+                }
             }
         }
     }
     
-    if (functionStr) {
+    if (functionStr !== "") {
+        filecount++;
         filesave(functionStr, filecount, folder);
     }
 }
 
-// その他のヘルパー関数（最適化済み）
+// アウトプットカラー正規化
+function normalizeOutput(color) {
+    if (color > 255) return 255;
+    else if (color < 0) return 0;
+    return color;
+}
 
+// チェックボックス確認
 function checkboxConfirm() {
     return [
-        document.getElementById("blockType1").checked,
-        document.getElementById("blockType2").checked,
-        document.getElementById("blockType3").checked
+        document.getElementById("blockType1").checked, // 羊毛
+        document.getElementById("blockType2").checked, // コンクリート
+        document.getElementById("blockType3").checked  // 固めたコンクリ
     ];
 }
 
-// 最適化されたRGB to LAB変換
-function rgb2lab(rgb) {
-    let [r, g, b] = rgb;
+// 複数のCSVファイルを読み込んで統合する新しい関数
+function loadCombinedCSVFiles(checkboxes) {
+    const files = [];
     
-    // sRGB to linear RGB
-    r = r > 10.31475 ? Math.pow((r / 269.025 + 0.05213), 2.4) : r / 3294.6;
-    g = g > 10.31475 ? Math.pow((g / 269.025 + 0.05213), 2.4) : g / 3294.6;
-    b = b > 10.31475 ? Math.pow((b / 269.025 + 0.05213), 2.4) : b / 3294.6;
+    // チェックボックスの状態に基づいてファイルを選択
+    if (checkboxes[0]) files.push("BlocksColor_wool.csv");
+    if (checkboxes[1]) files.push("BlocksColor_concrete.csv");
+    if (checkboxes[2]) files.push("BlocksColor_concrete_powder.csv");
+    
+    // どのファイルも選択されていない場合は、デフォルトとして羊毛を使用
+    if (files.length === 0) {
+        files.push("BlocksColor_wool.csv");
+        console.log("ブロックが選択されていないため、デフォルトとして羊毛を使用します。");
+    }
+    
+    let hsv_array = [];
+    let rgb_array = [];
+    let lab_array = [];
+    let block_names = [];
+    
+    // 各ファイルを読み込んで配列に追加
+    files.forEach(file => {
+        let csv = new XMLHttpRequest();
+        csv.open("get", file, false);
+        csv.send(null);
+        
+        if (csv.status !== 200) {
+            console.error(`ファイル ${file} の読み込みに失敗しました。代わりにBlocksColor.csvを使用します。`);
+            csv = new XMLHttpRequest();
+            csv.open("get", "BlocksColor.csv", false);
+            csv.send(null);
+        }
+        
+        console.log(`${file} を読み込みました。`);
+        
+        let str = csv.responseText;
+        let tmp_array = str.split("\n");
+        
+        // ヘッダー行をスキップし、各行を処理
+        for (var i = 1; i < tmp_array.length - 1; i++) {
+            let columns = tmp_array[i].split(',');
+            
+            // 必要な値を取得
+            if (columns.length >= 10) { // 十分な列があることを確認
+                let hsv_values = [parseInt(columns[7]), parseInt(columns[8]), parseInt(columns[9])];
+                let rgb_values = [parseInt(columns[1]), parseInt(columns[2]), parseInt(columns[3])];
+                let block_name = columns[0].trim(); // ブロック名も取得
+                
+                hsv_array.push(hsv_values);
+                rgb_array.push(rgb_values);
+                lab_array.push(rgb2lab(rgb_values));
+                block_names.push(block_name);
+            }
+        }
+    });
+    
+    console.log(`合計 ${hsv_array.length} 個のブロックを読み込みました。`);
+    
+    return [hsv_array, rgb_array, lab_array, block_names];
+}
 
-    // Observer = 2°, Illuminant = D65
-    let x = r * 0.4338906 + g * 0.3762349 + b * 0.1899060;
-    let y = r * 0.2126 + g * 0.7152 + b * 0.0722;
-    let z = r * 0.0177254 + g * 0.1094753 + b * 0.8729554;
+// 以下の関数は変更なし
+
+function ciede2000(L1,a1,b1, L2,a2,b2) {
+    //http://en.wikipedia.org/wiki/Color_difference#CIEDE2000
+    var radianToDegree = function(radian) {return radian * (180 / Math.PI);};
+    var degreeToRadian = function(degree) {return degree * (Math.PI / 180);};
+
+    var deltaLp = L2 - L1;
+    var L_ = (L1 + L2) / 2;
+    var C1 = Math.sqrt(Math.pow(a1, 2) + Math.pow(b1, 2));
+    var C2 = Math.sqrt(Math.pow(a2, 2) + Math.pow(b2, 2));
+    var C_ = (C1 + C2) / 2;
+    var ap1 = a1 + (a1 / 2) *
+        (1 - Math.sqrt(
+            Math.pow(C_, 7) /
+            (Math.pow(C_, 7) + Math.pow(25, 7))
+            )
+        );
+    var ap2 = a2 + (a2 / 2) *
+        (1 - Math.sqrt(
+            Math.pow(C_, 7) /
+            (Math.pow(C_, 7) + Math.pow(25, 7))
+            )
+        );
+    var Cp1 = Math.sqrt(Math.pow(ap1, 2) + Math.pow(b1, 2));
+    var Cp2 = Math.sqrt(Math.pow(ap2, 2) + Math.pow(b2, 2));
+    var Cp_ = (Cp1 + Cp2) / 2;
+    var deltaCp = Cp2 - Cp1;
+
+    var hp1;
+    if (b1 == 0 && ap1 == 0) {
+        hp1 = 0;
+    } else {
+        hp1 = radianToDegree(Math.atan2(b1, ap1));
+        if (hp1 < 0) {hp1 = hp1 + 360;}
+    }
+    var hp2;
+    if (b2 == 0 && ap2 == 0) {
+        hp2 = 0;
+    } else {
+        hp2 = radianToDegree(Math.atan2(b2, ap2));
+        if (hp2 < 0) {hp2 = hp2 + 360;}
+    }
+
+    var deltahp;
+    if (C1 == 0 || C2 == 0) {
+        deltahp = 0;
+    } else if (Math.abs(hp1 - hp2) <= 180) {
+        deltahp = hp2 - hp1;
+    } else if (hp2 <= hp1) {
+        deltahp = hp2 - hp1 + 360;
+    } else {
+        deltahp = hp2 - hp1 - 360;
+    }
+
+    var deltaHp = 2 * Math.sqrt(Cp1 * Cp2) * Math.sin(degreeToRadian(deltahp) / 2);
+
+    var Hp_;
+    if (Math.abs(hp1 - hp2) > 180) {
+        Hp_ =  (hp1 + hp2 + 360) / 2
+    } else {
+        Hp_ = (hp1 + hp2) / 2
+    };
+
+    var T = 1 -
+        0.17 * Math.cos(degreeToRadian(Hp_ - 30)) +
+        0.24 * Math.cos(degreeToRadian(2 * Hp_)) +
+        0.32 * Math.cos(degreeToRadian(3 * Hp_ + 6)) -
+        0.20 * Math.cos(degreeToRadian(4 * Hp_ - 63));
+
+    var SL = 1 + (
+        (0.015 * Math.pow(L_ - 50, 2)) /
+        Math.sqrt(20 + Math.pow(L_ - 50, 2))
+        );
+    var SC = 1 + 0.045 * Cp_;
+    var SH = 1 + 0.015 * Cp_ * T;
+
+    var RT = -2 *
+        Math.sqrt(
+            Math.pow(Cp_, 7) /
+            (Math.pow(Cp_, 7) + Math.pow(25, 7))
+        ) *
+        Math.sin(degreeToRadian(
+            60 * Math.exp(-Math.pow((Hp_ - 275) / 25, 2))
+        ));
+
+    return Math.sqrt(
+        Math.pow(deltaLp / SL, 2) +
+        Math.pow(deltaCp / SC, 2) +
+        Math.pow(deltaHp / SH, 2) +
+        RT * (deltaCp / SC) * (deltaHp / SH)
+        );
+}
+
+function rgb2lab(rgb) {
+    r = rgb[0];
+    g = rgb[1];
+    b = rgb[2];
+
+    r = r > 0.04045 ? Math.pow((r / 269.025 + 0.05213), 2.4) : (r / 12.92);
+    g = g > 0.04045 ? Math.pow((g / 269.025 + 0.05213), 2.4) : (g / 12.92);
+    b = b > 0.04045 ? Math.pow((b / 269.025 + 0.05213), 2.4) : (b / 12.92);
+
+    var x = (r * 0.4338906) + (g * 0.3762349) + (b * 0.1899060);
+    var y = (r * 0.2126) + (g * 0.7152) + (b * 0.0722);
+    var z = (r * 0.0177254) + (g * 0.1094753) + (b * 0.8729554);
 
     x = x > 0.008856 ? Math.cbrt(x) : (7.787 * x) + 0.13793103;
     y = y > 0.008856 ? Math.cbrt(y) : (7.787 * y) + 0.13793103;
     z = z > 0.008856 ? Math.cbrt(z) : (7.787 * z) + 0.13793103;
 
-    return [(116 * y) - 16, 500 * (x - y), 200 * (y - z)];
+    var L = (116 * y) - 16;
+    var a = 500 * (x - y);
+    var b = 200 * (y - z);
+
+    return [L, a, b];
 }
 
-function rgb2hsv(rgb, array_size) {
-    const hsvS = new Array(array_size);
-    
-    for (let i = 0; i < rgb.length; i += 4) {
-        const pixelIndex = i / 4;
-        const r = (rgb[i] || 0) / 255;
-        const g = (rgb[i + 1] || 0) / 255;
-        const b = (rgb[i + 2] || 0) / 255;
+function rgb2hsv(rgb,array_size){
+    let r,g,b;
+    let h,s,v;
+    let hsvS = [...Array(array_size)].map(k=>[...Array(3)].map(k=>-1));
+    for(var i = 0;i < rgb.length;i = i + 4){
+        let Vmax,Vmin;
+
+        if(rgb[i] == undefined) r = 0;
+        else r = rgb[i] / 255;
+        if(rgb[i + 1] == undefined) g = 0
+        else g = rgb[i + 1] / 255;
+        if(rgb[i + 2] == undefined) b = 0;
+        else b = rgb[i + 2] / 255;
         
-        const max = Math.max(r, g, b);
-        const min = Math.min(r, g, b);
-        const diff = max - min;
-        
-        let h, s, v = max;
-        
-        s = max === 0 ? 0 : diff / max;
-        
-        if (diff === 0) {
-            h = 0;
-        } else {
-            switch (max) {
-                case r: h = (g - b) / diff + (g < b ? 6 : 0); break;
-                case g: h = (b - r) / diff + 2; break;
-                case b: h = (r - g) / diff + 4; break;
-            }
-            h /= 6;
+        Vmax = Math.max(r,g,b);
+        Vmin = Math.min(r,g,b);
+
+        if(Vmax == 0) v = 0;
+        else v = Vmax * 100;
+
+        if((Vmax - Vmin) == 0) s = 0;
+        else s = (Vmax - Vmin) / Vmax * 100;
+        //sが０ならhも０
+        if(s == 0) h = 0;
+        else {
+            if(r == Vmax) h = (g - b) / (Vmax - Vmin) * (Math.PI/3);
+            else if(g == Vmax) h = (b - r) / (Vmax - Vmin) * (Math.PI/3) + 2 * Math.PI / 3;
+            else if(b == Vmax) h = (r - g) / (Vmax - Vmin) * (Math.PI/3) + 4 * Math.PI / 3;
         }
-        
-        hsvS[pixelIndex] = [Math.round(h * 360), Math.round(s * 100), Math.round(v * 100)];
-    }
-    
+        //Hを0~2πの間に収める
+        if(h < 0) h += 2 * Math.PI;
+        else if(h > 2 * Math.PI) h -= 2 * Math.PI;
+        h = h / (2 * Math.PI) * 360;
+
+        hsvS[i / 4][0] = Math.round(h);
+        hsvS[i / 4][1] = Math.round(s);
+        hsvS[i / 4][2] = Math.round(v);
+    }        
     return hsvS;
 }
 
-function rgb2grey(img_data, imagecolors) {
-    const data = img_data.data;
-    const width = img_data.width;
-    const height = img_data.height;
-    
-    for (let y = 0; y < height; y++) {
-        for (let x = 0; x < width; x++) {
-            const index = (x + y * width) * 4;
-            const grey = Math.round(0.2126 * data[index] + 0.7152 * data[index + 1] + 0.0722 * data[index + 2]);
-            
-            imagecolors[index] = grey;
-            imagecolors[index + 1] = grey;
-            imagecolors[index + 2] = grey;
+function rgb2grey(img_data,imagecolors){
+    for (var y = 1;y < img_data.height;y++) {
+        for (var x = 1;x < img_data.width;x++) {
+            var index = (x + y * img_data.width)*4;
+            rgb_grey = 0.2126 * img_data.data[index] + 0.7152 * img_data.data[index + 1] + 0.0722 * img_data.data[index + 2];    
+            //rgb_grey = (img_data.data[index] + img_data.data[index + 1] + img_data.data[index + 2])/3;
+            for(i = 0;i < 3;i++){
+                imagecolors[index + i] = rgb_grey;
+            }
             imagecolors[index + 3] = 255;
         }
     }
     return imagecolors;
 }
 
-// 最適化されたCSV読み込み
-function loadCSVFile2(checkbox) {
-    const xhr = new XMLHttpRequest();
-    xhr.open("GET", "BlocksColor.csv", false);
-    xhr.send(null);
-
-    console.log("ブロック色のファイルは読み込めました。");
-
-    const lines = xhr.responseText.trim().split("\n");
-    const dataLines = lines.slice(1); // ヘッダーを除く
-    
-    const hsv_array = new Array(dataLines.length);
-    const rgb_array = new Array(dataLines.length);
-    const lab_array = new Array(dataLines.length);
-    
-    for (let i = 0; i < dataLines.length; i++) {
-        const columns = dataLines[i].split(',');
-        const hsv = [parseInt(columns[7]), parseInt(columns[8]), parseInt(columns[9])];
-        const rgb = [parseInt(columns[1]), parseInt(columns[2]), parseInt(columns[3])];
-        
-        hsv_array[i] = hsv;
-        rgb_array[i] = rgb;
-        lab_array[i] = rgb2lab(rgb);
-    }
-    
-    return [hsv_array, rgb_array, lab_array];
+async function filesave(str,filecount,folder){
+    let blob = new Blob([str],{type:"text/plain"});
+    folder.file("imagefill" + filecount + ".mcfunction",str);
 }
 
-async function filesave(str, filecount, folder) {
-    folder.file(`imagefill${filecount}.mcfunction`, str);
+function init_zip(){
+    //zipファイル
+    let zip = new JSZip();
+    let folder1 = zip.folder("img2MC");
+    let folder2 = folder1.folder("data");
+    let pack_file = folder1.file('pack.mcmeta','{\n"pack": {\n"pack_format": 1,\n"description": "datapack"\n}\n}');
+    let folder3 = folder2.folder("cheese");
+    let folder4 = folder3.folder("functions");
+    return [zip,folder4];
 }
 
-function init_zip() {
-    const zip = new JSZip();
-    const folder1 = zip.folder("img2MC");
-    const folder2 = folder1.folder("data");
-    folder1.file('pack.mcmeta', '{\n"pack": {\n"pack_format": 1,\n"description": "datapack"\n}\n}');
-    const folder3 = folder2.folder("cheese");
-    const folder4 = folder3.folder("functions");
-    return [zip, folder4];
-}
+async function zipDL(zip){
+    let img_element = document.getElementById('inputImage');
 
-async function zipDL(zip) {
-    const content = await zip.generateAsync({type: "blob"});
+    zip.generateAsync({type:"blob"})
+    .then(function(content) {
     saveAs(content, "img2MC.zip");
+    console.log(img_element.name);
+    });
 }
