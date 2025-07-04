@@ -63,56 +63,109 @@ function processImageData(num) {
 }
 
 function greyErrorDiffusion(img_data, imagecolors, processed_data, checkbox, origin_xyz, zip, folder) {
+    // グレースケール化
     imagecolors = rgb2grey(img_data, imagecolors);
 
     const width = img_data.width;
     const height = img_data.height;
     
+    // 誤差拡散処理
     for (let y = 0; y < height - 1; y++) {
         for (let x = 0; x < width - 1; x++) {
-            const index = (x + y * width) * 4;
-            const oldPixel = imagecolors[index];
-            const newPixel = oldPixel < 128 ? 0 : 255;
-            const error = oldPixel - newPixel;
+            // 中間色の閾値配列を初期化
+            let mid_set_color = new Array(256);
+            let error_add = new Array(256);
             
-            // 新しい値を設定
-            for(let i = 0; i < 3; i++){
-                imagecolors[index + i] = newPixel;
+            for (let i = 0; i < 128; i++) {
+                mid_set_color[i] = 0;
+                error_add[i] = 0;
+            }
+            for (let i = 128; i <= 255; i++) {
+                mid_set_color[i] = 255;
+                error_add[i] = 255;
             }
 
+            const index = (x + y * width) * 4;
+            
+            // 誤差計算（現在のピクセルの値と量子化後の値の差）
+            const pixelValue = Math.round(imagecolors[index]);
+            const error = imagecolors[index] - error_add[pixelValue];
+            
+            // ピクセルの値を設定（白か黒）
+            for (let i = 0; i < 3; i++) {
+                imagecolors[index + i] = mid_set_color[pixelValue];
+            }
+            imagecolors[index + 3] = 255; // アルファ値を255に
+
             // 誤差拡散（フロイド・シュタインベルグ法）
-            if(x < width - 1) {
-                const rightIndex = ((x + 1) + y * width) * 4;
-                for(let i = 0; i < 3; i++){
-                    imagecolors[rightIndex + i] = Math.min(255, Math.max(0, imagecolors[rightIndex + i] + (error * 7) >> 4));
+            for (let i = 0; i < 3; i++) {
+                // 右
+                if (x < width - 1) {
+                    imagecolors[((x + 1) + y * width) * 4 + i] += (error * 5) / 16 | 0;
                 }
-            }
-            if(x > 0 && y < height - 1) {
-                const leftDownIndex = ((x - 1) + (y + 1) * width) * 4;
-                for(let i = 0; i < 3; i++){
-                    imagecolors[leftDownIndex + i] = Math.min(255, Math.max(0, imagecolors[leftDownIndex + i] + (error * 3) >> 4));
+                // 左下
+                if (x > 0 && y < height - 1) {
+                    imagecolors[((x - 1) + (y + 1) * width) * 4 + i] += (error * 3) / 16 | 0;
                 }
-            }
-            if(y < height - 1) {
-                const downIndex = (x + (y + 1) * width) * 4;
-                for(let i = 0; i < 3; i++){
-                    imagecolors[downIndex + i] = Math.min(255, Math.max(0, imagecolors[downIndex + i] + (error * 5) >> 4));
+                // 下 - ここが間違っていた
+                if (y < height - 1) {
+                    imagecolors[(x + (y + 1) * width) * 4 + i] += (error * 5) / 16 | 0;
                 }
-            }
-            if(x < width - 1 && y < height - 1) {
-                const rightDownIndex = ((x + 1) + (y + 1) * width) * 4;
-                for(let i = 0; i < 3; i++){
-                    imagecolors[rightDownIndex + i] = Math.min(255, Math.max(0, imagecolors[rightDownIndex + i] + (error * 1) >> 4));
+                // 右下
+                if (x < width - 1 && y < height - 1) {
+                    imagecolors[((x + 1) + (y + 1) * width) * 4 + i] += (error * 3) / 16 | 0;
                 }
             }
         }
     }
-
-    // 画像化
-    processed_data.data.set(imagecolors);
     
-    // Minecraft コマンド生成（最適化）
-    generateMinecraftCommands(imagecolors, img_data.width, img_data.height, origin_xyz, folder, true);
+    // 画像化
+    for (let i = 0; i < img_data.data.length; i++) {
+        processed_data.data[i] = imagecolors[i];
+    }
+    
+    // マイクラドット絵コマンド書き込み
+    let count = 0;
+    let filecount = 0;
+    let functionStr = '';
+    
+    for (let y = 0; y < height; y++) {
+        for (let x = 0; x < width; x++) {
+            count++;
+            const index = (x + y * width) * 4;
+            
+            // 連続する同じ色のピクセル数をカウント
+            let runLength = 0;
+            for (let c = 0; c < width - x; c++) {
+                if (imagecolors[((x + c) + y * width) * 4] === imagecolors[index] && (x + c) < width) {
+                    runLength += 1;
+                } else {
+                    break;
+                }
+            }
+
+            // Minecraftコマンドを生成
+            if (imagecolors[index] === 0) {
+                functionStr += `fill ${x + origin_xyz[0]} ${origin_xyz[1]} ${y + origin_xyz[2]} ${x + origin_xyz[0] + runLength - 1} ${origin_xyz[1]} ${y + origin_xyz[2]} minecraft:black_wool\n`;
+            } else if (imagecolors[index] === 255) {
+                functionStr += `fill ${x + origin_xyz[0]} ${origin_xyz[1]} ${y + origin_xyz[2]} ${x + origin_xyz[0] + runLength - 1} ${origin_xyz[1]} ${y + origin_xyz[2]} minecraft:white_wool\n`;
+            }
+            
+            // x座標を進める
+            x += runLength - 1; // -1は次のforループで+1されるため
+            
+            // 10000コマンドごとにファイル分割
+            if (count >= 10000) {
+                filecount++;
+                filesave(functionStr, filecount, folder);
+                functionStr = "";
+                count = 0;
+            }
+        }
+    }
+    
+    // 残りのコマンドを保存
+    filesave(functionStr, filecount, folder);
     zipDL(zip);
 
     return processed_data;
