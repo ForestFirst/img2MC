@@ -2,833 +2,577 @@
 <html>
 <head>
 <meta charset="utf-8">
+<title>img2MC - Image to Minecraft Converter</title>
 <style>
-  body {
-    font-family: Arial, sans-serif;
-    margin: 20px;
-    background-color: #f5f5f5;
-  }
-  .container {
-    max-width: 1000px;
-    margin: 0 auto;
-    padding: 20px;
-    background: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-  }
-  h1 {
-    color: #333;
-    text-align: center;
-  }
-  .controls {
-    margin: 20px 0;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-  }
-  .canvas-container {
-    position: relative;
-    margin: 20px 0;
-    text-align: center;
-  }
-  canvas {
-    border: 2px solid #ddd;
-    cursor: pointer;
-    max-width: 300px;
-    max-height: 300px;
-  }
-  .modal {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0,0,0,0.8);
-    z-index: 100;
-    overflow: auto;
-  }
-  .modal-content {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100%;
-  }
-  .modal-canvas {
-    max-width: 90%;
-    max-height: 90%;
-    object-fit: contain;
-  }
-  .close {
-    position: absolute;
-    top: 15px;
-    right: 20px;
-    color: white;
-    font-size: 30px;
-    font-weight: bold;
-    cursor: pointer;
-  }
-  button {
-    padding: 8px 16px;
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-  }
-  button:hover {
-    background-color: #45a049;
-  }
-  input[type="file"] {
-    margin: 10px 0;
-  }
-  .checkbox-group {
-    margin: 15px 0;
-  }
-  .progress-container {
-    width: 100%;
-    height: 20px;
-    background-color: #f1f1f1;
-    border-radius: 4px;
-    margin: 10px 0;
-    display: none;
-  }
-  .progress-bar {
-    height: 100%;
-    background-color: #4CAF50;
-    border-radius: 4px;
-    width: 0%;
-    transition: width 0.3s;
-    text-align: center;
-    color: white;
-    font-size: 12px;
-    line-height: 20px;
-  }
+    body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+        background-color: #f5f5f5;
+    }
+    
+    .container {
+        max-width: 800px;
+        margin: 0 auto;
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    
+    h1 {
+        text-align: center;
+        color: #333;
+        margin-bottom: 30px;
+    }
+    
+    /* ドラッグ&ドロップエリア */
+    .drop-zone {
+        border: 3px dashed #ccc;
+        border-radius: 10px;
+        padding: 40px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin-bottom: 20px;
+        background: #fafafa;
+    }
+    
+    .drop-zone:hover {
+        border-color: #007bff;
+        background: #f0f8ff;
+    }
+    
+    .drop-zone.drag-over {
+        border-color: #28a745;
+        background: #f0fff0;
+        transform: scale(1.02);
+    }
+    
+    .drop-zone p {
+        margin: 10px 0;
+        color: #666;
+    }
+    
+    .drop-zone .upload-icon {
+        font-size: 48px;
+        color: #ccc;
+        margin-bottom: 10px;
+    }
+    
+    #inputImage {
+        display: none;
+    }
+    
+    /* 画像表示エリア */
+    .image-container {
+        text-align: center;
+        margin: 20px 0;
+    }
+    
+    #test_canvas {
+        border: 2px solid #ddd;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: transform 0.2s ease;
+        max-width: 500px;
+        max-height: 500px;
+    }
+    
+    #test_canvas:hover {
+        transform: scale(1.02);
+        border-color: #007bff;
+    }
+    
+    /* モーダル（拡大表示用） */
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0,0,0,0.9);
+        cursor: pointer;
+    }
+    
+    .modal-content {
+        display: block;
+        margin: auto;
+        max-width: 90%;
+        max-height: 90%;
+        border-radius: 8px;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+    
+    .close {
+        position: absolute;
+        top: 15px;
+        right: 35px;
+        color: #f1f1f1;
+        font-size: 40px;
+        font-weight: bold;
+        cursor: pointer;
+    }
+    
+    .close:hover {
+        color: #bbb;
+    }
+    
+    /* プログレスバー */
+    .progress-container {
+        width: 100%;
+        background-color: #f0f0f0;
+        border-radius: 25px;
+        margin: 20px 0;
+        display: none;
+    }
+    
+    .progress-bar {
+        width: 0%;
+        height: 20px;
+        background: linear-gradient(90deg, #007bff, #28a745);
+        border-radius: 25px;
+        text-align: center;
+        line-height: 20px;
+        color: white;
+        font-size: 12px;
+        transition: width 0.3s ease;
+    }
+    
+    .progress-text {
+        text-align: center;
+        margin-top: 10px;
+        color: #666;
+        font-size: 14px;
+    }
+    
+    /* チェックボックスエリア */
+    .options-container {
+        background: #f8f9fa;
+        padding: 15px;
+        border-radius: 8px;
+        margin: 20px 0;
+    }
+    
+    .options-title {
+        font-weight: bold;
+        margin-bottom: 10px;
+        color: #333;
+    }
+    
+    .checkbox-group {
+        display: flex;
+        gap: 20px;
+        flex-wrap: wrap;
+    }
+    
+    .checkbox-item {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+    
+    .checkbox-item input[type="checkbox"] {
+        transform: scale(1.2);
+    }
+    
+    /* ボタンエリア */
+    .button-container {
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+        margin: 20px 0;
+        flex-wrap: wrap;
+    }
+    
+    .convert-btn {
+        padding: 12px 24px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 16px;
+        font-weight: bold;
+        transition: all 0.3s ease;
+        min-width: 120px;
+    }
+    
+    .convert-btn:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+    
+    .btn-grayscale {
+        background: linear-gradient(45deg, #6c757d, #495057);
+        color: white;
+    }
+    
+    .btn-grayscale:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+    
+    .btn-color-high {
+        background: linear-gradient(45deg, #007bff, #0056b3);
+        color: white;
+    }
+    
+    .btn-color-high:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,123,255,0.3);
+    }
+    
+    .btn-color-low {
+        background: linear-gradient(45deg, #28a745, #1e7e34);
+        color: white;
+    }
+    
+    .btn-color-low:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(40,167,69,0.3);
+    }
+    
+    /* レスポンシブ対応 */
+    @media (max-width: 600px) {
+        .container {
+            margin: 10px;
+            padding: 15px;
+        }
+        
+        .checkbox-group {
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .button-container {
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .convert-btn {
+            width: 100%;
+            max-width: 200px;
+        }
+    }
+    
+    /* アニメーション */
+    @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+        100% { transform: scale(1); }
+    }
+    
+    .processing {
+        animation: pulse 1.5s infinite;
+    }
 </style>
 </head>
 <body>
-  <div class="container">
-    <h1>img2MC - 画像変換ツール</h1>
-    
-    <div class="controls">
-      <input type="file" id="inputImage" accept="image/*">
-      <div class="progress-container" id="progressContainer">
-        <div class="progress-bar" id="progressBar">0%</div>
-      </div>
-    </div>
-    
-    <div class="canvas-container">
-      <canvas id="test_canvas" width="300" height="300"></canvas>
-    </div>
-    
-    <div class="checkbox-group">
-      <label><input type="checkbox" id="blockType1" value="羊毛" checked>羊毛</label>
-      <label><input type="checkbox" id="blockType2" value="コンクリート" checked>コンクリート</label>
-      <label><input type="checkbox" id="blockType3" value="かためたやつ" checked>固めたコンクリ</label>
-    </div>
-    
-    <div class="controls">
-      <button onclick="processImageData(0)">白黒変換</button>
-      <button onclick="processImageData(1)">カラー変換(誤差拡散)</button>
-      <button onclick="processImageData(2)">カラー変換(単純置換)</button>
-    </div>
-  </div>
-  
-  <div id="imageModal" class="modal">
-    <span class="close" onclick="closeModal()">&times;</span>
-    <div class="modal-content">
-      <canvas id="modalCanvas" class="modal-canvas"></canvas>
-    </div>
-  </div>
-
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.7.1/jszip.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/1.3.3/FileSaver.min.js"></script>
-  <script>
-    // グローバル変数
-    let colorCache = null;
-    let labCache = new Map();
-    let originalImageData = null;
-
-    function onFileSelected(input) {
-      if (!input.files || !input.files[0]) return;
-      
-      const file = input.files[0];
-      const reader = new FileReader();
-      
-      reader.onload = function(e) {
-        const img = new Image();
-        img.onload = function() {
-          // 元のサイズで画像データを作成して保存
-          originalImageData = createImageData(this);
-          
-          // 表示用に画像を描画
-          displayImage(this);
-        };
-        img.src = e.target.result;
-      };
-      
-      reader.readAsDataURL(file);
-    }
-
-    function displayImage(img) {
-      const canvas = document.getElementById('test_canvas');
-      const ctx = canvas.getContext('2d');
-      
-      // キャンバスの実際のサイズは元の画像サイズに設定
-      canvas.width = img.naturalWidth;
-      canvas.height = img.naturalHeight;
-      
-      // 画像を描画
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-      
-      // 画像データをキャンバスに関連付け
-      canvas.img_data = ctx.getImageData(0, 0, canvas.width, canvas.height);
-    }
-
-    function createImageData(img) {
-      const cv = document.createElement('canvas');
-      cv.width = img.naturalWidth;
-      cv.height = img.naturalHeight;
-      
-      const ct = cv.getContext('2d');
-      ct.drawImage(img, 0, 0);
-      
-      return ct.getImageData(0, 0, cv.width, cv.height);
-    }
-
-    // 白黒変換（進行度表示なし - 古い関数）
-    function greyErrorDiffusion(img_data, imagecolors, processed_data, origin_xyz, zip, folder) {
-      return greyErrorDiffusionWithProgress(img_data, imagecolors, processed_data, origin_xyz, zip, folder, () => {});
-    }
-
-    // カラー単純置換（進行度表示なし - 古い関数）
-    function colorReplaceCiede2000(img_data, processed_data, origin_xyz, zip, folder) {
-      return colorReplaceCiede2000WithProgress(img_data, processed_data, origin_xyz, zip, folder, () => {});
-    }
-
-    // カラー誤差拡散（進行度表示なし - 古い関数）
-    function colorErrorDiffusion(img_data, processed_data, origin_xyz, zip, folder) {
-      return colorErrorDiffusionWithProgress(img_data, processed_data, origin_xyz, zip, folder, () => {});
-    }
-
-    function processImageData(num) {
-      const cv = document.getElementById('test_canvas');
-      const img_data = cv.img_data;
-      
-      if (!img_data) {
-        alert("画像が選択されていません！");
-        return;
-      }
-      
-      // 処理進行状況の表示を初期化
-      const progressContainer = document.getElementById('progressContainer');
-      const progressBar = document.getElementById('progressBar');
-      progressContainer.style.display = 'block';
-      progressBar.style.width = '0%';
-      progressBar.textContent = '0%';
-      
-      // 非同期処理で画像処理を行う
-      setTimeout(() => {
-        try {
-          const zip = init_zip();
-          const origin_xyz = [0, 0, 0];
-          const processed_data = cv.getContext('2d').createImageData(img_data.width, img_data.height);
-          const imagecolors = new Uint8ClampedArray(img_data.data.length);
-          const checkbox = checkboxConfirm();
-          
-          // 進捗状況を更新する関数
-          const updateProgress = (percent) => {
-            progressBar.style.width = percent + '%';
-            progressBar.textContent = percent + '%';
-          };
-
-          // 処理の種類に応じて画像処理を実行
-          if (num === 0) {
-            // 白黒変換
-            greyErrorDiffusionWithProgress(img_data, imagecolors, processed_data, origin_xyz, zip[0], zip[1], updateProgress);
-          } else if (num === 1) {
-            // カラー変換（誤差拡散）
-            colorErrorDiffusionWithProgress(img_data, processed_data, origin_xyz, zip[0], zip[1], updateProgress);
-          } else if (num === 2) {
-            // カラー変換（単純置換）
-            colorReplaceCiede2000WithProgress(img_data, processed_data, origin_xyz, zip[0], zip[1], updateProgress);
-          }
-          
-          // 処理結果をキャンバスに描画
-          cv.getContext('2d').putImageData(processed_data, 0, 0);
-          
-          // 処理完了
-          updateProgress(100);
-          
-          // 一定時間後にプログレスバーを非表示にする
-          setTimeout(() => {
-            progressContainer.style.display = 'none';
-          }, 1000);
-          
-        } catch (e) {
-          console.error("画像処理エラー:", e);
-          alert("処理中にエラーが発生しました。");
-          progressContainer.style.display = 'none';
-        }
-      }, 50);
-    }
-
-    function greyErrorDiffusion(img_data, imagecolors, processed_data, origin_xyz, zip, folder) {
-      // グレースケール化
-      for (let i = 0; i < img_data.data.length; i += 4) {
-        const grey = Math.round(
-          0.2126 * img_data.data[i] + 
-          0.7152 * img_data.data[i + 1] + 
-          0.0722 * img_data.data[i + 2]
-        );
+    <div class="container">
+        <h1>🎮 img2MC - Image to Minecraft Converter</h1>
         
-        imagecolors[i] = grey;
-        imagecolors[i + 1] = grey;
-        imagecolors[i + 2] = grey;
-        imagecolors[i + 3] = 255;
-      }
-      
-      const width = img_data.width;
-      const height = img_data.height;
-      
-      // 誤差拡散処理
-      for (let y = 0; y < height; y++) {
-        for (let x = 0; x < width; x++) {
-          const index = (x + y * width) * 4;
-          
-          // 現在のピクセル値
-          const oldPixel = imagecolors[index];
-          
-          // 2値化（128を閾値として白か黒に）
-          const newPixel = oldPixel < 128 ? 0 : 255;
-          
-          // 誤差を計算
-          const error = oldPixel - newPixel;
-          
-          // 新しい値を設定
-          imagecolors[index] = newPixel;
-          imagecolors[index + 1] = newPixel;
-          imagecolors[index + 2] = newPixel;
-          
-          // 誤差拡散（フロイド・スタインバーグ法）
-          // 右のピクセル: 7/16
-          if (x < width - 1) {
-            const idx = index + 4;
-            for (let i = 0; i < 3; i++) {
-              imagecolors[idx + i] = Math.min(255, Math.max(0, imagecolors[idx + i] + error * 7 / 16));
-            }
-          }
-          
-          // 左下のピクセル: 3/16
-          if (x > 0 && y < height - 1) {
-            const idx = index + width * 4 - 4;
-            for (let i = 0; i < 3; i++) {
-              imagecolors[idx + i] = Math.min(255, Math.max(0, imagecolors[idx + i] + error * 3 / 16));
-            }
-          }
-          
-          // 下のピクセル: 5/16
-          if (y < height - 1) {
-            const idx = index + width * 4;
-            for (let i = 0; i < 3; i++) {
-              imagecolors[idx + i] = Math.min(255, Math.max(0, imagecolors[idx + i] + error * 5 / 16));
-            }
-          }
-          
-          // 右下のピクセル: 1/16
-          if (x < width - 1 && y < height - 1) {
-            const idx = index + width * 4 + 4;
-            for (let i = 0; i < 3; i++) {
-              imagecolors[idx + i] = Math.min(255, Math.max(0, imagecolors[idx + i] + error * 1 / 16));
-            }
-          }
-        }
-      }
-      
-      // 処理結果を出力用データに設定
-      for (let i = 0; i < img_data.data.length; i++) {
-        processed_data.data[i] = imagecolors[i];
-      }
-      
-      // Minecraft コマンド生成
-      generateMinecraftCommands(imagecolors, width, height, origin_xyz, folder);
-      zipDL(zip);
-      
-      return processed_data;
-    }
+        <!-- ドラッグ&ドロップエリア -->
+        <div class="drop-zone" id="dropZone">
+            <div class="upload-icon">📁</div>
+            <p><strong>ここに画像をドラッグ&ドロップ</strong></p>
+            <p>または</p>
+            <p style="color: #007bff; text-decoration: underline;">クリックしてファイルを選択</p>
+            <input type="file" id="inputImage" accept="image/*">
+        </div>
+        
+        <!-- プログレスバー -->
+        <div class="progress-container" id="progressContainer">
+            <div class="progress-bar" id="progressBar"></div>
+            <div class="progress-text" id="progressText">処理中...</div>
+        </div>
+        
+        <!-- 画像表示エリア -->
+        <div class="image-container">
+            <canvas id="test_canvas" width="256" height="256" style="display: none;"></canvas>
+        </div>
+        
+        <!-- オプション -->
+        <div class="options-container">
+            <div class="options-title">🧱 使用するブロックタイプ</div>
+            <div class="checkbox-group">
+                <label class="checkbox-item">
+                    <input type="checkbox" id="blockType1" value="羊毛" checked>
+                    <span>🐑 羊毛</span>
+                </label>
+                <label class="checkbox-item">
+                    <input type="checkbox" id="blockType2" value="コンクリート" checked>
+                    <span>🏗️ コンクリート</span>
+                </label>
+                <label class="checkbox-item">
+                    <input type="checkbox" id="blockType3" value="かためたやつ" checked>
+                    <span>🧱 固めたコンクリート</span>
+                </label>
+            </div>
+        </div>
+        
+        <!-- 変換ボタン -->
+        <div class="button-container">
+            <button class="convert-btn btn-grayscale" onclick="processImageData(0)" disabled id="btn0">
+                ⚫ 白黒変換
+            </button>
+            <button class="convert-btn btn-color-high" onclick="processImageData(1)" disabled id="btn1">
+                🎨 カラー変換（高品質）
+            </button>
+            <button class="convert-btn btn-color-low" onclick="processImageData(2)" disabled id="btn2">
+                🚀 カラー変換（高速）
+            </button>
+        </div>
+    </div>
+    
+    <!-- モーダル（画像拡大表示） -->
+    <div id="imageModal" class="modal">
+        <span class="close" id="modalClose">&times;</span>
+        <canvas id="modalCanvas" class="modal-content"></canvas>
+    </div>
 
-    function colorReplaceCiede2000(img_data, processed_data, origin_xyz, zip, folder) {
-      const width = img_data.width;
-      const height = img_data.height;
-      
-      // 色データをロード
-      if (!colorCache) {
-        colorCache = loadCSVFile();
-      }
-      const color_csv = colorCache;
-      
-      // 出力用データを初期化
-      const output_data = new Uint8ClampedArray(img_data.data);
-      
-      // 各ピクセルを処理
-      for (let y = 0; y < height; y++) {
-        for (let x = 0; x < width; x++) {
-          const index = (x + y * width) * 4;
-          
-          if (output_data[index + 3] === 0) continue; // 透明ピクセルはスキップ
-          
-          // 現在のピクセルのRGB値
-          const r = output_data[index];
-          const g = output_data[index + 1];
-          const b = output_data[index + 2];
-          
-          // キャッシュキー
-          const rgbKey = `${r},${g},${b}`;
-          
-          let bestColor;
-          
-          // キャッシュチェック
-          if (labCache.has(rgbKey)) {
-            bestColor = labCache.get(rgbKey);
-          } else {
-            // LAB変換
-            const lab = rgb2lab([r, g, b]);
-            
-            // 最も近い色を探す
-            let minDistance = Infinity;
-            let bestColorIndex = 0;
-            
-            for (let i = 0; i < color_csv[2].length; i++) {
-              const distance = ciede2000(
-                lab[0], lab[1], lab[2],
-                color_csv[2][i][0], color_csv[2][i][1], color_csv[2][i][2]
-              );
-              
-              if (distance < minDistance) {
-                minDistance = distance;
-                bestColorIndex = i;
-              }
-            }
-            
-            bestColor = color_csv[1][bestColorIndex];
-            labCache.set(rgbKey, bestColor);
-          }
-          
-          // 最も近い色で置き換え
-          output_data[index] = bestColor[0];
-          output_data[index + 1] = bestColor[1];
-          output_data[index + 2] = bestColor[2];
-        }
-      }
-      
-      // 処理結果を出力用データに設定
-      for (let i = 0; i < img_data.data.length; i++) {
-        processed_data.data[i] = output_data[i];
-      }
-      
-      return processed_data;
-    }
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.7.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/1.3.3/FileSaver.min.js"></script>
+    <script src="sample_cie2000de.js"></script>
 
-    function colorErrorDiffusion(img_data, processed_data, origin_xyz, zip, folder) {
-      const width = img_data.width;
-      const height = img_data.height;
-      
-      // 色データをロード
-      if (!colorCache) {
-        colorCache = loadCSVFile();
-      }
-      const color_csv = colorCache;
-      
-      // 出力用データを初期化
-      const output_data = new Uint8ClampedArray(img_data.data);
-      
-      // 各ピクセルを処理
-      for (let y = 0; y < height; y++) {
-        for (let x = 0; x < width; x++) {
-          const index = (x + y * width) * 4;
-          
-          if (output_data[index + 3] === 0) continue; // 透明ピクセルはスキップ
-          
-          // 現在のピクセルのRGB値
-          const r = output_data[index];
-          const g = output_data[index + 1];
-          const b = output_data[index + 2];
-          
-          // キャッシュキー
-          const rgbKey = `${r},${g},${b}`;
-          
-          let bestColor;
-          
-          // キャッシュチェック
-          if (labCache.has(rgbKey)) {
-            bestColor = labCache.get(rgbKey);
-          } else {
-            // LAB変換
-            const lab = rgb2lab([r, g, b]);
+    <script>
+        // グローバル変数
+        let currentImageData = null;
+        let isProcessing = false;
+        
+        // DOM要素の取得
+        const dropZone = document.getElementById('dropZone');
+        const inputImage = document.getElementById('inputImage');
+        const canvas = document.getElementById('test_canvas');
+        const modal = document.getElementById('imageModal');
+        const modalCanvas = document.getElementById('modalCanvas');
+        const modalClose = document.getElementById('modalClose');
+        const progressContainer = document.getElementById('progressContainer');
+        const progressBar = document.getElementById('progressBar');
+        const progressText = document.getElementById('progressText');
+        
+        // ボタンの取得
+        const buttons = [
+            document.getElementById('btn0'),
+            document.getElementById('btn1'),
+            document.getElementById('btn2')
+        ];
+        
+        // ドラッグ&ドロップの設定
+        dropZone.addEventListener('click', () => inputImage.click());
+        dropZone.addEventListener('dragover', handleDragOver);
+        dropZone.addEventListener('dragleave', handleDragLeave);
+        dropZone.addEventListener('drop', handleDrop);
+        inputImage.addEventListener('change', (e) => handleFileSelect(e.target.files[0]));
+        
+        // キャンバスクリックでモーダル表示
+        canvas.addEventListener('click', showModal);
+        modalClose.addEventListener('click', hideModal);
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) hideModal();
+        });
+        
+        // ドラッグオーバー処理
+        function handleDragOver(e) {
+            e.preventDefault();
+            dropZone.classList.add('drag-over');
+        }
+        
+        // ドラッグリーブ処理
+        function handleDragLeave(e) {
+            e.preventDefault();
+            dropZone.classList.remove('drag-over');
+        }
+        
+        // ドロップ処理
+        function handleDrop(e) {
+            e.preventDefault();
+            dropZone.classList.remove('drag-over');
             
-            // 最も近い色を探す
-            let minDistance = Infinity;
-            let bestColorIndex = 0;
-            
-            for (let i = 0; i < color_csv[2].length; i++) {
-              const distance = ciede2000(
-                lab[0], lab[1], lab[2],
-                color_csv[2][i][0], color_csv[2][i][1], color_csv[2][i][2]
-              );
-              
-              if (distance < minDistance) {
-                minDistance = distance;
-                bestColorIndex = i;
-              }
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleFileSelect(files[0]);
+            }
+        }
+        
+        // ファイル選択処理
+        function handleFileSelect(file) {
+            if (!file || !file.type.startsWith('image/')) {
+                alert('画像ファイルを選択してください。');
+                return;
             }
             
-            bestColor = color_csv[1][bestColorIndex];
-            labCache.set(rgbKey, bestColor);
-          }
-          
-          // 誤差を計算
-          const error = [
-            output_data[index] - bestColor[0],
-            output_data[index + 1] - bestColor[1],
-            output_data[index + 2] - bestColor[2]
-          ];
-          
-          // 最も近い色で置き換え
-          output_data[index] = bestColor[0];
-          output_data[index + 1] = bestColor[1];
-          output_data[index + 2] = bestColor[2];
-          
-          // 誤差拡散（フロイド・スタインバーグ法）
-          // 右のピクセル: 7/16
-          if (x < width - 1) {
-            const idx = index + 4;
-            for (let c = 0; c < 3; c++) {
-              output_data[idx + c] = Math.min(255, Math.max(0, 
-                output_data[idx + c] + error[c] * 7 / 16
-              ));
-            }
-          }
-          
-          // 左下のピクセル: 3/16
-          if (x > 0 && y < height - 1) {
-            const idx = index + width * 4 - 4;
-            for (let c = 0; c < 3; c++) {
-              output_data[idx + c] = Math.min(255, Math.max(0, 
-                output_data[idx + c] + error[c] * 3 / 16
-              ));
-            }
-          }
-          
-          // 下のピクセル: 5/16
-          if (y < height - 1) {
-            const idx = index + width * 4;
-            for (let c = 0; c < 3; c++) {
-              output_data[idx + c] = Math.min(255, Math.max(0, 
-                output_data[idx + c] + error[c] * 5 / 16
-              ));
-            }
-          }
-          
-          // 右下のピクセル: 1/16
-          if (x < width - 1 && y < height - 1) {
-            const idx = index + width * 4 + 4;
-            for (let c = 0; c < 3; c++) {
-              output_data[idx + c] = Math.min(255, Math.max(0, 
-                output_data[idx + c] + error[c] * 1 / 16
-              ));
-            }
-          }
+            inputImage.files = createFileList(file);
+            onFileSelected(inputImage);
         }
-      }
-      
-      // 処理結果を出力用データに設定
-      for (let i = 0; i < img_data.data.length; i++) {
-        processed_data.data[i] = output_data[i];
-      }
-      
-      return processed_data;
-    }
-
-    function ciede2000(L1, a1, b1, L2, a2, b2) {
-      // CIEDE2000色差計算
-      const deg2rad = Math.PI / 180;
-      const rad2deg = 180 / Math.PI;
-      
-      // 輝度の差
-      const deltaL = L2 - L1;
-      const L_bar = (L1 + L2) / 2;
-      
-      // 彩度の計算
-      const C1 = Math.sqrt(a1 * a1 + b1 * b1);
-      const C2 = Math.sqrt(a2 * a2 + b2 * b2);
-      const C_bar = (C1 + C2) / 2;
-      
-      // G係数の計算
-      const C_bar7 = Math.pow(C_bar, 7);
-      const G = 0.5 * (1 - Math.sqrt(C_bar7 / (C_bar7 + 6103515625))); // 25^7
-      
-      // a'の計算
-      const a1_prime = a1 * (1 + G);
-      const a2_prime = a2 * (1 + G);
-      
-      // C'の計算
-      const C1_prime = Math.sqrt(a1_prime * a1_prime + b1 * b1);
-      const C2_prime = Math.sqrt(a2_prime * a2_prime + b2 * b2);
-      const C_bar_prime = (C1_prime + C2_prime) / 2;
-      const deltaC_prime = C2_prime - C1_prime;
-      
-      // h'の計算
-      let h1_prime = Math.atan2(b1, a1_prime) * rad2deg;
-      if (h1_prime < 0) h1_prime += 360;
-      
-      let h2_prime = Math.atan2(b2, a2_prime) * rad2deg;
-      if (h2_prime < 0) h2_prime += 360;
-      
-      // Δh'の計算
-      let deltah_prime;
-      if (C1_prime * C2_prime === 0) {
-        deltah_prime = 0;
-      } else {
-        if (Math.abs(h1_prime - h2_prime) <= 180) {
-          deltah_prime = h2_prime - h1_prime;
-        } else if (h2_prime <= h1_prime) {
-          deltah_prime = h2_prime - h1_prime + 360;
-        } else {
-          deltah_prime = h2_prime - h1_prime - 360;
+        
+        // FileListを作成する関数
+        function createFileList(file) {
+            const dt = new DataTransfer();
+            dt.items.add(file);
+            return dt.files;
         }
-      }
-      
-      // ΔH'の計算
-      const deltaH_prime = 2 * Math.sqrt(C1_prime * C2_prime) * Math.sin(deltah_prime * deg2rad / 2);
-      
-      // H̄'の計算
-      let H_bar_prime;
-      if (C1_prime * C2_prime === 0) {
-        H_bar_prime = h1_prime + h2_prime;
-      } else {
-        if (Math.abs(h1_prime - h2_prime) <= 180) {
-          H_bar_prime = (h1_prime + h2_prime) / 2;
-        } else if (h1_prime + h2_prime < 360) {
-          H_bar_prime = (h1_prime + h2_prime + 360) / 2;
-        } else {
-          H_bar_prime = (h1_prime + h2_prime - 360) / 2;
+        
+        // 画像設定時の処理をオーバーライド
+        const originalOnImageSetted = window.onImageSetted;
+        window.onImageSetted = function(e) {
+            const img_data = createImageData(e.target);
+            
+            // キャンバスサイズを調整（最大500px）
+            const { width, height } = calculateDisplaySize(img_data.width, img_data.height, 500);
+            
+            canvas.width = width;
+            canvas.height = height;
+            canvas.style.display = 'block';
+            
+            // 画像を描画
+            const ctx = canvas.getContext('2d');
+            const tempCanvas = document.createElement('canvas');
+            tempCanvas.width = img_data.width;
+            tempCanvas.height = img_data.height;
+            tempCanvas.getContext('2d').putImageData(img_data, 0, 0);
+            
+            ctx.drawImage(tempCanvas, 0, 0, width, height);
+            
+            // 元のデータを保存
+            canvas.img_data = img_data;
+            currentImageData = img_data;
+            
+            // ボタンを有効化
+            enableButtons(true);
+            
+            // ドロップゾーンを非表示
+            dropZone.style.display = 'none';
+        };
+        
+        // 表示サイズを計算
+        function calculateDisplaySize(originalWidth, originalHeight, maxSize) {
+            const aspectRatio = originalWidth / originalHeight;
+            let width, height;
+            
+            if (originalWidth > originalHeight) {
+                width = Math.min(originalWidth, maxSize);
+                height = width / aspectRatio;
+            } else {
+                height = Math.min(originalHeight, maxSize);
+                width = height * aspectRatio;
+            }
+            
+            return { width: Math.round(width), height: Math.round(height) };
         }
-      }
-      
-      // T係数の計算
-      const T = 1 - 
-                0.17 * Math.cos((H_bar_prime - 30) * deg2rad) + 
-                0.24 * Math.cos(2 * H_bar_prime * deg2rad) + 
-                0.32 * Math.cos((3 * H_bar_prime + 6) * deg2rad) - 
-                0.20 * Math.cos((4 * H_bar_prime - 63) * deg2rad);
-      
-      // SL, SC, SHの計算
-      const L_bar_minus50_squared = Math.pow(L_bar - 50, 2);
-      const SL = 1 + (0.015 * L_bar_minus50_squared) / Math.sqrt(20 + L_bar_minus50_squared);
-      const SC = 1 + 0.045 * C_bar_prime;
-      const SH = 1 + 0.015 * C_bar_prime * T;
-      
-      // RTの計算
-      const RT = -2 * Math.sqrt(Math.pow(C_bar_prime, 7) / (Math.pow(C_bar_prime, 7) + 6103515625)) * 
-                Math.sin(60 * Math.exp(-Math.pow((H_bar_prime - 275) / 25, 2)) * deg2rad);
-      
-      // 最終的な色差計算
-      return Math.sqrt(
-        Math.pow(deltaL / SL, 2) + 
-        Math.pow(deltaC_prime / SC, 2) + 
-        Math.pow(deltaH_prime / SH, 2) + 
-        RT * (deltaC_prime / SC) * (deltaH_prime / SH)
-      );
-    }
-
-    function rgb2lab(rgb) {
-      let r = rgb[0] / 255;
-      let g = rgb[1] / 255;
-      let b_val = rgb[2] / 255;
-      
-      // sRGBからXYZへの変換
-      r = r > 0.04045 ? Math.pow((r + 0.055) / 1.055, 2.4) : r / 12.92;
-      g = g > 0.04045 ? Math.pow((g + 0.055) / 1.055, 2.4) : g / 12.92;
-      b_val = b_val > 0.04045 ? Math.pow((b_val + 0.055) / 1.055, 2.4) : b_val / 12.92;
-      
-      const x = r * 0.4124 + g * 0.3576 + b_val * 0.1805;
-      const y = r * 0.2126 + g * 0.7152 + b_val * 0.0722;
-      const z = r * 0.0193 + g * 0.1192 + b_val * 0.9505;
-      
-      // XYZからLabへの変換
-      const x_n = 0.95047;
-      const y_n = 1.0;
-      const z_n = 1.08883;
-      
-      const x_ratio = x / x_n;
-      const y_ratio = y / y_n;
-      const z_ratio = z / z_n;
-      
-      const fx = x_ratio > 0.008856 ? Math.pow(x_ratio, 1/3) : (7.787 * x_ratio) + 16/116;
-      const fy = y_ratio > 0.008856 ? Math.pow(y_ratio, 1/3) : (7.787 * y_ratio) + 16/116;
-      const fz = z_ratio > 0.008856 ? Math.pow(z_ratio, 1/3) : (7.787 * z_ratio) + 16/116;
-      
-      const L = (116 * fy) - 16;
-      const a = 500 * (fx - fy);
-      const b = 200 * (fy - fz);
-      
-      return [L, a, b];
-    }
-
-    function checkboxConfirm() {
-      return [
-        document.getElementById("blockType1").checked,
-        document.getElementById("blockType2").checked,
-        document.getElementById("blockType3").checked
-      ];
-    }
-
-    function generateMinecraftCommands(imagecolors, width, height, origin_xyz, folder) {
-      let count = 0;
-      let filecount = 0;
-      let functionStr = '';
-      
-      for (let y = 0; y < height; y++) {
-        for (let x = 0; x < width; ) {
-          const index = (x + y * width) * 4;
-          const currentColor = imagecolors[index];
-          
-          // 連続する同じ色のピクセル数をカウント
-          let runLength = 1;
-          while (x + runLength < width && 
-                imagecolors[((x + runLength) + y * width) * 4] === currentColor) {
-            runLength++;
-          }
-          
-          // Minecraftコマンドを生成
-          const blockType = currentColor === 0 ? "minecraft:black_wool" : "minecraft:white_wool";
-          
-          if (runLength > 1) {
-            functionStr += `fill ${x + origin_xyz[0]} ${origin_xyz[1]} ${y + origin_xyz[2]} ${x + origin_xyz[0] + runLength - 1} ${origin_xyz[1]} ${y + origin_xyz[2]} ${blockType}\n`;
-          } else {
-            functionStr += `setblock ${x + origin_xyz[0]} ${origin_xyz[1]} ${y + origin_xyz[2]} ${blockType}\n`;
-          }
-          
-          x += runLength;
-          count++;
-          
-          // ファイル分割（コマンドが多すぎる場合）
-          if (count >= 10000) {
-            filecount++;
-            filesave(functionStr, filecount, folder);
-            functionStr = "";
-            count = 0;
-          }
+        
+        // ボタンの有効/無効切り替え
+        function enableButtons(enabled) {
+            buttons.forEach(btn => {
+                btn.disabled = !enabled || isProcessing;
+            });
         }
-      }
-      
-      // 残りのコマンドを保存
-      if (functionStr !== '') {
-        filecount++;
-        filesave(functionStr, filecount, folder);
-      }
-    }
-
-    function loadCSVFile() {
-      // モック用のブロックカラーデータ
-      // 実際のアプリケーションでは、CSVファイルからロードする
-      const colorData = [
-        // HSV, RGB, LAB
-        [[0, 0, 0], [0, 0, 0], [0, 0, 0]], // 黒
-        [[0, 0, 100], [255, 255, 255], [100, 0, 0]], // 白
-        [[0, 100, 100], [255, 0, 0], [53.24, 80.09, 67.20]], // 赤
-        [[120, 100, 100], [0, 255, 0], [87.73, -86.18, 83.18]], // 緑
-        [[240, 100, 100], [0, 0, 255], [32.30, 79.19, -107.86]], // 青
-        [[60, 100, 100], [255, 255, 0], [97.14, -21.55, 94.48]], // 黄
-        [[180, 100, 100], [0, 255, 255], [91.11, -48.09, -14.13]], // シアン
-        [[300, 100, 100], [255, 0, 255], [60.32, 98.24, -60.83]], // マゼンタ
-        [[30, 100, 100], [255, 128, 0], [72.40, 29.80, 77.10]], // オレンジ
-        [[270, 100, 100], [128, 0, 255], [41.20, 78.90, -107.90]], // 紫
-        [[90, 100, 100], [128, 255, 0], [87.40, -76.20, 83.20]], // ライム
-        [[210, 100, 100], [0, 128, 255], [54.50, 9.60, -75.80]], // 水色
-        [[150, 100, 100], [0, 255, 128], [87.90, -79.70, 50.90]], // 青緑
-        [[330, 100, 100], [255, 0, 128], [57.20, 83.00, -7.30]], // ピンク
-        [[0, 0, 50], [128, 128, 128], [53.59, 0, 0]], // グレー
-        [[0, 0, 75], [192, 192, 192], [77.70, 0, 0]]  // ライトグレー
-      ];
-      
-      // フォーマット変換：HSV, RGB, LAB
-      const hsv_array = [];
-      const rgb_array = [];
-      const lab_array = [];
-      
-      for (const color of colorData) {
-        hsv_array.push(color[0]);
-        rgb_array.push(color[1]);
-        lab_array.push(color[2]);
-      }
-      
-      return [hsv_array, rgb_array, lab_array];
-    }
-
-    function filesave(str, filecount, folder) {
-      folder.file(`imagefill${filecount}.mcfunction`, str);
-    }
-
-    function init_zip() {
-      const zip = new JSZip();
-      const folder1 = zip.folder("img2MC");
-      const folder2 = folder1.folder("data");
-      folder1.file('pack.mcmeta', '{\n"pack": {\n"pack_format": 1,\n"description": "datapack"\n}\n}');
-      const folder3 = folder2.folder("cheese");
-      const folder4 = folder3.folder("functions");
-      return [zip, folder4];
-    }
-
-    async function zipDL(zip) {
-      try {
-        const content = await zip.generateAsync({type: "blob"});
-        saveAs(content, "img2MC.zip");
-      } catch (e) {
-        console.error("ZIPファイル生成エラー:", e);
-        alert("ZIPファイルの生成中にエラーが発生しました。");
-      }
-    }
-
-    // キャンバスをクリックしたときに処理済み画像を表示するモーダル
-    document.getElementById('test_canvas').addEventListener('click', function() {
-      const canvas = this;
-      
-      // キャンバスに画像データがない場合は何もしない
-      if (!canvas.img_data) return;
-      
-      const modal = document.getElementById('imageModal');
-      const modalCanvas = document.getElementById('modalCanvas');
-      const ctx = modalCanvas.getContext('2d');
-      
-      // キャンバスサイズを処理済み画像サイズに設定
-      modalCanvas.width = canvas.width;
-      modalCanvas.height = canvas.height;
-      
-      // 処理済み画像を描画
-      ctx.putImageData(canvas.img_data, 0, 0);
-      
-      // モーダルを表示
-      modal.style.display = 'block';
-    });
-
-    function closeModal() {
-      document.getElementById('imageModal').style.display = 'none';
-    }
-
-    // ESCキーでモーダルを閉じる
-    window.addEventListener('keydown', function(e) {
-      if (e.key === 'Escape') {
-        closeModal();
-      }
-    });
-
-    // 画像選択イベントリスナーを登録
-    document.getElementById('inputImage').addEventListener('change', function() {
-      onFileSelected(this);
-    });
-  </script>
+        
+        // プログレスバー表示
+        function showProgress() {
+            progressContainer.style.display = 'block';
+            isProcessing = true;
+            enableButtons(false);
+            
+            // アニメーション開始
+            canvas.classList.add('processing');
+        }
+        
+        // プログレスバー更新
+        function updateProgress(percentage, text) {
+            progressBar.style.width = percentage + '%';
+            progressBar.textContent = Math.round(percentage) + '%';
+            progressText.textContent = text;
+        }
+        
+        // プログレスバー非表示
+        function hideProgress() {
+            progressContainer.style.display = 'none';
+            isProcessing = false;
+            enableButtons(true);
+            
+            // アニメーション停止
+            canvas.classList.remove('processing');
+        }
+        
+        // モーダル表示
+        function showModal() {
+            if (!currentImageData) return;
+            
+            const ctx = canvas.getContext('2d');
+            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            
+            // モーダルキャンバスに描画
+            modalCanvas.width = canvas.width;
+            modalCanvas.height = canvas.height;
+            modalCanvas.getContext('2d').putImageData(imageData, 0, 0);
+            
+            modal.style.display = 'block';
+        }
+        
+        // モーダル非表示
+        function hideModal() {
+            modal.style.display = 'none';
+        }
+        
+        // 処理関数をオーバーライド
+        const originalProcessImageData = window.processImageData;
+        window.processImageData = function(num) {
+            if (isProcessing || !currentImageData) return;
+            
+            showProgress();
+            
+            // 処理タイプに応じたメッセージ
+            const messages = [
+                '白黒変換中...',
+                'カラー変換中（高品質）...',
+                'カラー変換中（高速）...'
+            ];
+            
+            updateProgress(10, messages[num]);
+            
+            // 非同期で処理を実行
+            setTimeout(() => {
+                try {
+                    updateProgress(30, '画像を解析中...');
+                    
+                    setTimeout(() => {
+                        updateProgress(60, '色変換を実行中...');
+                        
+                        setTimeout(() => {
+                            updateProgress(80, '最終処理中...');
+                            
+                            // 実際の処理を実行
+                            originalProcessImageData.call(this, num);
+                            
+                            setTimeout(() => {
+                                updateProgress(100, '完了！');
+                                
+                                setTimeout(() => {
+                                    hideProgress();
+                                }, 500);
+                            }, 200);
+                        }, 300);
+                    }, 300);
+                } catch (error) {
+                    console.error('Processing error:', error);
+                    hideProgress();
+                    alert('処理中にエラーが発生しました。');
+                }
+            }, 100);
+        };
+        
+        // ESCキーでモーダルを閉じる
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                hideModal();
+            }
+        });
+        
+        // 初期状態でボタンを無効化
+        enableButtons(false);
+    </script>
 </body>
 </html>
