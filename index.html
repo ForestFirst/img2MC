@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+</head>
+<body>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.7.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/1.3.3/FileSaver.min.js"></script>
+    <script src="https://d3js.org/d3.v5.min.js"></script>
+    <script src="sample_cie2000de.js"></script>
+
+<p>
+<input type="file" id="inputImage" onchange="onFileSelected(this)">
+</p>
+
+<p>
+<canvas id="test_canvas" width=256 height=256 style="border: 1px solid;"></canvas>
+</p>
+<p>
+    <label><input type="checkbox" id="blockType1" value="羊毛" checked>羊毛</label>
+    <label><input type="checkbox" id="blockType2" value="コンクリート" checked>コンクリート</label>
+    <label><input type="checkbox" id="blockType3" value="かためたやつ" checked>固めたコンクリ</label>
+</p>
+<!--
+<p>
+    <article>
+        <h1>Blocks</h1>
+        <canvas id="black_concrete" width="30" height="30"></canvas>
+        <img data-src="./textures/concrete/blue_concrete.png" alt="Bear" width="100">
+        <img data-src="./textures/concrete/brown_concrete.png" alt="Bear" width="100">
+        <img data-src="./textures/concrete/cyan_concrete.png" alt="Bear" width="100">
+        <img data-src="./textures/concrete/gray_concrete.png" alt="Bear" width="100">
+        <img data-src="./textures/concrete/green_concrete.png" alt="Bear" width="100">
+        <img data-src="./textures/concrete/light_blue_concrete.png" alt="Bear" width="100">
+        <img data-src="./textures/concrete/light_gray_concrete.png" alt="Bear" width="100">
+        <img data-src="./textures/concrete/lime_concrete.png" alt="Bear" width="100">
+        <img data-src="./textures/concrete/magenta_concrete.png" alt="Bear" width="100">
+        <img data-src="./textures/concrete/orange_concrete.png" alt="Bear" width="100">
+        <img data-src="./textures/concrete/pink_concrete.png" alt="Bear" width="100">
+        <img data-src="./textures/concrete/purple_concrete.png" alt="Bear" width="100">
+        <img data-src="./textures/concrete/red_concrete.png" alt="Bear" width="100">
+        <img data-src="./textures/concrete/white_concrete.png" alt="Bear" width="100">
+        <img data-src="./textures/concrete/yellow_concrete.png" alt="Bear" width="100">
+    </article>
+</p>
+-->
+
+<p>
+<input type="button" value="白黒" onclick="processImageData(0)">
+
+<input type="button" value="カラー(高)" onclick="processImageData(1)">
+
+<input type="button" value="カラー（低）" onclick="processImageData(2)">
+</p>
+
+</body>
+</html>
